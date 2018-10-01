@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="导言快速过一遍计算机视觉中用到的网络结构的名词描述。  Inception V1-V3  Inception系列InceptionV1  https://zhuanlan.zhihu.com/p/30756181InceptionV2 + InceptionV3  https://arxiv.org/pdf/1512.00567.pdf 设计思想主要来自InceptionV2V3的论文： http">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络结构术语合集">
+<meta property="og:url" content="http://tensors.space/2019/01/神经网络结构术语合集/index.html">
+<meta property="og:site_name" content="阮明康">
+<meta property="og:description" content="导言快速过一遍计算机视觉中用到的网络结构的名词描述。  Inception V1-V3  Inception系列InceptionV1  https://zhuanlan.zhihu.com/p/30756181InceptionV2 + InceptionV3  https://arxiv.org/pdf/1512.00567.pdf 设计思想主要来自InceptionV2V3的论文： http">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/Inceptionv1.png">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/high-demension.png">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/afterpool.png">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/side-branch.png">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/residual.jpg">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/denseblock.jpg">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/senet.png">
+<meta property="og:image" content="http://tensors.space/2019/01/神经网络结构术语合集/sca-cnn-arch.png">
+<meta property="og:updated_time" content="2019-04-28T13:40:09.766Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="神经网络结构术语合集">
+<meta name="twitter:description" content="导言快速过一遍计算机视觉中用到的网络结构的名词描述。  Inception V1-V3  Inception系列InceptionV1  https://zhuanlan.zhihu.com/p/30756181InceptionV2 + InceptionV3  https://arxiv.org/pdf/1512.00567.pdf 设计思想主要来自InceptionV2V3的论文： http">
+<meta name="twitter:image" content="http://tensors.space/2019/01/神经网络结构术语合集/Inceptionv1.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://tensors.space/2019/01/神经网络结构术语合集/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>神经网络结构术语合集 | 阮明康</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">阮明康</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">TENSORS SPACE | 张量空间</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>Sitemap</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/01/神经网络结构术语合集/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">神经网络结构术语合集
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-01-28 21:37:23" itemprop="dateCreated datePublished" datetime="2019-01-28T21:37:23+08:00">2019-01-28</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/神经网络/" itemprop="url" rel="index"><span itemprop="name">神经网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>快速过一遍计算机视觉中用到的网络结构的名词描述。</p>
+<ul>
+<li>Inception V1-V3</li>
+</ul>
+<h1 id="Inception系列"><a href="#Inception系列" class="headerlink" title="Inception系列"></a>Inception系列</h1><p>InceptionV1  <a href="https://zhuanlan.zhihu.com/p/30756181" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30756181</a><br>InceptionV2 + InceptionV3  <a href="https://arxiv.org/pdf/1512.00567.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1512.00567.pdf</a></p>
+<h2 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h2><p>主要来自InceptionV2V3的论文： <a href="https://arxiv.org/pdf/1512.00567.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1512.00567.pdf</a></p>
+<ol>
+<li><p>Avoid representational bottlenecks, especially early in the network. Feed-forward networks can be represented by an acyclic graph from the input layer(s) to the classifier or regressor. This defines a clear direction for the information flow. For any cut separating the inputs from the outputs, one can access the amount of information passing though the cut. One should avoid<br>bottlenecks with extreme compression. In general the representation size should gently decrease from the inputs to the outputs before reaching the final representation used for the task at hand. Theoretically, information content can not be assessed merely by the dimensionality of the representation as it discards important factors like correlation structure; the dimensionality merely provides a rough estimate of information content.<br>第一条就是不要尝试在网络早期就将网络的信息压缩到太小，被前面网络去除掉的信息是不能够被后续找回的，因为CNN是一个无环路的图。</p>
+</li>
+<li><p>Higher dimensional representations are easier to process locally within a network. Increasing the activations per tile in a convolutional network allows for more disentangled features. The resulting networks will train faster.<br>第二条的意思就是，更加高维的输入会更加方便寻找local feature, 也就是更加方便cnn来获得局部特征，因此神经网络的激活神经元应该高一些，保留的激活部分多一些，而不是压抑激活单元。</p>
+</li>
+<li><p>Spatial aggregation can be done over lower dimensional embeddings without much or any loss in representational power. For example, before performing a more spread out (e.g. 3 × 3) convolution, one can reduce the dimension of the input representation before the spatial aggregation without expecting serious adverse effects. We hypothesize that the reason for that is the strong correlation between adjacent unit results in much less loss of information during dimension reduction, if the outputs are used in a spatial aggregation context. Given that these signals should be easily compressible, the dimension reduction even promotes faster learning.<br>第三条说的是，在底层的特征可以先压缩再进行卷积，并不会影响到最终的效果，这个假设成立的前提就是，上一层的神经网络输出存在相关性，允许被压缩。注意到这条和第一条是稍微有一些相反的，第一条建议的是不要过快进行信息的压缩，而这里提出的是可以先进行1x1压缩再进行卷积是不会对最终结果有太大影响。这里的度就是玄学所在了。</p>
+</li>
+<li><p>Balance the width and depth of the network. Optimal performance of the network can be reached by balancing the number of filters per stage and the depth of the network. Increasing both the width and the depth of the network can contribute to higher quality networks. However, the optimal improvement for a constant amount of computation can be reached if both are<br>increased in parallel. The computational budget should therefore be distributed in a balanced way between the depth and width of the network.<br>第四条就更玄学了，增加网络的宽(每层更多的filter)和深(更深的网络，少用stride)都能够提高网络的表达能力，但是特定的计算能力预算下，怎样分配宽和深是一个不容易，甚至是玄学的事情。唔，道理都懂…其实有没有人想过为什么CNN一层一层垒在一起就能够有这么强的表达能力？</p>
+</li>
+</ol>
+<h2 id="Inception系列网络"><a href="#Inception系列网络" class="headerlink" title="Inception系列网络"></a>Inception系列网络</h2><p>Inception系列网络可以参考这个链接： <a href="https://zhuanlan.zhihu.com/p/30756181" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30756181</a><br>Inception是一种常见的模块，其作用是在同一层获得不同scale的卷积结果。scale在物体检测领域是非常重要的一个参数，设计再良好的特征，如果scale不对也很难获得好的检测结果，当前基于RPN或者基于Anchor的two-stage detection主要也是致力于解决scale问题，因为数据刷到现在，难点一般都是对小的物体存在大量的漏检，而增强对小物体的检测能力（recall）一般又会伴随而来是大量的误检(FP)。<br>Inception系列网络最主要的思想就是在同一层卷积神经网络里面并行多个卷积核，并将卷积结果concat起来，从而在同一层中就能够获得不同感受野的feature map。</p>
+<h3 id="第一代GoogleNet提出InceptionV1"><a href="#第一代GoogleNet提出InceptionV1" class="headerlink" title="第一代GoogleNet提出InceptionV1"></a>第一代GoogleNet提出InceptionV1</h3><p>论文来自： <a href="https://arxiv.org/pdf/1409.4842.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1409.4842.pdf</a></p>
+<p><img src="/2019/01/神经网络结构术语合集/Inceptionv1.png" alt="Inceptionv1"></p>
+<p>图1</p>
+<p>为什么能够用1x1来进行channel数量的缩减，因为存在这样的一个假设，在神经网络最后的输出层里面，feature map有多个部分是高度相关的，可以按照相关性分为多个组，每个组可以认为是抓住了原图像中特定的区域或者特定的特征，换句话说，信息存在冗余，这是可以用1x1来进行reduce的理论基础。</p>
+<p>同样的，文章认为，这些相关组有些cover的区域比较小，有些比较大，这就要求同一层同scale的卷积应该有多种卷积核，至于为什么采用3x3 5x5并不是因为经过精确计算这些大小的核符合要求，而是因为方便和常用，有现成的实现。</p>
+<p>由于高层网络更应该抓住高层信息，因此论文建议，越高的层，其3x3, 5x5的卷积核应该相应地增多。当然，实际上并没有这么做，因为会额外增加网络设计的复杂性，同时这个也是非常heuristic的想法，需要手工进行设置。</p>
+<p>有人会比较好奇，3x3, 5x5之后的结果怎样进行concate，大小不是不一致的吗，其实主要是通过对原图padding然后进行convolution得到的，比如3x3比5x5输出feature map大小是要大2的，只需要让5x5padding为1（两边共补2）就可以了。<br>看这个tensorflow实现的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import d2lzh as d2l</span><br><span class="line">from mxnet import gluon, init, nd</span><br><span class="line">from mxnet.gluon import nn</span><br><span class="line"></span><br><span class="line">class Inception(nn.Block):</span><br><span class="line">    # c1 - c4为每条线路里的层的输出通道数</span><br><span class="line">    def __init__(self, c1, c2, c3, c4, **kwargs):</span><br><span class="line">        super(Inception, self).__init__(**kwargs)</span><br><span class="line">        # 线路1，单1 x 1卷积层</span><br><span class="line">        self.p1_1 = nn.Conv2D(c1, kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line">        # 线路2，1 x 1卷积层后接3 x 3卷积层</span><br><span class="line">        self.p2_1 = nn.Conv2D(c2[0], kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line">        self.p2_2 = nn.Conv2D(c2[1], kernel_size=3, padding=1,</span><br><span class="line">                              activation=&apos;relu&apos;)</span><br><span class="line">        # 线路3，1 x 1卷积层后接5 x 5卷积层</span><br><span class="line">        self.p3_1 = nn.Conv2D(c3[0], kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line">        self.p3_2 = nn.Conv2D(c3[1], kernel_size=5, padding=2,</span><br><span class="line">                              activation=&apos;relu&apos;)</span><br><span class="line">        # 线路4，3 x 3最大池化层后接1 x 1卷积层</span><br><span class="line">        self.p4_1 = nn.MaxPool2D(pool_size=3, strides=1, padding=1)</span><br><span class="line">        self.p4_2 = nn.Conv2D(c4, kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        p1 = self.p1_1(x)</span><br><span class="line">        p2 = self.p2_2(self.p2_1(x))</span><br><span class="line">        p3 = self.p3_2(self.p3_1(x))</span><br><span class="line">        p4 = self.p4_2(self.p4_1(x))</span><br><span class="line">        return nd.concat(p1, p2, p3, p4, dim=1)  # 在通道维上连结输出</span><br></pre></td></tr></table></figure></p>
+<p>其中1x1, 3x3, 5x5分别pad 0， 1， 2个像素，来使得输出和输入大小一致。</p>
+<h3 id="Inception-V2"><a href="#Inception-V2" class="headerlink" title="Inception V2"></a>Inception V2</h3><ul>
+<li>在V1基础上，添加了Batch Norm</li>
+<li>用两个3x3代替一个5x5， 参数量减少，同时增加了网络的深度，计算到的感受野却没有改变。</li>
+<li>作者想，那能不能用2x2或者更小的卷积核来替代大核呢，于是，极端地，作者认为可以用1xn和nx1的组合来替代一个nxn的大核。这样的替代在中层（输入大小从12到20部分）是有效的，但是不能够被用于底层，也就是一开始几层。原因没有进一步说明。用1xn和nx1来替代n x n, 同样减少参数，同时增加了网络深度。实验证明，在中间层网络，用1x7和7x1的效果不错。(玄学)</li>
+<li>增加输出的channel数量(原则2)，如下图所示，将3x3拆成1x3和3x1两个平行的channel(注意不是串联)，从而保留高维的表达。</li>
+</ul>
+<p><img src="/2019/01/神经网络结构术语合集/high-demension.png" alt="high-demension"><br>图2</p>
+<ul>
+<li>可以使用并行结构来优化Pooling。前面的规则1提到Pooling会造成represtation bottleneck，一种解决办法就是在Pooling前用1x1卷积把特征数加倍（见图3右侧），这种加倍可以理解加入了冗余的特征，然后再作Pooling就只是把冗余的信息重新去掉，没有减少信息量。这种方法有很好的效果但因为加入了1x1卷积会极大的增大 计算量。替代的方法是使用两个并行的支路，一路1x1卷积，由于特征维度没有加倍计算量相比之前减少了一倍，一路是Pooling，最后再在特征维度拼合到一起（见图4）。这种方法即有很好的效果，又没有增大计算量。<br><img src="/2019/01/神经网络结构术语合集/afterpool.png" alt="afterpool"><br>图3<br><img src="/2019/01/神经网络结构术语合集/side-branch.png" alt="side-branch"><br>图4<h3 id="Inception-V3"><a href="#Inception-V3" class="headerlink" title="Inception V3"></a>Inception V3</h3></li>
+</ul>
+<p>Inception V2 + 辅助的分类器就变成了v3。 这个新的思想就是使用一个分类器来筛选有用的梯度，使得有效信息能够传回到底层网络，避免梯度消失等情况。这个相当于早期的监督信息，这个输出层插在网络的中间，可以理解为将梯度回传的起始点设置在了中间，辅助整体的学习。</p>
+<h3 id="Inception-V4"><a href="#Inception-V4" class="headerlink" title="Inception V4"></a>Inception V4</h3><p><a href="https://arxiv.org/pdf/1602.07261.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1602.07261.pdf</a><br>在此基础上，添加stem模块，Inception A， B， C， Reduction A， B等。 Reduction主要的区别就是不是直接pool为2，而是分了几个分支做stride为2的conv。实际上感觉没有InceptionV2, V3那样的比较根本性的创新。</p>
+<h1 id="Resnet"><a href="#Resnet" class="headerlink" title="Resnet"></a>Resnet</h1><p>Resnet残差结构是神经网络另外一个神仙操作，可以较好地解决梯度消失等困难。<br>使用残差结构的比较经典的论文有ResNet, DenseNet和SENet等。</p>
+<h2 id="Resnet-1"><a href="#Resnet-1" class="headerlink" title="Resnet"></a>Resnet</h2><p><img src="/2019/01/神经网络结构术语合集/residual.jpg" alt="residual"><br>ResNet的一个重大创新设计就是这个Residual block</p>
+<h2 id="DenseNet"><a href="#DenseNet" class="headerlink" title="DenseNet"></a>DenseNet</h2><p><img src="/2019/01/神经网络结构术语合集/denseblock.jpg" alt="denseblock"></p>
+<ul>
+<li>使用DenseBlock，每一个block的输出都会直接输入到后面的每一个Block</li>
+<li>DenseBlock之间加入过渡层(Transition Layer)，实质就是1x1卷积核一个stride&gt;1的pooling操作， 当然作者选择了stride=2</li>
+</ul>
+<h1 id="Spatial-and-Channel-Attention"><a href="#Spatial-and-Channel-Attention" class="headerlink" title="Spatial and Channel Attention"></a>Spatial and Channel Attention</h1><h2 id="SENet"><a href="#SENet" class="headerlink" title="SENet"></a>SENet</h2><p><a href="https://arxiv.org/pdf/1709.01507.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1709.01507.pdf</a><br>Squeeze-and-Excitation Net, SE网络对每一个输出通道计算一个重要性权重加在输出feature中。这个权重是通过几层FC和激活得到的。应该也属于某种程度的attention.<br><img src="/2019/01/神经网络结构术语合集/senet.png" alt="senet"></p>
+<h2 id="SCA-CNN"><a href="#SCA-CNN" class="headerlink" title="SCA-CNN"></a>SCA-CNN</h2><p><a href="https://arxiv.org/pdf/1611.05594.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1611.05594.pdf</a><br>CNN领域Attention的经典之作。<br><img src="/2019/01/神经网络结构术语合集/sca-cnn-arch.png" alt="sca-cnn-arch"><br>待续…</p>
+<h1 id="移动端优化方面"><a href="#移动端优化方面" class="headerlink" title="移动端优化方面"></a>移动端优化方面</h1><h2 id="MobileNet"><a href="#MobileNet" class="headerlink" title="MobileNet"></a>MobileNet</h2><h2 id="ShuffleNet"><a href="#ShuffleNet" class="headerlink" title="ShuffleNet"></a>ShuffleNet</h2>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>阮明康</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    
+    <a href="http://tensors.space/2019/01/神经网络结构术语合集/" title="神经网络结构术语合集">http://tensors.space/2019/01/神经网络结构术语合集/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/10/配置PyCharm远程调试并本地显示matplotlib图像/" rel="next" title="配置PyCharm远程调试并本地显示matplotlib图像">
+                <i class="fa fa-chevron-left"></i> 配置PyCharm远程调试并本地显示matplotlib图像
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/CMake基础/" rel="prev" title="CMake基础">
+                CMake基础 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="阮明康">
+            
+              <p class="site-author-name" itemprop="name">阮明康</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">13</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/ruanmk" title="GitHub &rarr; https://github.com/ruanmk" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.linkedin.com/in/ruanmk/" title="LinkedIn &rarr; https://www.linkedin.com/in/ruanmk/" rel="noopener" target="_blank"><i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#导言"><span class="nav-number">1.</span> <span class="nav-text">导言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Inception系列"><span class="nav-number">2.</span> <span class="nav-text">Inception系列</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设计思想"><span class="nav-number">2.1.</span> <span class="nav-text">设计思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Inception系列网络"><span class="nav-number">2.2.</span> <span class="nav-text">Inception系列网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一代GoogleNet提出InceptionV1"><span class="nav-number">2.2.1.</span> <span class="nav-text">第一代GoogleNet提出InceptionV1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inception-V2"><span class="nav-number">2.2.2.</span> <span class="nav-text">Inception V2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inception-V3"><span class="nav-number">2.2.3.</span> <span class="nav-text">Inception V3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inception-V4"><span class="nav-number">2.2.4.</span> <span class="nav-text">Inception V4</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Resnet"><span class="nav-number">3.</span> <span class="nav-text">Resnet</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Resnet-1"><span class="nav-number">3.1.</span> <span class="nav-text">Resnet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DenseNet"><span class="nav-number">3.2.</span> <span class="nav-text">DenseNet</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spatial-and-Channel-Attention"><span class="nav-number">4.</span> <span class="nav-text">Spatial and Channel Attention</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SENet"><span class="nav-number">4.1.</span> <span class="nav-text">SENet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SCA-CNN"><span class="nav-number">4.2.</span> <span class="nav-text">SCA-CNN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#移动端优化方面"><span class="nav-number">5.</span> <span class="nav-text">移动端优化方面</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MobileNet"><span class="nav-number">5.1.</span> <span class="nav-text">MobileNet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ShuffleNet"><span class="nav-number">5.2.</span> <span class="nav-text">ShuffleNet</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阮明康</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '765ca76ad899ed716837',
+    clientSecret: 'c8111d57983bf95607814ee45462a5e45117291f',
+    repo: 'git-comments',
+    owner: 'ruanmk',
+    admin: ['ruanmk'],
+    id: md5(location.pathname),
+    
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#more");
+  
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
