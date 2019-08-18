@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="基本原理除了用cmake进行库的编译以外，我们还需要掌握如何写一个cmake方便别人在使用我们的库的时候能够顺利链接。本篇仅说明一下整个链接和安装的思路，理清看文档的顺序，其具体的参数和函数签名都有详细的文档的。 首先推荐大家下载这一个Toy Example:https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd2">
+<meta name="keywords" content="CMake">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用cmake发布库">
+<meta property="og:url" content="http://tensors.space/2018/05/CPP11/用cmake发布库/index.html">
+<meta property="og:site_name" content="阮明康">
+<meta property="og:description" content="基本原理除了用cmake进行库的编译以外，我们还需要掌握如何写一个cmake方便别人在使用我们的库的时候能够顺利链接。本篇仅说明一下整个链接和安装的思路，理清看文档的顺序，其具体的参数和函数签名都有详细的文档的。 首先推荐大家下载这一个Toy Example:https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd2">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-08-18T15:44:04.594Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用cmake发布库">
+<meta name="twitter:description" content="基本原理除了用cmake进行库的编译以外，我们还需要掌握如何写一个cmake方便别人在使用我们的库的时候能够顺利链接。本篇仅说明一下整个链接和安装的思路，理清看文档的顺序，其具体的参数和函数签名都有详细的文档的。 首先推荐大家下载这一个Toy Example:https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd2">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://tensors.space/2018/05/CPP11/用cmake发布库/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>用cmake发布库 | 阮明康</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">阮明康</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">TENSORS SPACE | 张量空间</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>Sitemap</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/05/CPP11/用cmake发布库/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用cmake发布库
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-13 19:21:24" itemprop="dateCreated datePublished" datetime="2018-05-13T19:21:24+08:00">2018-05-13</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><p>除了用cmake进行库的编译以外，我们还需要掌握如何写一个cmake方便别人在使用我们的库的时候能够顺利链接。<br>本篇仅说明一下整个链接和安装的思路，理清看文档的顺序，其具体的参数和函数签名都有详细的文档的。</p>
+<p>首先推荐大家下载这一个Toy Example:<br><a href="https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip" target="_blank" rel="noopener">https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip</a><br>其展示了一个最小的，支持安装以及被其他库find_package的写法。<br>另外可以参考这篇文章，用中文讲述地比较清晰：<br><a href="http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/" target="_blank" rel="noopener">http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/</a><br>这里是关于find_package的完整API阐述：<br><a href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" target="_blank" rel="noopener">https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package</a><br>通过本篇文章，咱们希望知道以下目的是怎样达成的：</p>
+<ul>
+<li>将我们需要对外公布的lib以及header安装在指定的位置</li>
+<li>提供多个.cmake脚本（XXConfig.cmake, XXTarget.cmake, XXConfigVersion.cmake）， 使得客户在调用find_package的时候能够成功找到所需库和头文件的位置，这里我们用name来表示库的名字，这相当于设置了以下的变量：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;NAME&gt;_FOUND</span><br><span class="line">&lt;NAME&gt;_INCLUDE_DIRS or &lt;NAME&gt;_INCLUDES</span><br><span class="line">&lt;NAME&gt;_LIBRARIES or &lt;NAME&gt;_LIBRARIES or &lt;NAME&gt;_LIBS</span><br><span class="line">&lt;NAME&gt;_DEFINITIONS</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="find-package做了啥"><a href="#find-package做了啥" class="headerlink" title="find_package做了啥"></a>find_package做了啥</h1><p>为了理解要给find_package提供什么内容，我们首先要理解find_package到底做了哪一些步骤。find_package找库的位置可以分为两种方法：</p>
+<ul>
+<li><p>模块模式(Module Mode)：查找形如<code>Find&lt;name&gt;.cmake</code>这样的脚本，通过该脚本定义以上的变量。查找的位置有两处：1. 设置的<code>${CMAKE_MODULE_PATH}</code>(由当前CmakeLists.txt脚本或调用命令行等设置)下；2. <code>&lt;CMAKE_ROOT&gt;/Modules/</code> ，比如<code>CMAKE_ROOT=/usr/bin/cmake/share/cmake-3.10</code>, 这个位置保存了cmake认为编程人员常用的库，如lua: FindLua.cmake等。这些路径保留了<code>Find&lt;name&gt;.cmake</code>这样的路径，cmake匹配上后将直接执行，类似于<code>include(Find&lt;name&gt;.cmake)</code>。如果模块模式找不到相应的cmake文件，那么就会启动配置模式，配置模式则比较复杂。</p>
+</li>
+<li><p>配置模式(Config Mode )</p>
+<blockquote>
+<p>The CONFIG option, the synonymous NO_MODULE option, or the use of options not specified in the basic signature all enforce pure Config mode. In pure Config mode, the command skips Module mode search and proceeds at once with Config mode search.</p>
+</blockquote>
+</li>
+</ul>
+<p>配置模式指定配置所在的位置非常直白，它有一系列的搜索顺序，但是日常我们只需要设置<code>&lt;name&gt;_DIR</code>为包含config的文件夹路径即可。如果<code>&lt;name&gt;_DIR</code>找到了所需的配置文件，那么就会停止搜索，否则会按照顺序进行搜索，可能构造的搜索地址为：</p>
+<blockquote>
+<p>CMake constructs a set of possible installation prefixes for the package. Under each prefix several directories are searched for a configuration file. The tables below show the directories searched. Each entry is meant for installation trees following Windows (W), UNIX (U), or Apple (A) conventions:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;prefix&gt;/                                                       (W)</span><br><span class="line">&lt;prefix&gt;/(cmake|CMake)/                                         (W)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;*/                                               (W)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;*/(cmake|CMake)/                                 (W)</span><br><span class="line">&lt;prefix&gt;/(lib/&lt;arch&gt;|lib*|share)/cmake/&lt;name&gt;*/                 (U)</span><br><span class="line">&lt;prefix&gt;/(lib/&lt;arch&gt;|lib*|share)/&lt;name&gt;*/                       (U)</span><br><span class="line">&lt;prefix&gt;/(lib/&lt;arch&gt;|lib*|share)/&lt;name&gt;*/(cmake|CMake)/         (U)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;*/(lib/&lt;arch&gt;|lib*|share)/cmake/&lt;name&gt;*/         (W/U)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;*/(lib/&lt;arch&gt;|lib*|share)/&lt;name&gt;*/               (W/U)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;*/(lib/&lt;arch&gt;|lib*|share)/&lt;name&gt;*/(cmake|CMake)/ (W/U)</span><br></pre></td></tr></table></figure></p>
+<p>On systems supporting macOS Frameworks and Application Bundles the following directories are searched for frameworks or bundles containing a configuration file:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;prefix&gt;/&lt;name&gt;.framework/Resources/                    (A)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;.framework/Resources/CMake/              (A)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;.framework/Versions/*/Resources/         (A)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;.framework/Versions/*/Resources/CMake/   (A)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;.app/Contents/Resources/                 (A)</span><br><span class="line">&lt;prefix&gt;/&lt;name&gt;.app/Contents/Resources/CMake/           (A)</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>这其中<code>&lt;prefix&gt;</code>的变量替换顺序为(其实不用记住这么多，实际上常用的就是<code>&lt;name&gt;_DIR</code>)：</p>
+<blockquote>
+<ol>
+<li>Search paths specified in the <a href="https://cmake.org/cmake/help/latest/variable/PackageName_ROOT.html#variable:%3CPackageName%3E_ROOT" target="_blank" rel="noopener"><code>_ROOT</code></a> CMake variable and the <a href="https://cmake.org/cmake/help/latest/envvar/PackageName_ROOT.html#envvar:%3CPackageName%3E_ROOT" target="_blank" rel="noopener"><code>_ROOT</code></a>environment variable, where <code>&lt;PackageName&gt;</code> is the package to be found. The package root variables are maintained as a stack so if called from within a find module, root paths from the parent’s find module will also be searched after paths for the current package. This can be skipped if <code>NO_PACKAGE_ROOT_PATH</code> is passed. See policy <a href="https://cmake.org/cmake/help/latest/policy/CMP0074.html#policy:CMP0074" target="_blank" rel="noopener"><code>CMP0074</code></a>.</li>
+<li><p>Search paths specified in cmake-specific cache variables. These are intended to be used on the command line with a <code>-DVAR=value</code>. The values are interpreted as <a href="https://cmake.org/cmake/help/latest/manual/cmake-language.7.html#cmake-language-lists" target="_blank" rel="noopener">semicolon-separated lists</a>. This can be skipped if <code>NO_CMAKE_PATH</code> is passed:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_PREFIX_PATH</span><br><span class="line">CMAKE_FRAMEWORK_PATH</span><br><span class="line">CMAKE_APPBUNDLE_PATH</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Search paths specified in cmake-specific environment variables. These are intended to be set in the user’s shell configuration, and therefore use the host’s native path separator (<code>;</code> on Windows and <code>:</code> on UNIX). This can be skipped if <code>NO_CMAKE_ENVIRONMENT_PATH</code> is passed:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;PackageName&gt;_DIR</span><br><span class="line">CMAKE_PREFIX_PATH</span><br><span class="line">CMAKE_FRAMEWORK_PATH</span><br><span class="line">CMAKE_APPBUNDLE_PATH</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Search paths specified by the <code>HINTS</code> option. These should be paths computed by system introspection, such as a hint provided by the location of another item already found. Hard-coded guesses should be specified with the <code>PATHS</code> option.</p>
+</li>
+<li><p>Search the standard system environment variables. This can be skipped if <code>NO_SYSTEM_ENVIRONMENT_PATH</code>is passed. Path entries ending in <code>/bin</code> or <code>/sbin</code> are automatically converted to their parent directories:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PATH</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Search paths stored in the CMake <a href="https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#user-package-registry" target="_blank" rel="noopener">User Package Registry</a>. This can be skipped if <code>NO_CMAKE_PACKAGE_REGISTRY</code> is passed or by setting the <a href="https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY.html#variable:CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY" target="_blank" rel="noopener"><code>CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY</code></a> to <code>TRUE</code>. See the <a href="https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#manual:cmake-packages(7" target="_blank" rel="noopener"><code>cmake-packages(7)</code></a>) manual for details on the user package registry.</p>
+</li>
+<li><p>Search cmake variables defined in the Platform files for the current system. This can be skipped if <code>NO_CMAKE_SYSTEM_PATH</code> is passed:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CMAKE_SYSTEM_PREFIX_PATH</span><br><span class="line">CMAKE_SYSTEM_FRAMEWORK_PATH</span><br><span class="line">CMAKE_SYSTEM_APPBUNDLE_PATH</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Search paths stored in the CMake <a href="https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#system-package-registry" target="_blank" rel="noopener">System Package Registry</a>. This can be skipped if <code>NO_CMAKE_SYSTEM_PACKAGE_REGISTRY</code> is passed or by setting the<a href="https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY.html#variable:CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY" target="_blank" rel="noopener"><code>CMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY</code></a> to <code>TRUE</code>. See the <a href="https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#manual:cmake-packages(7" target="_blank" rel="noopener"><code>cmake-packages(7)</code></a>) manual for details on the system package registry.</p>
+</li>
+<li>Search paths specified by the <code>PATHS</code> option. These are typically hard-coded guesses.</li>
+</ol>
+</blockquote>
+<p><strong>config的名字只能有这两种形式：<code>&lt;name&gt;Config.cmake</code> 或者 <code>&lt;lower-case-package-name&gt;-config.cmake</code>，一旦设置好<code>&lt;name&gt;_DIR</code>，并且cmake通过这个路径找到了相应的两种形式(之一)的配置文件，就会设置<code>&lt;name&gt;_CONFIG</code>为找到的配置文件(两者之一)的全部路径。</strong></p>
+<h1 id="自定义模块config-cmake"><a href="#自定义模块config-cmake" class="headerlink" title="自定义模块config.cmake"></a>自定义模块config.cmake</h1><p>find_package. 不管是配置式还是模块式，最终都是设置相应的库的路径。</p>
+<h2 id="模块模式"><a href="#模块模式" class="headerlink" title="模块模式"></a>模块模式</h2><p>下面我们看一下模块式的一个例子：FindMFC.cmake<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"># Distributed under the OSI-approved BSD 3-Clause License.  See accompanying</span><br><span class="line"># file Copyright.txt or https://cmake.org/licensing for details.</span><br><span class="line"></span><br><span class="line">#.rst:</span><br><span class="line"># FindMFC</span><br><span class="line"># -------</span><br><span class="line">#</span><br><span class="line"># Find MFC on Windows</span><br><span class="line">#</span><br><span class="line"># Find the native MFC - i.e.  decide if an application can link to the</span><br><span class="line"># MFC libraries.</span><br><span class="line">#</span><br><span class="line"># ::</span><br><span class="line">#</span><br><span class="line">#   MFC_FOUND - Was MFC support found</span><br><span class="line">#</span><br><span class="line"># You don&apos;t need to include anything or link anything to use it.</span><br><span class="line"></span><br><span class="line"># Assume no MFC support</span><br><span class="line">set(MFC_FOUND &quot;NO&quot;)</span><br><span class="line"></span><br><span class="line"># Only attempt the try_compile call if it has a chance to succeed:</span><br><span class="line">set(MFC_ATTEMPT_TRY_COMPILE 0)</span><br><span class="line">if(WIN32 AND NOT UNIX AND NOT BORLAND AND NOT MINGW)</span><br><span class="line">  set(MFC_ATTEMPT_TRY_COMPILE 1)</span><br><span class="line">endif()</span><br><span class="line"></span><br><span class="line">if(MFC_ATTEMPT_TRY_COMPILE)</span><br><span class="line">  if(NOT DEFINED MFC_HAVE_MFC)</span><br><span class="line">    set(CHECK_INCLUDE_FILE_VAR &quot;afxwin.h&quot;)</span><br><span class="line">    configure_file($&#123;CMAKE_ROOT&#125;/Modules/CheckIncludeFile.cxx.in</span><br><span class="line">      $&#123;CMAKE_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/CMakeTmp/CheckIncludeFile.cxx)</span><br><span class="line">    message(STATUS &quot;Looking for MFC&quot;)</span><br><span class="line">    # Try both shared and static as the root project may have set the /MT flag</span><br><span class="line">    try_compile(MFC_HAVE_MFC</span><br><span class="line">      $&#123;CMAKE_BINARY_DIR&#125;</span><br><span class="line">      $&#123;CMAKE_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/CMakeTmp/CheckIncludeFile.cxx</span><br><span class="line">      CMAKE_FLAGS</span><br><span class="line">      -DCMAKE_MFC_FLAG:STRING=2</span><br><span class="line">      -DCOMPILE_DEFINITIONS:STRING=-D_AFXDLL</span><br><span class="line">      OUTPUT_VARIABLE OUTPUT)</span><br><span class="line">    if(NOT MFC_HAVE_MFC)</span><br><span class="line">      configure_file($&#123;CMAKE_ROOT&#125;/Modules/CheckIncludeFile.cxx.in</span><br><span class="line">        $&#123;CMAKE_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/CMakeTmp/CheckIncludeFile.cxx)</span><br><span class="line">      try_compile(MFC_HAVE_MFC</span><br><span class="line">        $&#123;CMAKE_BINARY_DIR&#125;</span><br><span class="line">        $&#123;CMAKE_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/CMakeTmp/CheckIncludeFile.cxx</span><br><span class="line">        CMAKE_FLAGS</span><br><span class="line">        -DCMAKE_MFC_FLAG:STRING=1</span><br><span class="line">        OUTPUT_VARIABLE OUTPUT)</span><br><span class="line">    endif()</span><br><span class="line">    if(MFC_HAVE_MFC)</span><br><span class="line">      message(STATUS &quot;Looking for MFC - found&quot;)</span><br><span class="line">      set(MFC_HAVE_MFC 1 CACHE INTERNAL &quot;Have MFC?&quot;)</span><br><span class="line">      file(APPEND $&#123;CMAKE_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/CMakeOutput.log</span><br><span class="line">        &quot;Determining if MFC exists passed with the following output:\n&quot;</span><br><span class="line">        &quot;$&#123;OUTPUT&#125;\n\n&quot;)</span><br><span class="line">    else()</span><br><span class="line">      message(STATUS &quot;Looking for MFC - not found&quot;)</span><br><span class="line">      set(MFC_HAVE_MFC 0 CACHE INTERNAL &quot;Have MFC?&quot;)</span><br><span class="line">      file(APPEND $&#123;CMAKE_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/CMakeError.log</span><br><span class="line">        &quot;Determining if MFC exists failed with the following output:\n&quot;</span><br><span class="line">        &quot;$&#123;OUTPUT&#125;\n\n&quot;)</span><br><span class="line">    endif()</span><br><span class="line">  endif()</span><br><span class="line"></span><br><span class="line">  if(MFC_HAVE_MFC)</span><br><span class="line">    set(MFC_FOUND &quot;YES&quot;)</span><br><span class="line">  endif()</span><br><span class="line">endif()</span><br></pre></td></tr></table></figure></p>
+<h2 id="配置模式"><a href="#配置模式" class="headerlink" title="配置模式"></a>配置模式</h2><p>具体参考<br><a href="https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip" target="_blank" rel="noopener">https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip</a>   关键是提供<code>&lt;name&gt;Config.cmake</code>和<code>&lt;name&gt;ConfigVersion.cmake</code>两个文件，并且在Version中配置<code>PACKAGE_VERSION_COMPATIBLE</code>和<code>PACKAGE_VERSION_EXACT</code>两个变量。</p>
+<h1 id="Export及其使用"><a href="#Export及其使用" class="headerlink" title="Export及其使用"></a>Export及其使用</h1><p>我们虽然通过find_package能够定义这些库所在的位置以及头文件的位置，但是需要一种方式将其作为一个target加进来，以用于编译和链接(否则他们只是纯粹的放在内存里的几个变量而已。这些需要通过target脚本来实现，一般target脚本都是和配置模式一起使用的，<code>&lt;name&gt;Config.cmake</code>中常<code>include (&quot;${CMAKE_CURRENT_LIST_DIR}/&lt;name&gt;-target.cmake&quot;)</code>来直接调用target，直白来说，target里面就是添加了这几个库作为target，一个例子如下, 这个脚本是cmake通过export命令生成的，具体可以参考<a href="https://cmake.org/cmake/help/v3.12/command/export.html：" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.12/command/export.html：</a> ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"># Generated by CMake</span><br><span class="line"></span><br><span class="line">if(&quot;$&#123;CMAKE_MAJOR_VERSION&#125;.$&#123;CMAKE_MINOR_VERSION&#125;&quot; LESS 2.5)</span><br><span class="line">   message(FATAL_ERROR &quot;CMake &gt;= 2.6.0 required&quot;)</span><br><span class="line">endif()</span><br><span class="line">cmake_policy(PUSH)</span><br><span class="line">cmake_policy(VERSION 2.6)</span><br><span class="line">#----------------------------------------------------------------</span><br><span class="line"># Generated CMake target import file.</span><br><span class="line">#----------------------------------------------------------------</span><br><span class="line"></span><br><span class="line"># Commands may need to know the format version.</span><br><span class="line">set(CMAKE_IMPORT_FILE_VERSION 1)</span><br><span class="line"></span><br><span class="line"># Protect against multiple inclusion, which would fail when already imported targets are added once more.</span><br><span class="line">set(_targetsDefined)</span><br><span class="line">set(_targetsNotDefined)</span><br><span class="line">set(_expectedTargets)</span><br><span class="line">foreach(_expectedTarget foo bar)</span><br><span class="line">  list(APPEND _expectedTargets $&#123;_expectedTarget&#125;)</span><br><span class="line">  if(NOT TARGET $&#123;_expectedTarget&#125;)</span><br><span class="line">    list(APPEND _targetsNotDefined $&#123;_expectedTarget&#125;)</span><br><span class="line">  endif()</span><br><span class="line">  if(TARGET $&#123;_expectedTarget&#125;)</span><br><span class="line">    list(APPEND _targetsDefined $&#123;_expectedTarget&#125;)</span><br><span class="line">  endif()</span><br><span class="line">endforeach()</span><br><span class="line">if(&quot;$&#123;_targetsDefined&#125;&quot; STREQUAL &quot;$&#123;_expectedTargets&#125;&quot;)</span><br><span class="line">  unset(_targetsDefined)</span><br><span class="line">  unset(_targetsNotDefined)</span><br><span class="line">  unset(_expectedTargets)</span><br><span class="line">  set(CMAKE_IMPORT_FILE_VERSION)</span><br><span class="line">  cmake_policy(POP)</span><br><span class="line">  return()</span><br><span class="line">endif()</span><br><span class="line">if(NOT &quot;$&#123;_targetsDefined&#125;&quot; STREQUAL &quot;&quot;)</span><br><span class="line">  message(FATAL_ERROR &quot;Some (but not all) targets in this export set were already defined.\nTargets Defined: $&#123;_targetsDefined&#125;\nTargets not yet defined: $&#123;_targetsNotDefined&#125;\n&quot;)</span><br><span class="line">endif()</span><br><span class="line">unset(_targetsDefined)</span><br><span class="line">unset(_targetsNotDefined)</span><br><span class="line">unset(_expectedTargets)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># Create imported target foo</span><br><span class="line">add_library(foo SHARED IMPORTED)</span><br><span class="line"></span><br><span class="line"># Create imported target bar</span><br><span class="line">add_executable(bar IMPORTED)</span><br><span class="line"></span><br><span class="line"># Import target &quot;foo&quot; for configuration &quot;Debug&quot;</span><br><span class="line">set_property(TARGET foo APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)</span><br><span class="line">set_target_properties(foo PROPERTIES</span><br><span class="line">  IMPORTED_LOCATION_DEBUG &quot;/Users/rmk/Downloads/FooBar/cmake-build-debug/foo/libfoo.dylib&quot;</span><br><span class="line">  IMPORTED_SONAME_DEBUG &quot;/Users/rmk/Downloads/FooBar/cmake-build-debug/foo/libfoo.dylib&quot;</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"># Import target &quot;bar&quot; for configuration &quot;Debug&quot;</span><br><span class="line">set_property(TARGET bar APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)</span><br><span class="line">set_target_properties(bar PROPERTIES</span><br><span class="line">  IMPORTED_LOCATION_DEBUG &quot;/Users/rmk/Downloads/FooBar/cmake-build-debug/bar/bar&quot;</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line"># This file does not depend on other imported targets which have</span><br><span class="line"># been exported from the same project but in a separate export set.</span><br><span class="line"></span><br><span class="line"># Commands beyond this point should not need to know the version.</span><br><span class="line">set(CMAKE_IMPORT_FILE_VERSION)</span><br><span class="line">cmake_policy(POP)</span><br></pre></td></tr></table></figure></p>
+<h1 id="生成配置模式所需文件的CMakeLists-txt脚本"><a href="#生成配置模式所需文件的CMakeLists-txt脚本" class="headerlink" title="生成配置模式所需文件的CMakeLists.txt脚本"></a>生成配置模式所需文件的CMakeLists.txt脚本</h1><p>摘自<a href="https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip" target="_blank" rel="noopener">https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># Add all targets to the build-tree export set</span><br><span class="line">export(TARGETS foo bar</span><br><span class="line">  FILE &quot;$&#123;PROJECT_BINARY_DIR&#125;/FooBarTargets.cmake&quot;)</span><br><span class="line"></span><br><span class="line"># Export the package for use from the build-tree</span><br><span class="line"># (this registers the build-tree with a global CMake-registry)</span><br><span class="line">export(PACKAGE FooBar)</span><br><span class="line"></span><br><span class="line"># Create the FooBarConfig.cmake and FooBarConfigVersion files</span><br><span class="line">file(RELATIVE_PATH REL_INCLUDE_DIR &quot;$&#123;INSTALL_CMAKE_DIR&#125;&quot;</span><br><span class="line">   &quot;$&#123;INSTALL_INCLUDE_DIR&#125;&quot;)</span><br><span class="line"># ... for the build tree</span><br><span class="line">set(CONF_INCLUDE_DIRS &quot;$&#123;PROJECT_SOURCE_DIR&#125;&quot; &quot;$&#123;PROJECT_BINARY_DIR&#125;&quot; CACHE PATH &quot;&quot;)</span><br><span class="line">configure_file(FooBarConfig.cmake.in</span><br><span class="line">  &quot;$&#123;PROJECT_BINARY_DIR&#125;/FooBarConfig.cmake&quot; @ONLY)</span><br><span class="line"># ... for the install tree</span><br><span class="line">set(CONF_INCLUDE_DIRS &quot;\$&#123;FOOBAR_CMAKE_DIR&#125;/$&#123;REL_INCLUDE_DIR&#125;&quot;)</span><br><span class="line">configure_file(FooBarConfig.cmake.in</span><br><span class="line">  &quot;$&#123;PROJECT_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/FooBarConfig.cmake&quot; @ONLY)</span><br><span class="line"># ... for both</span><br><span class="line">configure_file(FooBarConfigVersion.cmake.in</span><br><span class="line">  &quot;$&#123;PROJECT_BINARY_DIR&#125;/FooBarConfigVersion.cmake&quot; @ONLY)</span><br><span class="line"></span><br><span class="line"># Install the FooBarConfig.cmake and FooBarConfigVersion.cmake</span><br><span class="line">install(FILES</span><br><span class="line">  &quot;$&#123;PROJECT_BINARY_DIR&#125;$&#123;CMAKE_FILES_DIRECTORY&#125;/FooBarConfig.cmake&quot;</span><br><span class="line">  &quot;$&#123;PROJECT_BINARY_DIR&#125;/FooBarConfigVersion.cmake&quot;</span><br><span class="line">  DESTINATION &quot;$&#123;INSTALL_CMAKE_DIR&#125;&quot; COMPONENT dev)</span><br><span class="line"></span><br><span class="line"># Install the export set for use with the install-tree</span><br><span class="line"># allowing others to include FooBarTargets.cmake</span><br><span class="line">install(EXPORT FooBarTargets DESTINATION</span><br><span class="line">  &quot;$&#123;INSTALL_CMAKE_DIR&#125;&quot; COMPONENT dev)</span><br></pre></td></tr></table></figure></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="http://www.voidcn.com/article/p-ydfqrabf-ru.html" target="_blank" rel="noopener">http://www.voidcn.com/article/p-ydfqrabf-ru.html</a><br><a href="https://gitlab.kitware.com/cmake/community/wikis/doc/tutorials/How-to-create-a-ProjectConfig.cmake-file" target="_blank" rel="noopener">https://gitlab.kitware.com/cmake/community/wikis/doc/tutorials/How-to-create-a-ProjectConfig.cmake-file</a><br><a href="http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/" target="_blank" rel="noopener">http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/</a></p>
+<p>例子：<a href="https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip" target="_blank" rel="noopener">https://gitlab.kitware.com/cmake/community/uploads/a91192d30ee2df45bd225b08c3a20c1d/FooBar.zip</a><br>export函数: <a href="https://cmake.org/cmake/help/v3.12/command/export.html" target="_blank" rel="noopener">https://cmake.org/cmake/help/v3.12/command/export.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>阮明康</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    
+    <a href="http://tensors.space/2018/05/CPP11/用cmake发布库/" title="用cmake发布库">http://tensors.space/2018/05/CPP11/用cmake发布库/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CMake/" rel="tag"># CMake</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/由人脸识别引发的Softmax改进/" rel="next" title="由人脸识别引发的Softmax改进">
+                <i class="fa fa-chevron-left"></i> 由人脸识别引发的Softmax改进
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/10/UBUNTU搭建DEEPSPEECH语音转录系统/" rel="prev" title="UBUNTU搭建DEEPSPEECH语音转录系统">
+                UBUNTU搭建DEEPSPEECH语音转录系统 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="阮明康">
+            
+              <p class="site-author-name" itemprop="name">阮明康</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.linkedin.com/in/ruanmk/" title="LinkedIn &rarr; https://www.linkedin.com/in/ruanmk/" rel="noopener" target="_blank"><i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本原理"><span class="nav-number">1.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#find-package做了啥"><span class="nav-number">2.</span> <span class="nav-text">find_package做了啥</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自定义模块config-cmake"><span class="nav-number">3.</span> <span class="nav-text">自定义模块config.cmake</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#模块模式"><span class="nav-number">3.1.</span> <span class="nav-text">模块模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置模式"><span class="nav-number">3.2.</span> <span class="nav-text">配置模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Export及其使用"><span class="nav-number">4.</span> <span class="nav-text">Export及其使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#生成配置模式所需文件的CMakeLists-txt脚本"><span class="nav-number">5.</span> <span class="nav-text">生成配置模式所需文件的CMakeLists.txt脚本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阮明康</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '765ca76ad899ed716837',
+    clientSecret: 'c8111d57983bf95607814ee45462a5e45117291f',
+    repo: 'git-comments',
+    owner: 'ruanmk',
+    admin: ['ruanmk'],
+    id: md5(location.pathname),
+    
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#more");
+  
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

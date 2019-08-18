@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="背景Softmax由于其每个分类正负样本的概率是对称的，使得其类内不够紧凑，针对这一缺点各种文章百花齐放，各种小修小改，其关键目的就是提高inter-class dispension和intra-class compactness.对于close-set的人脸识别任务，现有的分类手段已经能够做得比较好了，但是对于open-set的人脸识别任务，就要求即使是不在训练集里面的人脸，也应该要将同一个人的">
+<meta name="keywords" content="损失函数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="由人脸识别引发的Softmax改进">
+<meta property="og:url" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/index.html">
+<meta property="og:site_name" content="阮明康">
+<meta property="og:description" content="背景Softmax由于其每个分类正负样本的概率是对称的，使得其类内不够紧凑，针对这一缺点各种文章百花齐放，各种小修小改，其关键目的就是提高inter-class dispension和intra-class compactness.对于close-set的人脸识别任务，现有的分类手段已经能够做得比较好了，但是对于open-set的人脸识别任务，就要求即使是不在训练集里面的人脸，也应该要将同一个人的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/sep-dis.png">
+<meta property="og:image" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/center-loss.png">
+<meta property="og:image" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/centerloss-softmax.png">
+<meta property="og:image" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/sphereface.png">
+<meta property="og:image" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/compare.png">
+<meta property="og:updated_time" content="2019-08-18T15:44:04.595Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="由人脸识别引发的Softmax改进">
+<meta name="twitter:description" content="背景Softmax由于其每个分类正负样本的概率是对称的，使得其类内不够紧凑，针对这一缺点各种文章百花齐放，各种小修小改，其关键目的就是提高inter-class dispension和intra-class compactness.对于close-set的人脸识别任务，现有的分类手段已经能够做得比较好了，但是对于open-set的人脸识别任务，就要求即使是不在训练集里面的人脸，也应该要将同一个人的">
+<meta name="twitter:image" content="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/sep-dis.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>由人脸识别引发的Softmax改进 | 阮明康</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">阮明康</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">TENSORS SPACE | 张量空间</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>Sitemap</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">由人脸识别引发的Softmax改进
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-11 19:53:39" itemprop="dateCreated datePublished" datetime="2018-05-11T19:53:39+08:00">2018-05-11</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/神经网络/" itemprop="url" rel="index"><span itemprop="name">神经网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>Softmax由于其每个分类正负样本的概率是对称的，使得其类内不够紧凑，针对这一缺点各种文章百花齐放，各种小修小改，其关键目的就是提高inter-class dispension和intra-class compactness.对于close-set的人脸识别任务，现有的分类手段已经能够做得比较好了，但是对于open-set的人脸识别任务，就要求即使是不在训练集里面的人脸，也应该要将同一个人的脸的feature映射到特征空间里一个紧凑的位置从而使得无监督的聚类算法可以介入。这里有一个基本的要求，就是类内的最大距离一定不能大于类间的最小距离，部分文章还额外加上一个margin，也就是类内的最大距离要小于类间的最小距离减去margin，也就是还得留出一定的隔离带。这个要求也被大部分的Siamese类network所接受。open-set的人脸识别实际上是一种metric learning， 学的关键就是这个feature，而不是后面的classifier</p>
+<p>下面我们来看看基于改进softmax的每一家具体的方案。<br><strong>注意：以下的x是需要学习的样本的特征表示，是要学习的目的之一啊，不是固定的，我们要学的就是一个可以无监督分类的x，所谓metric learning, 可以理解为固定W学习x然后固定x计算新的W，W对应FC层的权重，x则是这之前的神经网络提取的特征，Wx一般输入到Softmax中，下面的所有推导中，都假设当前W固定，下一步是优化x，并说明为啥这些改动会使得得到的x更加紧凑</strong></p>
+<h1 id="CenterLoss-ECCV2016"><a href="#CenterLoss-ECCV2016" class="headerlink" title="CenterLoss (ECCV2016)"></a>CenterLoss (ECCV2016)</h1><p>这是由 <a href="https://kpzhang93.github.io/papers/eccv2016.pdf" target="_blank" rel="noopener">https://kpzhang93.github.io/papers/eccv2016.pdf</a> (A Discriminative Feature Learning Approach for Deep Face Recognition)这篇文章提出的。并且这样类似的方法并不只此一家，softmax + 某种能够强调类内compactness的loss都可以，比如softmax + tripletloss（不实用，好难设计样本对，exmaple mining不好做，训练时直接一步loss为0欠拟合是喜闻乐见的）等等。毕竟属于社会主义初级阶段，依然还是loss之间的排列组合。这篇文章还澄清了一对很重要的概念，那就是separable features和discriminative feature。separable feature可以理解为神经网络fc前最后一层，是线性可分的。而discriminative则不仅要separable，还必须保持类内紧凑，从而方便最近邻聚类等算法进行聚类，以保持对未知类别的可分性。换句话说，给一个不在训练集里面的人脸的多个样本，输出的feature不仅要和库里面的不同，并且这几个额外的样本在特征空间里面是要聚成一团的，可以无监督地得出这是一个新的类别。这样子就使得人脸识别模型在新来一个人的脸后不需要重新进行训练。从close-set的识别能力扩展到了open-set。</p>
+<p><img src="/2018/05/由人脸识别引发的Softmax改进/sep-dis.png" alt="sep-dis"></p>
+<p>正如其名字所表示的那样，center loss在每一个batch中，对每一类的所有样本的feature算了一个均值，然后损失函数为原softmax（类间差异）+center loss（类内紧凑）。<br>这篇文章开了一个类内紧凑的头，但是缺点是 每个batch都得要预先算一个中心，每个batch中心又是在不断改变的，这就导致了不一定会收敛(实际上作者将centor loss的权重调的比较小所以这个问题在实验中并没有体现出来。</p>
+<p><img src="/2018/05/由人脸识别引发的Softmax改进/center-loss.png" alt="center-loss"></p>
+<p>这篇文章还有一个副产物，那就是发现softmax的结果总是天然地按照弧度扇形分布，这个结果被后续的文章所使用，并产生了angular margin这么一个新的热词。</p>
+<p><img src="/2018/05/由人脸识别引发的Softmax改进/centerloss-softmax.png" alt="centerloss-softmax"></p>
+<h1 id="SphereFace-CVPR2017"><a href="#SphereFace-CVPR2017" class="headerlink" title="SphereFace (CVPR2017)"></a>SphereFace (CVPR2017)</h1><p><a href="https://arxiv.org/pdf/1704.08063.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1704.08063.pdf</a><br>首次提出angular margin，不再是之前画个二维散点图然后用直线区分几个分类的那种（Euclidean margin，比如SVM），现在它将样本看做是分布在圆弧(二维)或者高维球面上的点，根据圆（球）心角来区分几个不同的分类。</p>
+<p><img src="/2018/05/由人脸识别引发的Softmax改进/sphereface.png" alt="sphereface"></p>
+<h2 id="第一阶段-Modified-Softmax也是初步的A-Softmax"><a href="#第一阶段-Modified-Softmax也是初步的A-Softmax" class="headerlink" title="第一阶段 Modified-Softmax也是初步的A-Softmax"></a>第一阶段 Modified-Softmax也是初步的A-Softmax</h2><p>作者提出，softmax的结果虽然很像可以按角度去进行区分，实际上却又不是那么简单（比如上图a在不限制$W$的模长的情况下，样本在特征空间上的分布是不均匀的），于是需要对softmax进行一些修改。<br>为了方便说明，这里以二分类为例，对于原始softmax, 两个类的分界线可以写成：</p>
+<script type="math/tex; mode=display">
+W_1x+b1=W_2x+b2\Rightarrow (W_1-W_2)x + b_1-b_2=0</script><p>这就是softmax上面的幂指数相等的那个线。在原始的softmax函数中，两个W的模能够对分界线有较大的影响，想象到极限情况下，$\lVert W_1\rVert=+\infty,\lVert W_2\rVert=0$，这时候符合第一类的样本只需要满足$W_1x&gt;0$,bias此时已经变得不重要了。这个条件此时是非常容易满足的，只要不是完全和$W_1$正交就好，也就是$W_1$这边x的空间会摊得非常大，而$W_2$这边就被压缩的几乎看不到了，图b能够稍微看到一些这样的迹象，但是不准确。当然，一个正常训练的样本均衡的模型实际上并不会出现这样的$W$。如图b所示，两个向量的中间位置的夹角，并不能够区分两类样本（稍微调整下位置还是可以的），也就是，这个中心，还不够‘中心’，因为组成这个中心的两边是不平衡的。中心不平衡带来的问题就是，从$W_1$到$W_2$这个扇形里面，每一个单位弧度所包含的样本概率密度是不一样的，靠近$W_1$这边，由于$W_1$的模较大，其对应的同角度的x的模长范围就限制得比较松，或者同等模长的$x$则可以取值的角度范围较大，此时的实际分界线是偏向于模长较短的$W_2$这边的(即留给$W_1$更多位置)，而不是图b中的二分位置。有问题吗？没问题，只是没必要这样而已，如果能够限制两$W$的模长一致，那么就不需要算这个实际的分界点了，直接就是$(W_1+W_2)/2$，也就是角平分线就可以了。<br>为了方便，假如我们限制$\lVert W_1\rVert = \lVert W_2\rVert$,且$b_1=b_2=0$,那么我们有这样的分界线：</p>
+<script type="math/tex; mode=display">
+\lVert x\rVert (cos(\theta_1)-cos(\theta_2))=0</script><p>这时候学习到的样本空间就能够很好地由角度分开了(毕竟现在就是在直接优化$\theta$啊，能学不到嘛。。。实际上是优化x和W来达到优化$\theta​$的目的)，对应上图d。至此，我们已经能够用angular来替代euclidean softmax了,但是仅仅是替代，依然还没解决类内不紧凑的问题。</p>
+<h2 id="第二阶段-增加类内紧凑性后的A-Softmax"><a href="#第二阶段-增加类内紧凑性后的A-Softmax" class="headerlink" title="第二阶段 增加类内紧凑性后的A-Softmax"></a>第二阶段 增加类内紧凑性后的A-Softmax</h2><p>为了进一步分开两类，显然像SVM一样引入一块间隔margin能够增加模型的鲁棒性。这块margin中的样本不会被判断为任何一个类，实际上模型学习到的feature不会映射到这个区间内。看图f，在没有引入m之前，中间的Angular Bisector就是两类的分界线，在分界线的左边，以$W_1$为中心，越往两边其被分为第一类的置信度就越低，在分界线附近分为任何一类的置信度就一样了。要引入一个间隔，实际上就是以angular bisector为中心，在附近引入一块区域，特征落在这块区域中时，既不是第一类，也不是第二类。压缩的办法比较粗暴，那就是在bisector左边压缩$\theta_1$，而在右边压缩$\theta_2$，以左侧为例，引入下式作为判断类1的分界点：</p>
+<script type="math/tex; mode=display">
+\lVert x\rVert (cos(m\theta_1)-cos(\theta_2))>0</script><p>右侧判断类2的则相应的是：</p>
+<script type="math/tex; mode=display">
+\lVert x\rVert (cos(m\theta_2)-cos(\theta_1))>0</script><p>看左边对应的公式，这条式子的特别之处就是$\theta_2$是不变的，而使用$m\theta_1$来整体替代之前的$\theta_1$，$m$是一个大于1的数值，这就会压缩$\theta_1$的取值范围，又不影响$\theta_2$,如果此时$\theta_1$靠近bisector附近，那么$\lVert x\rVert (cos(m\theta_1)-cos(\theta_2))&lt;0$, 此时该样本不能被判为类1.同理用一样的方法对另一边进行操作，也会压缩另一个类2的取值范围，类2也会出现一个区域不能被判为2，这段既不能为1也不能为2的区域就组成了我们要的margin.训练过程中落在这些区域的样本由于被梯度往左右两边(拉向$W_1, W_2$)时loss会更少，因此充分训练后，可分的样本都不会出现在这个区域中。</p>
+<h1 id="CosFace"><a href="#CosFace" class="headerlink" title="CosFace"></a>CosFace</h1><p>cosface的想法也是比较类似的，但是m放的位置不同，它采用的是：</p>
+<script type="math/tex; mode=display">
+\lVert x\rVert (cos(\theta_1)-m-cos(\theta_2))>0</script><script type="math/tex; mode=display">
+\lVert x\rVert (cos(\theta_2)-m-cos(\theta_1))>0</script><p>注意这个减号，因为cos在$[0, \pi]$之间是单调递减的，这个作用大致也是相当于往$\theta$乘上一个大于1的数，来压缩相应边$\theta$的取值范围。</p>
+<h1 id="ArcFace"><a href="#ArcFace" class="headerlink" title="ArcFace"></a>ArcFace</h1><p><a href="https://arxiv.org/pdf/1801.07698.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1801.07698.pdf</a><br>一样的配方，m放在了cos里面，间隔改成了：</p>
+<script type="math/tex; mode=display">
+\lVert x\rVert (cos(\theta_1 + m)-cos(\theta_2))>0</script><script type="math/tex; mode=display">
+\lVert x\rVert (cos(\theta_2+m)-cos(\theta_1))>0</script><h1 id="几种Loss的区别"><a href="#几种Loss的区别" class="headerlink" title="几种Loss的区别"></a>几种Loss的区别</h1><p>ArcFace里面详细分析了几种修补版softmax的区别，并指出只有ArcFace这种方式能够保持间隔在每个$\theta_1, \theta_2​$保持一致。</p>
+<p><img src="/2018/05/由人脸识别引发的Softmax改进/compare.png" alt="compare"></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>阮明康</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    
+    <a href="http://tensors.space/2018/05/由人脸识别引发的Softmax改进/" title="由人脸识别引发的Softmax改进">http://tensors.space/2018/05/由人脸识别引发的Softmax改进/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/损失函数/" rel="tag"># 损失函数</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/CPP11/Cpp虚函数的意义/" rel="next" title="C++虚函数的意义">
+                <i class="fa fa-chevron-left"></i> C++虚函数的意义
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/CPP11/用cmake发布库/" rel="prev" title="用cmake发布库">
+                用cmake发布库 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="阮明康">
+            
+              <p class="site-author-name" itemprop="name">阮明康</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.linkedin.com/in/ruanmk/" title="LinkedIn &rarr; https://www.linkedin.com/in/ruanmk/" rel="noopener" target="_blank"><i class="fa fa-fw fa-linkedin"></i>LinkedIn</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CenterLoss-ECCV2016"><span class="nav-number">2.</span> <span class="nav-text">CenterLoss (ECCV2016)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SphereFace-CVPR2017"><span class="nav-number">3.</span> <span class="nav-text">SphereFace (CVPR2017)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一阶段-Modified-Softmax也是初步的A-Softmax"><span class="nav-number">3.1.</span> <span class="nav-text">第一阶段 Modified-Softmax也是初步的A-Softmax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二阶段-增加类内紧凑性后的A-Softmax"><span class="nav-number">3.2.</span> <span class="nav-text">第二阶段 增加类内紧凑性后的A-Softmax</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CosFace"><span class="nav-number">4.</span> <span class="nav-text">CosFace</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ArcFace"><span class="nav-number">5.</span> <span class="nav-text">ArcFace</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#几种Loss的区别"><span class="nav-number">6.</span> <span class="nav-text">几种Loss的区别</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">阮明康</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.0"></script>
+
+  <script src="/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.0"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '765ca76ad899ed716837',
+    clientSecret: 'c8111d57983bf95607814ee45462a5e45117291f',
+    repo: 'git-comments',
+    owner: 'ruanmk',
+    admin: ['ruanmk'],
+    id: md5(location.pathname),
+    
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
+  <script>
+  
+    bookmark.scrollToMark('auto', "#more");
+  
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
