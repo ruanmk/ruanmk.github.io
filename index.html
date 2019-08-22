@@ -387,6 +387,177 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/OpenGLES跨平台Context的建立/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/OpenGLES跨平台Context的建立/" class="post-title-link" itemprop="url">OpenGLES跨平台Context的建立</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-22 10:18:56" itemprop="dateCreated datePublished" datetime="2019-08-22T10:18:56+08:00">2019-08-22</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="OpenGL与GLES不同点"><a href="#OpenGL与GLES不同点" class="headerlink" title="OpenGL与GLES不同点"></a>OpenGL与GLES不同点</h1><p>OpenGL和GLES最大的不同点，我觉得就是对于纹理坐标的设置上。对于OpenGL，其纹理坐标原点在纹理图片的左下角，和OpenCV的图片坐标在y轴上是相反的.OpenGLES则不遵守这一规定，GLES的纹理坐标原点在左上角，和OpenCV一致。</p>
+<h1 id="GLES几个关键的概念"><a href="#GLES几个关键的概念" class="headerlink" title="GLES几个关键的概念"></a>GLES几个关键的概念</h1><h2 id="除iOS、OSX以外，其他平台初始化OpenGLES的代码段"><a href="#除iOS、OSX以外，其他平台初始化OpenGLES的代码段" class="headerlink" title="除iOS、OSX以外，其他平台初始化OpenGLES的代码段"></a>除iOS、OSX以外，其他平台初始化OpenGLES的代码段</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">EGLint configSpec[] = &#123; EGL_RED_SIZE, 8,</span><br><span class="line">                            EGL_GREEN_SIZE, 8,</span><br><span class="line">                            EGL_BLUE_SIZE, 8,</span><br><span class="line">                            EGL_SURFACE_TYPE, EGL_PBUFFER_BIT, EGL_NONE &#125;;</span><br><span class="line">    EGLint surfaceAttr[] = &#123;</span><br><span class="line">            EGL_WIDTH, width,</span><br><span class="line">            EGL_HEIGHT, height,</span><br><span class="line">            EGL_NONE</span><br><span class="line">    &#125;;</span><br><span class="line">    this-&gt;glContext-&gt;eglDisp = eglGetDisplay(EGL_DEFAULT_DISPLAY);</span><br><span class="line">    EGLint eglMajVers, eglMinVers;</span><br><span class="line">    EGLint numConfigs;</span><br><span class="line">    eglInitialize(this-&gt;glContext-&gt;eglDisp, &amp;eglMajVers, &amp;eglMinVers);</span><br><span class="line">    //    std::cout &lt;&lt; eglMajVers &lt;&lt; &quot; &quot; &lt;&lt; eglMinVers &lt;&lt; std::endl;</span><br><span class="line">    eglChooseConfig(this-&gt;glContext-&gt;eglDisp, configSpec, &amp;this-&gt;glContext-&gt;eglConf, 1, &amp;numConfigs);</span><br><span class="line">    this-&gt;glContext-&gt;eglSurface = eglCreatePbufferSurface(this-&gt;glContext-&gt;eglDisp, this-&gt;glContext-&gt;eglConf, surfaceAttr);</span><br><span class="line">    const EGLint ctxAttr[] = &#123;</span><br><span class="line">            EGL_CONTEXT_CLIENT_VERSION, 2,</span><br><span class="line">            EGL_NONE</span><br><span class="line">    &#125;;</span><br><span class="line">    this-&gt;glContext-&gt;eglCtx = eglCreateContext(this-&gt;glContext-&gt;eglDisp, this-&gt;glContext-&gt;eglConf,EGL_NO_CONTEXT, ctxAttr);</span><br><span class="line">    eglMakeCurrent(this-&gt;glContext-&gt;eglDisp, this-&gt;glContext-&gt;eglSurface, this-&gt;glContext-&gt;eglSurface, this-&gt;glContext-&gt;eglCtx);</span><br></pre></td></tr></table></figure>
+<p>整个流程是：获得DISPLAY， 在DISPLAY基础上创建Surface，将DISPLAY、Surface等一系列上下文写入创建Context中去。</p>
+<ol>
+<li><p>获取Display。<br> Display代表显示器，在有些系统上可以有多个显示器，也就会有多个Display。获得Display要调用EGLboolean eglGetDisplay(NativeDisplay dpy)，参数一般为 EGL_DEFAULT_DISPLAY 。该参数实际的意义是平台实现相关的，在X-Window下是XDisplay ID，在MS Windows下是Window DC。</p>
+</li>
+<li><p>初始化egl。<br> 调用 EGLboolean eglInitialize(EGLDisplay dpy, EGLint <em>major, EGLint </em>minor)，该函数会进行一些内部初始化工作，并传回EGL版本号(major.minor)。</p>
+</li>
+<li><p>选择Config。<br> 所谓Config实际指的是FrameBuffer的参数，在MS Windows下对应于PixelFormat，在X-Window下对应Visual。一般用EGLboolean eglChooseConfig(EGLDisplay dpy, const EGLint <em> attr_list, EGLConfig </em> config, EGLint config_size, EGLint <em>num_config)，其中attr_list是以EGL_NONE结束的参数数组，通常以id,value依次存放，对于个别标识性的属性可以只有 id，没有value。另一个办法是用EGLboolean eglGetConfigs(EGLDisplay dpy, EGLConfig </em> config, EGLint config_size, EGLint *num_config) 来获得所有config。这两个函数都会返回不多于config_size个Config，结果保存在config[]中，系统的总Config个数保存 在num_config中。可以利用eglGetConfig()中间两个参数为0来查询系统支持的Config总个数。<br> Config有众多的Attribute，这些Attribute决定FrameBuffer的格式和能力，通过eglGetConfigAttrib ()来读取，但不能修改。</p>
+</li>
+<li><p>构造Surface。<br> Surface实际上就是一个FrameBuffer，通过 EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig confg, NativeWindow win, EGLint *cfg_attr) 来创建一个可实际显示的Surface。系统通常还支持另外两种Surface：PixmapSurface和PBufferSurface，这两种都不 是可显示的Surface，PixmapSurface是保存在系统内存中的位图，PBuffer则是保存在显存中的帧。<br> Surface也有一些attribute，基本上都可以故名思意， EGL_HEIGHT EGL_WIDTH EGL_LARGEST_PBUFFER EGL_TEXTURE_FORMAT EGL_TEXTURE_TARGET EGL_MIPMAP_TEXTURE EGL_MIPMAP_LEVEL，通过eglSurfaceAttrib()设置、eglQuerySurface()读取。</p>
+</li>
+<li><p>创建Context。<br> OpenGL的pipeline从程序的角度看就是一个状态机，有当前的颜色、纹理坐标、变换矩阵、绚染模式等一大堆状态，这些状态作用于程序提交的顶点 坐标等图元从而形成帧缓冲内的像素。在OpenGL的编程接口中，Context就代表这个状态机，程序的主要工作就是向Context提供图元、设置状 态，偶尔也从Context里获取一些信息。<br> 用EGLContext eglCreateContext(EGLDisplay dpy, EGLSurface write, EGLSurface read, EGLContext * share_list)来创建一个Context。</p>
+<p>用eglMakeCurrent来将当前context设置为默认context</p>
+</li>
+</ol>
+<ol>
+<li>绘制。<br> 应用程序通过OpenGL API进行绘制，一帧完成之后，调用eglSwapBuffers(EGLDisplay dpy, EGLContext ctx)来显示。</li>
+</ol>
+<h2 id="DISPLAY、Surface、Context、Configuration"><a href="#DISPLAY、Surface、Context、Configuration" class="headerlink" title="DISPLAY、Surface、Context、Configuration"></a>DISPLAY、Surface、Context、Configuration</h2><ul>
+<li>DISPLAY可以理解为物理屏幕，对于PC就是显示器，对于手机，就是屏幕，获得这个句柄主要是用于正确放置surface，surface建立于DISPLAY以上。</li>
+<li>Surface可以理解为画板，可以为物理屏幕上的像素，也可以是离屏渲染的FrameBuffer</li>
+<li>Context就是设置好这些以后，所处的一个配置环境。</li>
+</ul>
+<p>相应的，EGL中，<br>NativeDisplayType 平台显示数据类型，标识你所开发设备的物理屏幕<br>NativeWindowType 平台窗口数据类型，标识系统窗口<br>NativePixmapType 可以作为 Framebuffer 的系统图像（内存）数据类型，该类型只用于离屏渲染</p>
+<h3 id="获得DISPLAY"><a href="#获得DISPLAY" class="headerlink" title="获得DISPLAY"></a>获得DISPLAY</h3><p><code>this-&gt;glContext-&gt;eglDisp = eglGetDisplay(EGL_DEFAULT_DISPLAY);</code><br>如果你只是想得到一个系统默认的 Display ，你可以使用 EGL_DEFAULT_DISPLAY 参数。如果系统中没有一个可用的 native display ID 与给定的 display 参数匹配，函数将返回 EGL_NO_DISPLAY ，而没有任何 Error 状态被设置。由于设置无效的 display 值不会有任何错误状态，在你继续操作前请检测返回值。因此，上述函数还应该检查返回的eglDisp是不是 EGL_NO_DISPLAY<br><code>assert(this-&gt;glContext-&gt;eglDisp != EGL_NO_DISPLAY)</code><br>查询到系统的Display之后，需要初始化这个eglDisp, 并且获得这个DISPLAY所支持GL版本。</p>
+<h3 id="Surface"><a href="#Surface" class="headerlink" title="Surface"></a>Surface</h3><p>Surface是可以绘制的画板，通常有屏幕像素、PixmapSurface(保存在系统内存中的位图)，PBuffer(保存在显存中的帧)</p>
+<h1 id="iOS上的EGL配置"><a href="#iOS上的EGL配置" class="headerlink" title="iOS上的EGL配置"></a>iOS上的EGL配置</h1><p>具体参考：<a href="https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008793" target="_blank" rel="noopener">https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008793</a></p>
+<p>iOS和Android不一样，虽然iOS也支持EGL，但是是自己的一个版本。另外不能用纯C++来简历iOS上面的EGL上下文，必须采用部分object头来初始化。另外一点就是，EAGL不允许设置宽高等，直接获得context就好了。实际上，这个context还没有设置surface，后续才会去做这个设置。<br>另外，后台运行的任务，也就是没有占用屏幕的应用是无法执行OpenGL的渲染指令的。</p>
+<h2 id="一个iOS离屏渲染的例子"><a href="#一个iOS离屏渲染的例子" class="headerlink" title="一个iOS离屏渲染的例子"></a>一个iOS离屏渲染的例子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">EAGLNativeContext eaglContext;</span><br><span class="line">eaglContext.createMainContext();</span><br><span class="line">eaglContext.makeCurrent();</span><br><span class="line"></span><br><span class="line">GLuint frameBufferTexture;</span><br><span class="line">GLuint frameBuffer;</span><br><span class="line"></span><br><span class="line">int width = 640;</span><br><span class="line">int height = 480;</span><br><span class="line"></span><br><span class="line">glGenTextures(1, &amp;frameBufferTexture);</span><br><span class="line">glGenFramebuffers(1, &amp;frameBuffer);</span><br><span class="line">glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);</span><br><span class="line">glBindTexture(GL_TEXTURE_2D, frameBufferTexture);</span><br><span class="line"></span><br><span class="line">//use linear combination of pixel values when scaling and down-sampling</span><br><span class="line">glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);</span><br><span class="line">glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</span><br><span class="line"></span><br><span class="line">// specify texture warping</span><br><span class="line">glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // the s axis</span><br><span class="line">glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // the t axis</span><br><span class="line"></span><br><span class="line">//feed no data, and bind texture to framebuffer</span><br><span class="line">glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);</span><br><span class="line">glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameBufferTexture, 0);</span><br><span class="line"></span><br><span class="line">GLuint depthRenderbuffer;</span><br><span class="line">glGenRenderbuffers(1, &amp;depthRenderbuffer);</span><br><span class="line">glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);</span><br><span class="line">glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);</span><br><span class="line">glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);</span><br><span class="line"></span><br><span class="line">if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)</span><br><span class="line">&#123;</span><br><span class="line">  ERROR(&quot;Frame Buffer InComplete&quot;);</span><br><span class="line">  return;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// begin drawing</span><br><span class="line">glClearColor(0, 0, 1, 0);</span><br><span class="line">glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);</span><br><span class="line"></span><br><span class="line">glFlush();</span><br><span class="line"></span><br><span class="line">glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);</span><br><span class="line"></span><br><span class="line">unsigned char tmp_data[20 * 20 * 4];</span><br><span class="line">glReadPixels(0, 0, 20, 20, GL_RGBA, GL_UNSIGNED_BYTE, tmp_data);</span><br><span class="line">std::cout &lt;&lt; tmp_data &lt;&lt; std::endl;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到在readPixel之前tmp_data全是0，而在read_pixel之后就会变成0, 0, 0xff, 0，注意一点是，texture大小在iOS是有限制的,具体可以看context。注意这段要放在view加载之后，否则可能无法获得context。</p>
+<p>注意，其中深度buffer有没有并不影响平面的画，但是会影响三维的draw。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>至此，离屏渲染实际上已经完成了跨平台，只需在android, windows, linux使用EGL，在iOS使用EAGL即可，只要对编译选项按平台稍加改造，就能够实现跨平台的opengles引擎的渲染逻辑的初始化。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/三维重建方法/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1244,208 +1415,6 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/04/颜色模型与显示/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/颜色模型与显示/" class="post-title-link" itemprop="url">颜色模型与显示</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-27 21:50:43" itemprop="dateCreated datePublished" datetime="2019-04-27T21:50:43+08:00">2019-04-27</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/图像处理/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>总用有五类颜色模型，分别是：<br>CIE, RGB, YUV, HSL/HSV, and CMYK</p>
-<p>来自色彩空间中的HSL、HSV、HSB有什么区别？ - MoonCancer的回答 - 知乎<br><a href="https://www.zhihu.com/question/22077462/answer/105844680" target="_blank" rel="noopener">https://www.zhihu.com/question/22077462/answer/105844680</a> 的回答可以很好地解释描述颜色的几个重要的方面：</p>
-<blockquote>
-<p>色相（表，表现）：即色彩的相貌和特征。自然界中色彩的种类很多，色相指色彩的种类和名称。如；红、橙、黄、绿、青、蓝、紫等等颜色的种类变化就叫色相。<br>明度（表，面子）：指色彩的亮度或明度，也叫<strong>明亮度</strong>。颜色有深浅、明暗的变化。比如，深黄、中黄、淡黄、柠檬黄等黄颜色在明度上就不一样，紫红、深红、玫瑰红、大红、朱红、桔红等红颜色在亮度上也不尽相同。这些颜色在明暗、深浅上的不同变化，也就是色彩的又一重要特征一一明度变化。<br>色彩的明度变化有许多种情况，一是不同色相之间的明度变化。如：白比黄亮、黄比橙亮、橙比红亮、红比紫亮、紫比黑亮；二是在某种颜色中加白色，亮度就会逐渐提高，加黑色亮度就会变暗，但同时它们的纯度(颜色的饱和度)就会降低，三是相同的颜色，因光线照射的强弱不同也会产生不同的明暗变化。。<br>纯度（里，里子）：指色彩的鲜艳程度，也叫<strong>饱和度</strong>。原色是纯度最高的色彩。颜色混合的次数越多，纯度越低，反之，纯度则高。原色中混入补色，纯度会立即降低、变灰。物体本身的色彩，也有纯度高低之分，西红柿与苹果相比，西红柿的纯度高些，苹果的纯度低些。</p>
-</blockquote>
-<p>所谓的颜色模型，大都是在这几个方面进行的描述。</p>
-<h1 id="CIE颜色模型"><a href="#CIE颜色模型" class="headerlink" title="CIE颜色模型"></a>CIE颜色模型</h1><p>CIE是首个基于人类对颜色的感受来定义的颜色空间，后续也有一些改进版本，计算机视觉中接触较少，这里不多展开。</p>
-<h1 id="RGB颜色模型"><a href="#RGB颜色模型" class="headerlink" title="RGB颜色模型"></a>RGB颜色模型</h1><p>RGB模型是最容易理解的一个颜色模型了，RGB不是一种颜色空间，而是一种颜色模型，因为RGB以及其颜色混合是符合物理意义的，它的三个值都是代表着实际的物理意义。</p>
-<p>sRGB主要用于互联网的图片，这涉及到一个叫做gamma校正的知识点，gamma校正也是一种常见的预处理方法。gamma校正主要原因是RGB是一种线性的模型，认为(0.5, 0, 0)的颜色亮度就是(1.0, 0, 0)的一半，但是显示器实际上并不是线性的。</p>
-<h1 id="YUV"><a href="#YUV" class="headerlink" title="YUV"></a>YUV</h1><p>或者YIQ, YCbCr等。YUV中的Y是Luminance，流明，也就是明度，UV则用于指定色彩（色相）和饱和度(纯度)，YUV的产生主要是为了分离出灰度图，如果YUV只有Y，那么也是能够显示出来的，只不过只能够显示出灰度图而不带有颜色。</p>
-<p>YCbCr是YUV的翻版，属于YUV系列，Y依然是明度，但是Cb和Cr则是蓝色色度和红色色度的分量。我们知道，灰度可以由RGB三个分量计算得出，那么如果知道RB和灰度，其实也是可以推算回来G的，这也是为什么大部分颜色空间都是三维的，因为最终基于的颜色模型就是只有三维，再怎么转换秩也不会提升，多余三维的都是因为某种目的故意添加冗余信息。</p>
-<p>YCbCr 有许多取样格式，主要的采样格式有YCbCr 4:2:0、YCbCr 4:2:2、YCbCr 4:1:1和 YCbCr 4:4:4。其中YCbCr 4:1:1 比较常用，其含义为：每个点保存一个 8bit 的亮度值（也就是Y值），每 2x2 个点保存一个 Cr 和Cb 值，图像在肉眼中的感觉不会起太大的变化。所以，原来用 RGB(R,G,B 都是 8bit unsigned) 模型，每个点需要 8x3=24 bits（如下图第一个图）. 而使用YUV411仅需要 $8+(8/4)+(8/4)=12bits$，平均每个点占12bits。这样就把图像的数据压缩了一半。简而言之，就是认为人眼看的没那么精细，就让多个像素点共用一个颜色值来粗暴地达到压缩的效果。</p>
-<ul>
-<li>YUV 444，未经压缩的版本</li>
-<li>YUV 411, 水平每四个像素共用一个色度</li>
-<li><p>YUV 422， 水平每两个像素共用一个色度</p>
-</li>
-<li><p>YUV 420， 这个有点特殊，也比较神奇。420不是说Cr就不要了，而是Cr和Cb轮流着要。什么意思呢，就是说，水平方向，第一行每两个像素抽一个Cr, 第二行每两个像素抽一个Cb，上下两行共享Cr和Cb，也就是说第一行用第二行的Cb, 第二行用第一行的Cr。这样子，一个2x2的像素框中，存4个Y值，1个Cr和一个Cb值，共需要六个byte， 比RGB需要的<script type="math/tex">4 * 3 =12 bytes</script>减少一倍。</p>
-</li>
-</ul>
-<h1 id="HSV-又叫HSB-或者HSL"><a href="#HSV-又叫HSB-或者HSL" class="headerlink" title="HSV(又叫HSB)或者HSL"></a>HSV(又叫HSB)或者HSL</h1><p>HSV(HSB)或者HSL实际上是RGB颜色模型转换到柱坐标空间。也就是说，它们并不是一种新的颜色模型，只是RGB用某种方式由柱坐标所表示出来而已，RGB对于计算机非常友好，但是对于艺术创造者就不是了，很简单的例子，没人能说请往RGB三个通道进行调整所代表的颜色变动，人眼一般只能区分颜色，亮度，饱和度这样感性的问题 。HSV转换后的空间是: H (hue), S (saturation), V (value)，最后一个值也可以叫做B (brightness)，也就是 HSV == HSB，完全只是冠名权不同。HSV更多的是被艺术创造者所使用，因为它的三个值能够最直观地反映颜色的感官的变化。</p>
-<p>HSL和HSV非常类似，只是L代表(Lightness)，和HSV的前两个字母虽然一样，但是实际空间是不一样的，只是用了一样的名字罢了。</p>
-<p>HSB 和 HSL 在字面意思上是一样的： </p>
-<ul>
-<li>H 指的是<strong>色相</strong>（Hue），就是颜色名称，例如“红色”、“蓝色”；</li>
-<li>S 指的是<strong>饱和度</strong>（Saturation），即颜色的纯度； </li>
-<li>L（Lightness） 和 B（Brightness）是<strong>明度</strong>，颜色的明亮程度<br>在原理和表现上，HSL 和 HSB 中的 H（色相） 完全一致，但二者的 S（饱和度）不一样， L 和 B （明度 ）也不一样：</li>
-<li>HSB 中的 S 控制纯色中混入<strong>白色</strong>的量，值越大，白色越少，颜色<strong>越纯</strong>；</li>
-<li>HSB 中的 B 控制纯色中混入<strong>黑色</strong>的量，值越大，黑色越少，明度<strong>越高</strong></li>
-<li>HSL 中的 S 和黑白没有关系，饱和度不控制颜色中混入黑白的多寡；</li>
-<li>HSL 中的 L 控制纯色中的混入的<strong>黑白两种颜色</strong>。</li>
-</ul>
-<h2 id="gamma校正"><a href="#gamma校正" class="headerlink" title="gamma校正"></a>gamma校正</h2><p>当我们计算出场景中所有元素的最终颜色(RGB)后，我们必须将颜色显示到显示器上，但是显示器的显示能力是不同的，计算机的真彩色65535显示器并不能全部显示出来。显示器有一个物理特性，就是两倍的输入电压产生的并不是两倍的亮度，传统的CRT显示器输入电压产生的亮度约为输入电压（注意电压已经被归一化到0-1范围）的2.2次幂，这个2.2被称为显示器的gamma值。由gamma值我们知道显示器的亮度输出并不是线性的，线性的亮度输出需要非线性的电压调节。每一种设备都有其特定的gamma值，任何设备的gamma值基本不会等于1，等于1的设备是一种理想的线性的状态。</p>
-<p><img src="/2019/04/颜色模型与显示/gamma_correction_brightness.png" alt="gamma_correction_brightness"><br>上图是人眼感受亮度和实际物理亮度的对比，人眼对比较暗的亮度变化比较敏感，对于比较亮的部分的变化则不那么敏感，上图中上面一行是人感受到的亮度变化，而下面一行则是光子数量的变化。可以看到，上面一行亮度由0.3到0.6,视觉上相当于下面一行0.1到0.2的变化。</p>
-<p>我们从0.1到0.2这一档就可以看出，光子数量无需增加一倍，人眼感受到的亮度已经增加了一倍。而在亮的部分，下面一行(光子数)从0.7变化到1.0, 人眼感受到的亮度变化则几乎不变。<br>人眼感受到的亮度这样的变化规律和显示器的gamma规律其实是非常接近的，这也是用gamma的一个原因，举个例子，假如gamma是2， 输入电压从0.1到0.2，实际上显示器显示的亮度是从$0.1^2$变成$0.2^2 = (0.1  + 0.1)^2 = 4 x 0.1^2$, 变成了四倍，而光子亮度（与电压相关）则只是增长了一倍。同样可以尝试比较下电压从0.9到1.0, 显示亮度</p>
-<p>CRT中，物理亮度为电压的2.2次幂，而对于人眼，物理亮度也是人眼感受亮度的2次幂，这就解决了显示器亮度非线性的问题，因为非线性显示的亮度反而更加贴合人的肉眼观感，换句话说，我们只需线性变化电压即可获得线性的人眼感受亮度。在RGB颜色中，我们可以认为1就是最大电压，也就是颜色(1, 0, 0)就是强度最大的红色光。</p>
-<p><img src="/2019/04/颜色模型与显示/gamma_correction_gamma_curves.png" alt="gamma_correction_gamma_curves"></p>
-<p>在渲染图像时，又会产生另外的一种问题，这是因为大部分算法都假设是在线性空间里工作的，认为颜色的大小代表他的强度，是线性的。举个例子，(1.0, 0,0)代表红色，而(0.5, 0,0)就是强度减半的红色。不幸的是，在显示器中显示出来时，(1.0.0)依然是(1, 0, 0)但是， (0.5, 0, 0)则是(0.28, 0, 0)了，也就是强度不再是翻倍的关系，而是接近4.5倍。如果每个颜色都是人工调出来的还好，设计师的肉眼能够自动进行校正，本身就是在一个非线性的颜色空间里面工作，只要肉眼看起来强度是两倍就行了，不管实际的电压已经不是2倍关系。但是渲染还有一些计算光照等的算法可不是人眼，它假设就是颜色强度是线性的，0.5和1就能够产生强度是两倍而不是4.5倍的肉眼效果。<br>这就是为啥需要对颜色进行gamma校正。校正的做法就是将颜色强度首先进行一定程度的加强，然后让显示器显示出来。上图中， 为了获得线性的颜色输出，我们将(0.5, 0,0 )进行以下转换： $(0.5, 0,0)^{\frac{1}{2.2}} =(0.5, 0,0)^{0.45}=(0.73, 0,0)$。然后显示出来的时候再被显示器进行一次转换变回0.5,$(0.5, 0,0)^{\frac{1}{2.2}}*(0.5, 0,0)^{2.2} =(0.5, 0,0)$ ，这样子，我们的颜色依然可以在线性空间中计算，只是显示到显示器之前进行一次gamma校正，这样，设计师在实际设计的时候也会在线性空间中进行，算法计算出来的结果也在该空间，就不会造成冲突了。从工作原理我们可以看到，gamma校正应该只在输出到显示器之前做一次，否则进行多次gamma校正会使得强度过大而失真。</p>
-<h1 id="CMYK"><a href="#CMYK" class="headerlink" title="CMYK"></a>CMYK</h1><p>CMKT是用于打印机的颜色模型，由于打印机是反射光，和RGB这样的光源不同，其颜色模型也是不同的，反射光用的是一种减法模型，白纸是能够反射所有光线的，颜料涂上去后，则只能反射颜料的颜色了。CMYK存储了四种基色，青色 Cyan， 品红 （magenta， 偏紫色的红色），黄色 Yellow和黑色 Dark， 我们知道，黑色就是从白色中减去所有的颜色得到的最终颜色。CMYK主要用于打印，这里不再继续展开。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1494,7 +1463,7 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

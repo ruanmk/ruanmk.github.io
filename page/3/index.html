@@ -387,6 +387,180 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/10/配置PyCharm远程调试并本地显示matplotlib图像/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/10/配置PyCharm远程调试并本地显示matplotlib图像/" class="post-title-link" itemprop="url">配置PyCharm远程调试并本地显示matplotlib图像</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-10-01 21:25:19" itemprop="dateCreated datePublished" datetime="2018-10-01T21:25:19+08:00">2018-10-01</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/系统/" itemprop="url" rel="index"><span itemprop="name">系统</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/系统/环境配置/" itemprop="url" rel="index"><span itemprop="name">环境配置</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>远程机器为Ubuntu，本地机器为Linux、Mac、Window均可，这里以Mac为例。需要在Pycharm远程执行调试，但是部分中间结果，特别是图像处理结果通过matplotlib即时显示在本地机器上。该功能依赖X11forward。</p>
+<h1 id="远程机器（Ubuntu）需要执行的操作"><a href="#远程机器（Ubuntu）需要执行的操作" class="headerlink" title="远程机器（Ubuntu）需要执行的操作"></a>远程机器（Ubuntu）需要执行的操作</h1><h2 id="首先开启openssh-server的X11转发"><a href="#首先开启openssh-server的X11转发" class="headerlink" title="首先开启openssh-server的X11转发"></a>首先开启openssh-server的X11转发</h2><p>1、<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure></p>
+<p>2、找到相应的项并修改为以下值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">X11Forwarding yes</span><br><span class="line">X11DisplayOffset 10</span><br><span class="line">X11UseLocalhost no</span><br></pre></td></tr></table></figure></p>
+<p>3、重启ssh服务</p>
+<h2 id="安装openbox"><a href="#安装openbox" class="headerlink" title="安装openbox"></a>安装openbox</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install openbox</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/配置PyCharm远程调试并本地显示matplotlib图像/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1136,172 +1310,6 @@ W_1x+b1=W_2x+b2\Rightarrow (W_1-W_2)x + b_1-b_2=0</script><p>这就是softmax上
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/05/CPP11/Cpp虚函数的意义/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/CPP11/Cpp虚函数的意义/" class="post-title-link" itemprop="url">C++虚函数的意义</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-05-07 17:00:37" itemprop="dateCreated datePublished" datetime="2018-05-07T17:00:37+08:00">2018-05-07</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>下面以一个简单的例子说明virtual的作用，作为继承和多态的重要组件，如果没有虚函数，那么多态的实现将非常的困难。首先明确一点，类成员函数中this的类型取决于该函数定义的位置，在父类中，this的类型是父类，在子类中，this的类型是子类。比如父类A和B，父类有一个成员函数test(), 其函数体中通过this调用了test1, 如果子类没有override这个函数，那么子类中，test()函数体里面this的类型依然是父类的类型。我们看下面三个例子来理解这一点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;thread&gt;</span><br><span class="line">//This function will be called from a thread</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">    void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B:public A</span><br><span class="line">&#123;</span><br><span class="line">    virtual void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am Not Base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  //Launch a thread</span><br><span class="line">  B b;</span><br><span class="line">  b.test();</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 运行结果</span><br><span class="line">// I am base</span><br><span class="line">// I am base</span><br></pre></td></tr></table></figure></p>
-<p>这个例子中，子类B没有覆盖A::test，因此test函数体内，this类型依然是<code>A*</code>，这就造成了b.test()调用的是A::test1()，这往往不是想要的结果。而如果加上virtual, 那么就能够调用到真正想要调用的函数了，看下面的改动：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">    virtual void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B:public A</span><br><span class="line">&#123;</span><br><span class="line">    virtual void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am Not Base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  B b;</span><br><span class="line">  b.test();</span><br><span class="line">  </span><br><span class="line">  A a;</span><br><span class="line">  a.test();</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 运行结果</span><br><span class="line">// I am Not Base</span><br><span class="line">// I am base</span><br></pre></td></tr></table></figure></p>
-<p>这个例子中，test1是虚函数，因此即使B没有覆盖test函数，this的编译时类型依然是<code>A*</code>，但是在调用this-&gt;test1()的时候会查找虚函数表，然后知道this实际类型应该是<code>B*</code>并调用B::test1()。具体要调用A::test1还是B::test1只能在运行时知道。注意哦，如果子类同时覆盖了调用的函数test，那么也是能够调用到想要的test1的，因为此时编译时this的类型就已经是<code>B*</code>了。看下面的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">    void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B:public A</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am Not Base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  B b;</span><br><span class="line">  b.test();</span><br><span class="line">  </span><br><span class="line">  A a;</span><br><span class="line">  a.test();</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 运行结果</span><br><span class="line">// I am Not Base</span><br><span class="line">// I am base</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1350,7 +1358,7 @@ W_1x+b1=W_2x+b2\Rightarrow (W_1-W_2)x + b_1-b_2=0</script><p>这就是softmax上
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
