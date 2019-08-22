@@ -103,7 +103,7 @@
 <meta property="og:site_name" content="阮明康">
 <meta property="og:description" content="OpenGL与GLES不同点OpenGL和GLES最大的不同点，我觉得就是对于纹理坐标的设置上。对于OpenGL，其纹理坐标原点在纹理图片的左下角，和OpenCV的图片坐标在y轴上是相反的.OpenGLES则不遵守这一规定，GLES的纹理坐标原点在左上角，和OpenCV一致。 GLES几个关键的概念除iOS、OSX以外，其他平台初始化OpenGLES的代码段12345678910111213141">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-22T02:19:30.606Z">
+<meta property="og:updated_time" content="2019-08-22T02:51:31.260Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OpenGLES跨平台Context的建立">
 <meta name="twitter:description" content="OpenGL与GLES不同点OpenGL和GLES最大的不同点，我觉得就是对于纹理坐标的设置上。对于OpenGL，其纹理坐标原点在纹理图片的左下角，和OpenCV的图片坐标在y轴上是相反的.OpenGLES则不遵守这一规定，GLES的纹理坐标原点在左上角，和OpenCV一致。 GLES几个关键的概念除iOS、OSX以外，其他平台初始化OpenGLES的代码段12345678910111213141">
@@ -489,12 +489,10 @@
 </li>
 <li><p>构造Surface。<br> Surface实际上就是一个FrameBuffer，通过 EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig confg, NativeWindow win, EGLint *cfg_attr) 来创建一个可实际显示的Surface。系统通常还支持另外两种Surface：PixmapSurface和PBufferSurface，这两种都不 是可显示的Surface，PixmapSurface是保存在系统内存中的位图，PBuffer则是保存在显存中的帧。<br> Surface也有一些attribute，基本上都可以故名思意， EGL_HEIGHT EGL_WIDTH EGL_LARGEST_PBUFFER EGL_TEXTURE_FORMAT EGL_TEXTURE_TARGET EGL_MIPMAP_TEXTURE EGL_MIPMAP_LEVEL，通过eglSurfaceAttrib()设置、eglQuerySurface()读取。</p>
 </li>
-<li><p>创建Context。<br> OpenGL的pipeline从程序的角度看就是一个状态机，有当前的颜色、纹理坐标、变换矩阵、绚染模式等一大堆状态，这些状态作用于程序提交的顶点 坐标等图元从而形成帧缓冲内的像素。在OpenGL的编程接口中，Context就代表这个状态机，程序的主要工作就是向Context提供图元、设置状 态，偶尔也从Context里获取一些信息。<br> 用EGLContext eglCreateContext(EGLDisplay dpy, EGLSurface write, EGLSurface read, EGLContext * share_list)来创建一个Context。</p>
-<p>用eglMakeCurrent来将当前context设置为默认context</p>
+<li><p>创建Context。<br> OpenGL的pipeline从程序的角度看就是一个状态机，有当前的颜色、纹理坐标、变换矩阵、绚染模式等一大堆状态，这些状态作用于程序提交的顶点 坐标等图元从而形成帧缓冲内的像素。在OpenGL的编程接口中，Context就代表这个状态机，程序的主要工作就是向Context提供图元、设置状 态，偶尔也从Context里获取一些信息。<br> 用EGLContext eglCreateContext(EGLDisplay dpy, EGLSurface write, EGLSurface read, EGLContext * share_list)来创建一个Context。用eglMakeCurrent来将当前context设置为默认context</p>
 </li>
-</ol>
-<ol>
-<li>绘制。<br> 应用程序通过OpenGL API进行绘制，一帧完成之后，调用eglSwapBuffers(EGLDisplay dpy, EGLContext ctx)来显示。</li>
+<li><p>绘制。<br> 应用程序通过OpenGL API进行绘制，一帧完成之后，调用eglSwapBuffers(EGLDisplay dpy, EGLContext ctx)来显示。</p>
+</li>
 </ol>
 <h2 id="DISPLAY、Surface、Context、Configuration"><a href="#DISPLAY、Surface、Context、Configuration" class="headerlink" title="DISPLAY、Surface、Context、Configuration"></a>DISPLAY、Surface、Context、Configuration</h2><ul>
 <li>DISPLAY可以理解为物理屏幕，对于PC就是显示器，对于手机，就是屏幕，获得这个句柄主要是用于正确放置surface，surface建立于DISPLAY以上。</li>
