@@ -387,6 +387,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/05/CPP11/C-11泛型编程/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/CPP11/C-11泛型编程/" class="post-title-link" itemprop="url">C++11泛型编程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-05-01 10:24:56" itemprop="dateCreated datePublished" datetime="2019-05-01T10:24:56+08:00">2019-05-01</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="C-11型别推导"><a href="#C-11型别推导" class="headerlink" title="C++11型别推导"></a>C++11型别推导</h1><h2 id="数组类型与指针类型的转换"><a href="#数组类型与指针类型的转换" class="headerlink" title="数组类型与指针类型的转换"></a>数组类型与指针类型的转换</h2><p>C++有一个一直以来大家都习以为常的特性，那就是数组名字就是数组首元素的指针。一个数组形参可以接受一个指向数组首元素指针的实参，看起来这两者是一样的，但是其实进行了某种程度的退化，如果使用不当，很可能会造成析构不当(数组部分元素没有被析构到)。注意有一种情况下，数组是不会退化成指针(也就是保留其大小信息)， 那就是被传引用调用时。</p>
+<p>数组其实是有型别的，比如说<code>const char name[]=&quot;hello&quot;;</code>的型别就是<code>const char [6]</code>, 它的引用版本(作为函数参数的时候)是 <code>const char (&amp;)[6]</code>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T&gt;</span><br><span class="line">void f(T&amp; param);</span><br><span class="line">void g(T param)</span><br></pre></td></tr></table></figure></p>
+<p>传引用调用的时候，利用数组类型带大小这个特点，我们能够在编译器就能够获得传入数组的大小，利用的是非类型模板参数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T, std::size_t N&gt;</span><br><span class="line">constexpr std::size_t arraySize(T (&amp;)[N]) noexcept</span><br><span class="line">&#123;</span><br><span class="line">return N;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="auto关键字"><a href="#auto关键字" class="headerlink" title="auto关键字"></a>auto关键字</h1><p>auto关键字在很多情况下和模板类型的推导是一致的，以下这种情况却需要区别对待，那就是initializer_list这一个新出的初始化变量的方法。（以后我们分别将这两种类型推导叫做模板类型推导和auto类型推导。）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">auto x1=27;  //auto为int</span><br><span class="line">auto x2(27); // auto 为int</span><br><span class="line">auto x3&#123;27&#125;  // auto为std::initializer_list&lt;int&gt;, 且只有一个元素，27</span><br><span class="line">auto x4=&#123;27&#125; //同上</span><br></pre></td></tr></table></figure></p>
+<p>auto推导会将大括号推导为initializer_list，这一点和其他推导是不同的，比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">auto x=&#123;11, 12, 13&#125;;</span><br><span class="line">template &lt;typename T&gt;</span><br><span class="line">void f(T param)&#123;</span><br><span class="line">std::cout &lt;&lt; &quot;I am called&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">f(&#123;11, 12, 13&#125;);    // 错误，无法通过编译，默认不会讲花括号内转换成一个initializer_list类型。</span><br><span class="line">f(x); //正确， 输出I am called</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>另一个需要注意的是，auto用作函数返回值时，采用的是模板类型推导而不是auto类型推导，所以返回类似于{1, 2, 3}这样的initializer_list也是不被允许的。</p>
+<p>还有一个容易被混淆的点就是auto非常类似于 模板类型推导，但是不同于函数模板参数中会保留修饰词如const, auto并不会保留（函数按值传递不保留修饰词，这里也一样，auto是复制变量时，就不会保留修饰词）。要想要保留修饰词，需要使用decltype关键字。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Widget w;</span><br><span class="line">const Widget&amp; cw = w;</span><br><span class="line">auto myWidget1 = cw;    // myWidget1是Widget类型，不再具有const和引用</span><br><span class="line">decltype(auto) myWidget2 = cw;    // myWidget2是const Widget&amp;类型，能够保留修饰词</span><br></pre></td></tr></table></figure></p>
+<p>实际的编程中，应该多用auto来代替显式指定变量类型，以避免没必要的隐式的强制类型装换。</p>
+<h1 id="decltype关键字"><a href="#decltype关键字" class="headerlink" title="decltype关键字"></a>decltype关键字</h1><p>decltype一般用于返回值类型随着输入参数变化的函数，它的作用就是返回一个表达式或者一个值得型别。</p>
+<h2 id="decltype与C-11中的返回值型别尾序语法-trailing-return-type-syntax"><a href="#decltype与C-11中的返回值型别尾序语法-trailing-return-type-syntax" class="headerlink" title="decltype与C++11中的返回值型别尾序语法(trailing return type syntax)"></a>decltype与C++11中的返回值型别尾序语法(trailing return type syntax)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">template &lt;typename T, typename Index&gt;</span><br><span class="line">auto f(const T&amp; container, Index i) -&gt; decltype(container[i])</span><br><span class="line">&#123;</span><br><span class="line">std::cout &lt;&lt; container[i] &lt;&lt; std::endl;</span><br><span class="line">return container[i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">std::vector&lt;int&gt; v&#123;11, 12, 13&#125;;    </span><br><span class="line">f(v, 0); //正确， 输出11</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数将会返回container[i]的类型的返回值，且是引用返回。decltype如果作用于比名字更加复杂的左值表达式中，将总是返回一个引用，比如对int x, decltype((x))将返回int&amp;, 而decltype(x)的推导结果却是int， 不带引用。这个区别只在C++14上面，自动推导返回值类型的时候比较重要，而在C++11中几乎不会用到。</p>
+<h1 id="非类型模板参数"><a href="#非类型模板参数" class="headerlink" title="非类型模板参数"></a>非类型模板参数</h1><p><a href="https://blog.csdn.net/lanchunhui/article/details/49634077" target="_blank" rel="noopener">https://blog.csdn.net/lanchunhui/article/details/49634077</a></p>
+<h2 id="类的非类型模板参数"><a href="#类的非类型模板参数" class="headerlink" title="类的非类型模板参数"></a>类的非类型模板参数</h2><p>类的非类型模板参数需要在实例化类的时候手工进行指定，而函数的非类型模板化参数则可以纯粹由编译器推导得出。非类型模板参数不允许类对象(enum除外)和浮点数，其余的是可以的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">emplate&lt;typename T, int MAXSIZE=20&gt;</span><br><span class="line">class Stack</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">Stack():idx(0)&#123;&#125;</span><br><span class="line">bool empty() const &#123; return idx == 0;&#125;</span><br><span class="line">bool full() const &#123; return idx == MAXSIZE;&#125;</span><br><span class="line">void push(const T&amp;);</span><br><span class="line">void pop();</span><br><span class="line">T&amp; top();</span><br><span class="line">const T&amp; top() const;</span><br><span class="line">private:</span><br><span class="line">int idx; </span><br><span class="line">T elems[MAXSIZE];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Stack&lt;int, 10&gt; stackSize10;</span><br><span class="line">Stack&lt;int&gt; stackSize20;    //使用了缺省参数</span><br></pre></td></tr></table></figure></p>
+<h2 id="函数的非类型模板参数"><a href="#函数的非类型模板参数" class="headerlink" title="函数的非类型模板参数"></a>函数的非类型模板参数</h2><p>形如下面的代码，不一样的是模板类型可以由推导得出，不一定需要显式传入。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T, std::size_t N&gt;</span><br><span class="line">constexpr std::size_t arraySize(T (&amp;)[N]) noexcept</span><br><span class="line">&#123;</span><br><span class="line">return N;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char helloStr[] = &quot;hello&quot;;</span><br><span class="line">arraySize(helloStr);    //返回6</span><br></pre></td></tr></table></figure></p>
+<p>又如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">template &lt;typename T&gt;</span><br><span class="line">bool f(const T&amp; a, const T&amp; b)</span><br><span class="line">&#123;</span><br><span class="line">std::cout &lt;&lt; (a &gt; b) &lt;&lt; std::endl;</span><br><span class="line">return a &gt; b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;typename T&gt;</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">A(T a)&#123;</span><br><span class="line">std::cout &lt;&lt; &quot;Constructor&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">f&lt;int&gt;(0, 1);   //正确， </span><br><span class="line">f(0, 1);        //正确，T会被正确推导 </span><br><span class="line">A&lt;int&gt; a(1);    // 正确</span><br><span class="line">A b(1);         // 错误，编译不通过</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="C-泛型编程以及函数重载"><a href="#C-泛型编程以及函数重载" class="headerlink" title="C++泛型编程以及函数重载"></a>C++泛型编程以及函数重载</h1><ul>
+<li>enable_if_t</li>
+<li>enable_if</li>
+</ul>
+<p>SFINAE(Substitution Failure Is Not An Error)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">long multiply(int i, int j) &#123; return i * j; &#125;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">typename T::multiplication_result multiply(T t1, T t2)</span><br><span class="line">&#123;</span><br><span class="line">return t1 * t2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">multiply(4, 5);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>main 函数调用 multiply 会使编译器会尽可能去匹配所有候选函数，虽然第一个 multiply 函数明显是较优的匹配，但是为了得到一个最精确的匹配，编译器依然会尝试去匹配剩下的候选函数，此时就会去推导 第二个multiply 函数，中间在参数推导的过程中出现了一个无效的类型 int::multiplication_result ，但是因为 SFINAE 原则并不会报错。</p>
+</blockquote>
+<p>待续</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/04/颜色模型与显示/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1124,241 +1311,6 @@ QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/01/神经网络结构术语合集/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/神经网络结构术语合集/" class="post-title-link" itemprop="url">神经网络结构术语合集</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-01-28 21:37:23" itemprop="dateCreated datePublished" datetime="2019-01-28T21:37:23+08:00">2019-01-28</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/神经网络/" itemprop="url" rel="index"><span itemprop="name">神经网络</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>快速过一遍计算机视觉中用到的网络结构的名词描述。</p>
-<ul>
-<li>Inception V1-V3</li>
-</ul>
-<h1 id="Inception结构"><a href="#Inception结构" class="headerlink" title="Inception结构"></a>Inception结构</h1><p>InceptionV1  <a href="https://zhuanlan.zhihu.com/p/30756181" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30756181</a><br>InceptionV2 + InceptionV3  <a href="https://arxiv.org/pdf/1512.00567.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1512.00567.pdf</a></p>
-<h2 id="设计思想"><a href="#设计思想" class="headerlink" title="设计思想"></a>设计思想</h2><p>主要来自InceptionV2V3的论文： <a href="https://arxiv.org/pdf/1512.00567.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1512.00567.pdf</a></p>
-<ol>
-<li><p>Avoid representational bottlenecks, especially early in the network. Feed-forward networks can be represented by an acyclic graph from the input layer(s) to the classifier or regressor. This defines a clear direction for the information flow. For any cut separating the inputs from the outputs, one can access the amount of information passing though the cut. One should avoid<br>bottlenecks with extreme compression. In general the representation size should gently decrease from the inputs to the outputs before reaching the final representation used for the task at hand. Theoretically, information content can not be assessed merely by the dimensionality of the representation as it discards important factors like correlation structure; the dimensionality merely provides a rough estimate of information content.<br>第一条就是不要尝试在网络早期就将网络的信息压缩到太小，被前面网络去除掉的信息是不能够被后续找回的，因为CNN是一个无环路的图。</p>
-</li>
-<li><p>Higher dimensional representations are easier to process locally within a network. Increasing the activations per tile in a convolutional network allows for more disentangled features. The resulting networks will train faster.<br>第二条的意思就是，更加高维的输入会更加方便寻找local feature, 也就是更加方便cnn来获得局部特征，因此神经网络的激活神经元应该高一些，保留的激活部分多一些，而不是压抑激活单元。</p>
-</li>
-<li><p>Spatial aggregation can be done over lower dimensional embeddings without much or any loss in representational power. For example, before performing a more spread out (e.g. 3 × 3) convolution, one can reduce the dimension of the input representation before the spatial aggregation without expecting serious adverse effects. We hypothesize that the reason for that is the strong correlation between adjacent unit results in much less loss of information during dimension reduction, if the outputs are used in a spatial aggregation context. Given that these signals should be easily compressible, the dimension reduction even promotes faster learning.<br>第三条说的是，在底层的特征可以先压缩再进行卷积，并不会影响到最终的效果，这个假设成立的前提就是，上一层的神经网络输出存在相关性，允许被压缩。注意到这条和第一条是稍微有一些相反的，第一条建议的是不要过快进行信息的压缩，而这里提出的是可以先进行1x1压缩再进行卷积是不会对最终结果有太大影响。这里的度就是玄学所在了。</p>
-</li>
-<li><p>Balance the width and depth of the network. Optimal performance of the network can be reached by balancing the number of filters per stage and the depth of the network. Increasing both the width and the depth of the network can contribute to higher quality networks. However, the optimal improvement for a constant amount of computation can be reached if both are<br>increased in parallel. The computational budget should therefore be distributed in a balanced way between the depth and width of the network.<br>第四条就更玄学了，增加网络的宽(每层更多的filter)和深(更深的网络，少用stride)都能够提高网络的表达能力，但是特定的计算能力预算下，怎样分配宽和深是一个不容易，甚至是玄学的事情。唔，道理都懂…其实有没有人想过为什么CNN一层一层垒在一起就能够有这么强的表达能力？</p>
-</li>
-</ol>
-<h2 id="Inception系列网络"><a href="#Inception系列网络" class="headerlink" title="Inception系列网络"></a>Inception系列网络</h2><p>Inception系列网络可以参考这个链接： <a href="https://zhuanlan.zhihu.com/p/30756181" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/30756181</a><br>Inception是一种常见的模块，其作用是在同一层获得不同scale的卷积结果。scale在物体检测领域是非常重要的一个参数，设计再良好的特征，如果scale不对也很难获得好的检测结果，当前基于RPN或者基于Anchor的two-stage detection主要也是致力于解决scale问题，因为数据刷到现在，难点一般都是对小的物体存在大量的漏检，而增强对小物体的检测能力（recall）一般又会伴随而来是大量的误检(FP)。<br>Inception系列网络最主要的思想就是在同一层卷积神经网络里面并行多个卷积核，并将卷积结果concat起来，从而在同一层中就能够获得不同感受野的feature map。</p>
-<h3 id="第一代GoogleNet提出InceptionV1"><a href="#第一代GoogleNet提出InceptionV1" class="headerlink" title="第一代GoogleNet提出InceptionV1"></a>第一代GoogleNet提出InceptionV1</h3><p>论文来自： <a href="https://arxiv.org/pdf/1409.4842.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1409.4842.pdf</a></p>
-<p><img src="/2019/01/神经网络结构术语合集/Inceptionv1.png" alt="Inceptionv1"></p>
-<p>图1</p>
-<p>为什么能够用1x1来进行channel数量的缩减，因为存在这样的一个假设，在神经网络最后的输出层里面，feature map有多个部分是高度相关的，可以按照相关性分为多个组，每个组可以认为是抓住了原图像中特定的区域或者特定的特征，换句话说，信息存在冗余，这是可以用1x1来进行reduce的理论基础。</p>
-<p>同样的，文章认为，这些相关组有些cover的区域比较小，有些比较大，这就要求同一层同scale的卷积应该有多种卷积核，至于为什么采用3x3 5x5并不是因为经过精确计算这些大小的核符合要求，而是因为方便和常用，有现成的实现。</p>
-<p>由于高层网络更应该抓住高层信息，因此论文建议，越高的层，其3x3, 5x5的卷积核应该相应地增多。当然，实际上并没有这么做，因为会额外增加网络设计的复杂性，同时这个也是非常heuristic的想法，需要手工进行设置。</p>
-<p>有人会比较好奇，3x3, 5x5之后的结果怎样进行concate，大小不是不一致的吗，其实主要是通过对原图padding然后进行convolution得到的，比如3x3比5x5输出feature map大小是要大2的，只需要让5x5padding为1（两边共补2）就可以了。<br>看这个tensorflow实现的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import d2lzh as d2l</span><br><span class="line">from mxnet import gluon, init, nd</span><br><span class="line">from mxnet.gluon import nn</span><br><span class="line"></span><br><span class="line">class Inception(nn.Block):</span><br><span class="line">    # c1 - c4为每条线路里的层的输出通道数</span><br><span class="line">    def __init__(self, c1, c2, c3, c4, **kwargs):</span><br><span class="line">        super(Inception, self).__init__(**kwargs)</span><br><span class="line">        # 线路1，单1 x 1卷积层</span><br><span class="line">        self.p1_1 = nn.Conv2D(c1, kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line">        # 线路2，1 x 1卷积层后接3 x 3卷积层</span><br><span class="line">        self.p2_1 = nn.Conv2D(c2[0], kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line">        self.p2_2 = nn.Conv2D(c2[1], kernel_size=3, padding=1,</span><br><span class="line">                              activation=&apos;relu&apos;)</span><br><span class="line">        # 线路3，1 x 1卷积层后接5 x 5卷积层</span><br><span class="line">        self.p3_1 = nn.Conv2D(c3[0], kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line">        self.p3_2 = nn.Conv2D(c3[1], kernel_size=5, padding=2,</span><br><span class="line">                              activation=&apos;relu&apos;)</span><br><span class="line">        # 线路4，3 x 3最大池化层后接1 x 1卷积层</span><br><span class="line">        self.p4_1 = nn.MaxPool2D(pool_size=3, strides=1, padding=1)</span><br><span class="line">        self.p4_2 = nn.Conv2D(c4, kernel_size=1, activation=&apos;relu&apos;)</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        p1 = self.p1_1(x)</span><br><span class="line">        p2 = self.p2_2(self.p2_1(x))</span><br><span class="line">        p3 = self.p3_2(self.p3_1(x))</span><br><span class="line">        p4 = self.p4_2(self.p4_1(x))</span><br><span class="line">        return nd.concat(p1, p2, p3, p4, dim=1)  # 在通道维上连结输出</span><br></pre></td></tr></table></figure></p>
-<p>其中1x1, 3x3, 5x5分别pad 0， 1， 2个像素，来使得输出和输入大小一致。</p>
-<h3 id="Inception-V2"><a href="#Inception-V2" class="headerlink" title="Inception V2"></a>Inception V2</h3><ul>
-<li>在V1基础上，添加了Batch Norm</li>
-<li>用两个3x3代替一个5x5， 参数量减少，同时增加了网络的深度，计算到的感受野却没有改变。</li>
-<li>作者想，那能不能用2x2或者更小的卷积核来替代大核呢，于是，极端地，作者认为可以用1xn和nx1的组合来替代一个nxn的大核。这样的替代在中层（输入大小从12到20部分）是有效的，但是不能够被用于底层，也就是一开始几层。原因没有进一步说明。用1xn和nx1来替代n x n, 同样减少参数，同时增加了网络深度。实验证明，在中间层网络，用1x7和7x1的效果不错。(玄学)</li>
-<li>增加输出的channel数量(原则2)，如下图所示，将3x3拆成1x3和3x1两个平行的channel(注意不是串联)，从而保留高维的表达。</li>
-</ul>
-<p><img src="/2019/01/神经网络结构术语合集/high-demension.png" alt="high-demension"><br>图2</p>
-<ul>
-<li>可以使用并行结构来优化Pooling。前面的规则1提到Pooling会造成represtation bottleneck，一种解决办法就是在Pooling前用1x1卷积把特征数加倍（见图3右侧），这种加倍可以理解加入了冗余的特征，然后再作Pooling就只是把冗余的信息重新去掉，没有减少信息量。这种方法有很好的效果但因为加入了1x1卷积会极大的增大 计算量。替代的方法是使用两个并行的支路，一路1x1卷积，由于特征维度没有加倍计算量相比之前减少了一倍，一路是Pooling，最后再在特征维度拼合到一起（见图4右）。这种方法即有很好的效果，又没有增大计算量。<br><img src="/2019/01/神经网络结构术语合集/afterpool.png" alt="afterpool"><br>图3</li>
-</ul>
-<p><img src="/2019/01/神经网络结构术语合集/side-branch.png" alt="side-branch"><br>图4</p>
-<h3 id="Inception-V3"><a href="#Inception-V3" class="headerlink" title="Inception V3"></a>Inception V3</h3><p>Inception V2 + 辅助的分类器就变成了v3。 这个新的思想就是使用一个分类器来筛选有用的梯度，使得有效信息能够传回到底层网络，避免梯度消失等情况。这个相当于早期的监督信息，这个输出层插在网络的中间，可以理解为将梯度回传的起始点设置在了中间，辅助整体的学习。FPN系列也用了类似的思想。</p>
-<h3 id="Inception-V4"><a href="#Inception-V4" class="headerlink" title="Inception V4"></a>Inception V4</h3><p><a href="https://arxiv.org/pdf/1602.07261.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1602.07261.pdf</a><br>在此基础上，添加stem模块，Inception A， B， C， Reduction A， B等。 Reduction主要的区别就是不是直接pool为2，而是分了几个分支做stride为2的conv。实际上感觉没有InceptionV2, V3那样的比较根本性的创新。</p>
-<h1 id="残差系列结构"><a href="#残差系列结构" class="headerlink" title="残差系列结构"></a>残差系列结构</h1><p>Resnet残差结构是神经网络另外一个神仙操作，可以较好地解决梯度消失等困难。<br>使用残差结构的比较经典的论文有ResNet, DenseNet和SENet等。</p>
-<h2 id="Resnet"><a href="#Resnet" class="headerlink" title="Resnet"></a>Resnet</h2><p><img src="/2019/01/神经网络结构术语合集/residual.jpg" alt="residual"><br>ResNet的一个重大创新设计就是这个Residual block。当然还有一个比较出名的就是其channel先减后增的bottleneck结构。</p>
-<h2 id="DenseNet"><a href="#DenseNet" class="headerlink" title="DenseNet"></a>DenseNet</h2><p><img src="/2019/01/神经网络结构术语合集/denseblock.jpg" alt="denseblock"><br>Dense就是将残差进行到底的一个网络结构。</p>
-<ul>
-<li>使用DenseBlock，每一个block的输出都会直接输入到后面的每一个Block</li>
-<li>DenseBlock之间加入过渡层(Transition Layer)来结合不同大小的feature map，实质就是1x1卷积和一个stride&gt;1的pooling操作， 当然作者选择了stride=2</li>
-</ul>
-<h1 id="Attention机制：Spatial-and-Channel-Attention"><a href="#Attention机制：Spatial-and-Channel-Attention" class="headerlink" title="Attention机制：Spatial and Channel Attention"></a>Attention机制：Spatial and Channel Attention</h1><p>Attention可以简单理解为通过某种机制算出某些feature map的权重，以强调网络的部分中间结果。</p>
-<h2 id="SENet"><a href="#SENet" class="headerlink" title="SENet"></a>SENet</h2><p><a href="https://arxiv.org/pdf/1709.01507.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1709.01507.pdf</a><br>Squeeze-and-Excitation Net, SE网络对每一个输出通道计算一个重要性权重加在输出feature中。这个权重是通过几层FC和激活得到的。应该也属于某种程度的channel attention.<br><img src="/2019/01/神经网络结构术语合集/senet.png" alt="senet"></p>
-<h2 id="SCA-CNN"><a href="#SCA-CNN" class="headerlink" title="SCA-CNN"></a>SCA-CNN</h2><p><a href="https://arxiv.org/pdf/1611.05594.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1611.05594.pdf</a><br>CNN领域Attention的经典之作。包含channel和spatial attention.<br><img src="/2019/01/神经网络结构术语合集/sca-cnn-arch.png" alt="sca-cnn-arch"><br>为什么说经典，因为简单。直接通过上一层或者历史feature map获得当前层的channel权重和每个位置的权重，然后将权重应用在当前层的卷积结果中。根据channel attention和spatial attention的应用先后，分成S-C和C-S模式，实际应用差别不大。</p>
-<h1 id="移动端优化方面"><a href="#移动端优化方面" class="headerlink" title="移动端优化方面"></a>移动端优化方面</h1><h2 id="Group-Convolution"><a href="#Group-Convolution" class="headerlink" title="Group Convolution"></a>Group Convolution</h2><p>AlexNet最早提出Group Convolution， 将N个channel分成M份，分别进行卷积，然后将结果concate在一起，从而减少参数量。后续再加入了channel shuffle，把性能下降稍微解决了。</p>
-<h2 id="Depth-Wise-Convolution-MobileNet"><a href="#Depth-Wise-Convolution-MobileNet" class="headerlink" title="Depth-Wise Convolution: MobileNet"></a>Depth-Wise Convolution: MobileNet</h2><p>主要提出DepthWise Conv， 意思是，首先将上一层的feature map按channel拆开，然后首先每个channel自己单独做一次卷积，得到c个channel的卷积结果，然后做一个1x1的卷积，其实还是Inception那一套，只不过连channel这样的操作都被拆开而已。</p>
-<h2 id="Channel-Shuffle-ShuffleNet"><a href="#Channel-Shuffle-ShuffleNet" class="headerlink" title="Channel Shuffle: ShuffleNet"></a>Channel Shuffle: ShuffleNet</h2><p>代表性操作： channel shuffle, 就是先把输出通道group，然后group之间按一定规律交换channel来进行卷积得到下一层的feature map.</p>
-<h2 id="Bottleneck"><a href="#Bottleneck" class="headerlink" title="Bottleneck"></a>Bottleneck</h2><p>Bottleneck是一类结构，其特点就是先猛下采样再上采样，形成一种类似于瓶颈的结构。比如resnet就使用了这样的结果来减少参数量和加深网络。另外大部分的encoder-decoder在大范围上也可以称作是bottleneck。</p>
-<h1 id="神经网络的几大范式"><a href="#神经网络的几大范式" class="headerlink" title="神经网络的几大范式"></a>神经网络的几大范式</h1><h2 id="Encoder-Decoder"><a href="#Encoder-Decoder" class="headerlink" title="Encoder-Decoder"></a>Encoder-Decoder</h2><p>一般用于语言翻译、语义分割、以及基于heatmap的关键点检测等，其重要特点就是encoder和decoder的网络一般是对称的，且生成结果和输入结果的大小一般一致，或等比缩放。</p>
-<h2 id="Hourglass"><a href="#Hourglass" class="headerlink" title="Hourglass"></a>Hourglass</h2><p>Hourglass说实在的也算是Encoder-Decoder的一种。</p>
-<h2 id="FPN"><a href="#FPN" class="headerlink" title="FPN"></a>FPN</h2><p>Feature Pyramid Network，其特点是每一层feature map都会被直接利用，直接加到下一层(残差)，又或者直接用于预测结果，并将多层feature map的结果综合起来。<br>FPN经各大网络验证，是一种高效的提升精度的方法，可惜，用在CPU上跑实时是比较难的，BU和TD过程需要耗时太多了。<br>参考：<br><a href="https://towardsdatascience.com/review-fpn-feature-pyramid-network-object-detection-262fc7482610" target="_blank" rel="noopener">https://towardsdatascience.com/review-fpn-feature-pyramid-network-object-detection-262fc7482610</a><br><a href="https://arxiv.org/pdf/1612.03144.pdf" target="_blank" rel="noopener">https://arxiv.org/pdf/1612.03144.pdf</a></p>
-<h1 id="操作子"><a href="#操作子" class="headerlink" title="操作子"></a>操作子</h1><h2 id="Pooling"><a href="#Pooling" class="headerlink" title="Pooling"></a>Pooling</h2><ul>
-<li><p>Soft Pooling， 也就是我们常说的Average Pooling</p>
-</li>
-<li><p>Hard Pooling, 也就是我们常说的Max Pooling</p>
-</li>
-<li><p>Global Pooling, 实际上就是Pooling，一般用在输出层来替代FC层，用于适配输出结果的个数。比较狠的作者还可能把一个WxH的feature map直接pool成1x1的单个数值。global pooling的好处就是不需要FC层存储那么多参数进行那么多计算，但是坏处也是显而易见那就是，精度不太好，不容易训练。</p>
-</li>
-</ul>
-<h2 id="Normalization"><a href="#Normalization" class="headerlink" title="Normalization"></a>Normalization</h2><h3 id="Batch-Normalization-BN"><a href="#Batch-Normalization-BN" class="headerlink" title="Batch Normalization (BN)"></a>Batch Normalization (BN)</h3><h3 id="LRN"><a href="#LRN" class="headerlink" title="LRN"></a>LRN</h3><p>Local Response Normalization。 ReLU neurons have unbounded activations and we need LRN to normalize that.<br>LRN一般是在激活、池化后进行的一中处理方法。有两种模式： accross-channel和within-channel， accross-channel就是最原始的，也就是feature每个点所在channel及其相邻多个channel之内做的，相当于做一个 local_size x 1 x 1(chw)的卷积，而withn-channel则类似于avg-pooling， 只是计算公式不一样。LRN采用的计算公式为每个点除以以下分母：</p>
-<script type="math/tex; mode=display">
-(1 + (\alpha/n) \sum_i x_i^2)^\beta</script><p>其中$\alpha$是预定义的超参数，$n$就是local_size的大小，其含义就是该点周围的值越大则每个点最后计算的值越小(所谓的神经元抑制原理)。<br>PS：实际感觉用处不大。</p>
-<h1 id="物体检测框架"><a href="#物体检测框架" class="headerlink" title="物体检测框架"></a>物体检测框架</h1><p>为啥Two-Stage比One-Stage检测效果好，RetinaNet里面解释说，One Stage中Anchor是极其不均衡的，大量的负样本和少数的正样本混合是主要的原因，并据此提出Focal Loss. 首次超越Two Stage工作。</p>
-<h2 id="Yolo系列"><a href="#Yolo系列" class="headerlink" title="Yolo系列"></a>Yolo系列</h2><h3 id="Yolo-v2-v3用到的IoU-K-means"><a href="#Yolo-v2-v3用到的IoU-K-means" class="headerlink" title="Yolo v2 v3用到的IoU-K-means"></a>Yolo v2 v3用到的IoU-K-means</h3><p><a href="https://lars76.github.io/object-detection/k-means-anchor-boxes/" target="_blank" rel="noopener">https://lars76.github.io/object-detection/k-means-anchor-boxes/</a><br>其Kmeans算Anchor的中心的时候用的是同一个组内的anchor boxes长宽分别求平均数。<br>V2用了FPN？</p>
-<h3 id="YoLo-V3"><a href="#YoLo-V3" class="headerlink" title="YoLo V3"></a>YoLo V3</h3><p>个人感觉最大的改进就是设置了三个scale的anchor，分别在不同的层进行输出，同时添加了Residual。</p>
-<h2 id="SSD"><a href="#SSD" class="headerlink" title="SSD"></a>SSD</h2><p>SSD以及RetinaNet就是所谓的堆anchor狂魔。<br><a href="https://zhuanlan.zhihu.com/p/33544892" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/33544892</a></p>
-<p>YoLo采用的是中心Anchor匹配，而SSD采用的是最大IoU匹配<br>未能够匹配的Anchor，如果和某个正样本IoU大于0.5, 也认为是该样本在该Anchor的正例<br>这里会出现一个问题就是，一个Anchor会存在非常多的负样本，但是正样本就一两个，也就是样本是及其不平衡的，这就需要使用RetinaNet中提出来的Focal Loss之类的方法来进行匹配了。或者训练时人工丢弃部分负样本Anchor。<br>Anchor的Size是从0.2到0.9(相对于原图)，每个特征图的每个格子的anchor数量是一样的，这就造成了底层(feature map还比较大的时候)anchor数量比较多，而顶层anchor数量比较少。</p>
-<h1 id="传统算子"><a href="#传统算子" class="headerlink" title="传统算子"></a>传统算子</h1><h2 id="边缘检测子"><a href="#边缘检测子" class="headerlink" title="边缘检测子"></a>边缘检测子</h2><p>Canny<br>Susan   <a href="https://users.fmrib.ox.ac.uk/~steve/susan/susan/node8.html" target="_blank" rel="noopener">https://users.fmrib.ox.ac.uk/~steve/susan/susan/node8.html</a><br>待续</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1407,7 +1359,7 @@ QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1442,7 +1394,9 @@ QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
                     
                       
                     
-                    <span class="site-state-item-count">9</span>
+                      
+                    
+                    <span class="site-state-item-count">10</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>

@@ -387,6 +387,203 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/Cython制作C-动态库的python-binding/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/Cython制作C-动态库的python-binding/" class="post-title-link" itemprop="url">Cython制作C++动态库的python binding</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-27 23:22:33" itemprop="dateCreated datePublished" datetime="2019-08-27T23:22:33+08:00">2019-08-27</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://docs.python.org/2/extending/building.html#building" target="_blank" rel="noopener">https://docs.python.org/2/extending/building.html#building</a><br>python3官方文档： <a href="https://docs.python.org/3/extending/extending.html" target="_blank" rel="noopener">https://docs.python.org/3/extending/extending.html</a><br><a href="https://www.tutorialspoint.com/python/python_further_extensions.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/python/python_further_extensions.htm</a><br>关键参考这个例子<br><a href="https://github.com/JacekPierzchlewski/CppClass4Python3/blob/master/car/car2py.cpp" target="_blank" rel="noopener">https://github.com/JacekPierzchlewski/CppClass4Python3/blob/master/car/car2py.cpp</a><br>网上下载了Cython的书籍，已经上传nas<br><a href="http://www.jyguagua.com/wp-content/uploads/2017/03/OReilly.Cython-A-Guide-for-Python-Programmers.pdf" target="_blank" rel="noopener">http://www.jyguagua.com/wp-content/uploads/2017/03/OReilly.Cython-A-Guide-for-Python-Programmers.pdf</a><br>直接看第八章吧，其他的说的都是用不上的。<br><a href="https://notes-on-cython.readthedocs.io/en/latest/function_declarations.html" target="_blank" rel="noopener">https://notes-on-cython.readthedocs.io/en/latest/function_declarations.html</a></p>
+<h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>首先先上结论，对于c++ 11，使用pybind11能够更加完美支持C++11的新特性，Cython更加适合纯C或者C++11之前的C++，包括对模板类以及MemoryView的支持。手工写这两者都需要大量的转换，最好是能够写一个自动wrap的小工具会好一些。Cython主要的问题在于对enum class的支持不足，其他的坑暂时还没有发现更多。</p>
+<h1 id="主要概念"><a href="#主要概念" class="headerlink" title="主要概念"></a>主要概念</h1><p>需要认清以下几个主要的概念：</p>
+<ul>
+<li><p>Extension<br>Python大部分的解释器都是CPython，也就是实际上就是一个能够运行.py文件的C程序，python是支持通过so的方式对这个C程序进行扩展的，这个扩展是相当于直接加在了运行时的解释器上面，而不是类似于解析器读取py文件运行这样的机制，因此称之为Python的扩展Extension而不是package, </p>
+</li>
+<li><p>setup函数<br>setup函数来自setup_tools, setup_tools主要是改写了原本distutils里面的setup函数，我们一般只用setup_tools的setup函数，能够支持一些新的特性。<br>常见的开头长这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import setuptools</span><br><span class="line">from setuptools import setup, Extension</span><br><span class="line">from Cython.Build import cythonize</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>下面我们会具体说明使用到的cythonize函数，也就是Cython方案的核心之一。</p>
+<h1 id="Cython方案"><a href="#Cython方案" class="headerlink" title="Cython方案"></a>Cython方案</h1><p>Cython方案是诸多C++ wrapper中最接近python语法的一种，它能够比较好地用接近python的语法调用c++，不足之处就是对于enum class的支持非常差，导致无法在接口模块直接使用。为了使用一些C++支持而Cython不支持的特性，我们需要独立出来这部分代码，用纯C++来wrap一遍，去掉enum class这一类输入，用简单变量比如纯C的enum或者int来简单包装一下，再输入到最早需要接收enum class的函数中去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// shared_lib.h</span><br><span class="line">enum class Flag&#123;</span><br><span class="line">  FLAG1,</span><br><span class="line">  FLAG2,</span><br><span class="line">  ...</span><br><span class="line">&#125;;</span><br><span class="line">void func(enum class Flag)&#123;&#125;</span><br><span class="line"></span><br><span class="line">// write a wrapper so that cython need not interact directly with shared_lib.h</span><br><span class="line">// wrapper.h</span><br><span class="line">void func_wrapper(int flag)&#123;</span><br><span class="line">  if(flag == 1) Flag cflag = Flag::FLAG1</span><br><span class="line">  ...</span><br><span class="line">  return func(cflag);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Cython编译整体有两个阶段，第一阶段就是pyx转c/c++， 第二阶段就是这个c/c++转换为python的extension。第一阶段由cython提供，第二阶段就用的python官方的setuptools来实现了。第二阶段还能加入很多纯C/C++的代码，也最灵活。</p>
+<h2 id="pyx和pyd"><a href="#pyx和pyd" class="headerlink" title="pyx和pyd"></a>pyx和pyd</h2><p>类比于C++的.cpp和.h文件，pyx和pyd就是Cython的实现和头文件，注意声明来自C的变量和函数一定要在pyd里面进行，否则编译的时候会出现符号重定义的现象，这和C++是一样一样的。</p>
+<h2 id="wrap函数"><a href="#wrap函数" class="headerlink" title="wrap函数"></a>wrap函数</h2><h3 id="返回bool值"><a href="#返回bool值" class="headerlink" title="返回bool值"></a>返回bool值</h3><p>返回bool值得函数在这里需要用bint来替代作为python object</p>
+<h2 id="wrap变量"><a href="#wrap变量" class="headerlink" title="wrap变量"></a>wrap变量</h2><h3 id="接收str变量到char"><a href="#接收str变量到char" class="headerlink" title="接收str变量到char*"></a>接收str变量到char*</h3><h3 id="接收numpy变量"><a href="#接收numpy变量" class="headerlink" title="接收numpy变量"></a>接收numpy变量</h3><p>numpy的array在传到C++层面时候，其存储不一定是连续的，因此不能够直接取array.data作为buffer的起点，而应该先转换为continuous array之后，这个array.data才是能够直接作为c++指针的起点。比如我们用opencv在python层读了一个图片进来，这时候要怎样变成一个<code>unsigned char*</code> 的指针呢？注意，这个指针指向的内存由python所管理，因此千万别尝试接管这部分内存，否则很可能出现内存泄漏。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cpdef receive_numpy(self, image_data):</span><br><span class="line">        row, col = image_data.shape[0], image_data.shape[1]</span><br><span class="line">        cdef np.ndarray[np.uint8_t, ndim=3, mode = &apos;c&apos;] np_buff = np.ascontiguousarray(image_data, dtype = np.uint8)</span><br><span class="line">        cdef unsigned char* im_buff = &lt;unsigned char*&gt; np_buff.data</span><br><span class="line">        # do whatever you want with im_buff, but do not free the memory it points to.</span><br><span class="line">        # ...</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure></p>
+<h3 id="接收bool变量"><a href="#接收bool变量" class="headerlink" title="接收bool变量"></a>接收bool变量</h3><p>有一个比较奇怪的现象，就是容器里面的bool不能用bint替换，因为没有默认的强制类型转换函数，必须使用原生的c++ bool<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from libcpp cimport bool</span><br><span class="line">cdef extern from &quot;wrapper.h&quot;:</span><br><span class="line">	cdef struct Foo:</span><br><span class="line">		vector[bool] boolFlags</span><br></pre></td></tr></table></figure></p>
+<h2 id="shared-library的依赖管理"><a href="#shared-library的依赖管理" class="headerlink" title="shared library的依赖管理"></a>shared library的依赖管理</h2><p>我们给shared library添加wrapper, 在这样的使用场景下，so库是预编译的，拿到的时候应该就是so库及其相应的头文件，我们知道，python作为C程序的一种，他要想要使用到这个so库，加载的方式和传统的C程序也是没有什么两样的，比如搜索/usr/lib, /lib， ${LD_LIBRARY_PATH}, RPATH等等，因为我们希望在pip install 和uninstall的时候，pip能够管理我们全部生成的文件，在卸载的时候也能够卸载干净，因此我们不可能将so库放在/usr/lib或者/lib这样的全局位置，并且这样的操作setuptools默认是不支持的，且需要sudo权限。而设置LD_IBRARY_PATH则需要在启动python之前就完成设置，一旦python启动，后续不能够再设置，当然也有办法是python设置完之后，重启python，这种骚操作我觉得还是少用为妙。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import sys, os</span><br><span class="line">mymodule_path = &quot;/home/me/python/mymodule&quot;</span><br><span class="line">try:</span><br><span class="line">    sys.path.append(mymodule_path)</span><br><span class="line">    import mymodule</span><br><span class="line">except ImportError:</span><br><span class="line">   if sys.platform == &apos;win32&apos;:</span><br><span class="line">       os.environ[&apos;PATH&apos;] = mymodule_path</span><br><span class="line">   elif sys.platform == &apos;darwin&apos;:</span><br><span class="line">       os.environ[&apos;DYLD_LIBRARY_PATH&apos;] = mymodule_path</span><br><span class="line">   else:</span><br><span class="line">       os.environ[&apos;LD_LIBRARY_PATH&apos;] = mymodule_path</span><br><span class="line">   args = [sys.executable]</span><br><span class="line">   args.extend(sys.argv)</span><br><span class="line">   os.execv(sys.executable, args)</span><br></pre></td></tr></table></figure></p>
+<p>那么就只剩下一个关键的途径了，那就是设置RPATH，也就是runtime_library_dirs了，这是写在so库中的一个路径，我们可以用<code>readelf -d xxx.so</code>来看到，也可以用<code>ldd xxx.so</code>来看到如果在ldd当前目录下运行程序，有什么样的xxx.so依赖的其他so库能够被找到。RPATH有一个特殊的符号，<code>$ORIGIN</code>，注意这个不是一个变量，而是一个特定的符号，他表示，无论这个so被扔到那里了，$ORIGIN就是so所在的目录位置，于是，相对路径就变得可行起来了，比如我们添加这样的一行编译：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set_target_properties(xxx PROPERTIES LINK_FLAGS &quot;-Wl,-rpath,$ORIGIN&quot;)</span><br><span class="line">或者</span><br><span class="line">set_target_properties(xxx PROPERTIES INSTALL_RPATH &quot;$ORIGIN&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>而在setuptools里面，则是在Extension加上这个property:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ext = Extension(runtime_library_dirs=[&quot;$ORIGIN&quot;], ... , )</span><br></pre></td></tr></table></figure></p>
+<p>再次提醒，这个$ORIGIN并不会被替换成其他的变量，因为这是一个特殊符号。但是，这个只解决了由wrapper直接依赖的so的问题，假设我们的模块是mylib, mylib依赖的A.so可以由上述方式找到，但是A.so可能依赖另外一些shared lib, 比如B.so， 这就要求A.so在编译的时候就已经将RPATH设置正确，否则也是没有办法的，不过一般A.so, B.so这些也都是我们能够接触到源码的，所以改一下编译也不是难题，并且实在不行还可以用patchelf这个工具做后处理修改掉rpath.</p>
+<h1 id="Cython打包过程"><a href="#Cython打包过程" class="headerlink" title="Cython打包过程"></a>Cython打包过程</h1><p>像我们这种打包shared lib的，不可避免需要将被wrap的so安装到site<em>package里面去，那么怎么实现这件事呢？那就是用package<em>data啦，注意，package_data只能打包在package所在的文件夹之内的数据文件，不在这个路径下的，是不能被打包的，也不会报错。并且，某个文件要想被打包，其顶层一定有一个__init</em></em>.py作为当前文件夹是package的声明。比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">|--data</span><br><span class="line">	|--model.bin</span><br><span class="line">	|--model.lib</span><br><span class="line">	|--__init__.py</span><br><span class="line">|--setup.py</span><br></pre></td></tr></table></figure></p>
+<p>在setup.py里面，要想打包data里面的内容，那么：<br>只需要<code>setup(package_data={&#39;data&#39;: [&quot;model.*&quot;]}, ..., )</code>即可，当然目录还能更加复杂一些。</p>
+<h2 id="python-setup-py-install-sdist-bdist-bdist-wheel"><a href="#python-setup-py-install-sdist-bdist-bdist-wheel" class="headerlink" title="python setup.py install/sdist/bdist/bdist_wheel"></a>python setup.py install/sdist/bdist/bdist_wheel</h2><p>install为直接安装，一般就是安装到本机<br>sdist作用基本相当于直接将当前源码打包，然后放到其他机器同样运行python setup.py install来安装，就是所谓的源码发布<br>bdist作用相当于将pyx, pyd等编译之后只取二进制文件，实际上并不好用<br>bdist_wheel是我觉得最好用的，它切掉了全部的源码，只留下必要的文件。</p>
+<p>所有需要被打包的文件，都通过MANIFEST.in来进行指定。</p>
+<h2 id="static问题"><a href="#static问题" class="headerlink" title="static问题"></a>static问题</h2><p>由于python的extension在不同的系统，动态库其symbol的可见性是不一样的，比如windows就全局共享一个可见性，因此建议所有的extension的函数都带上static，只有模块的初始化函数XXX_Init除外。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/OpenGLES跨平台Context的建立/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1226,193 +1423,6 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/05/CPP11/C-11泛型编程/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/CPP11/C-11泛型编程/" class="post-title-link" itemprop="url">C++11泛型编程</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-01 10:24:56" itemprop="dateCreated datePublished" datetime="2019-05-01T10:24:56+08:00">2019-05-01</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="C-11型别推导"><a href="#C-11型别推导" class="headerlink" title="C++11型别推导"></a>C++11型别推导</h1><h2 id="数组类型与指针类型的转换"><a href="#数组类型与指针类型的转换" class="headerlink" title="数组类型与指针类型的转换"></a>数组类型与指针类型的转换</h2><p>C++有一个一直以来大家都习以为常的特性，那就是数组名字就是数组首元素的指针。一个数组形参可以接受一个指向数组首元素指针的实参，看起来这两者是一样的，但是其实进行了某种程度的退化，如果使用不当，很可能会造成析构不当(数组部分元素没有被析构到)。注意有一种情况下，数组是不会退化成指针(也就是保留其大小信息)， 那就是被传引用调用时。</p>
-<p>数组其实是有型别的，比如说<code>const char name[]=&quot;hello&quot;;</code>的型别就是<code>const char [6]</code>, 它的引用版本(作为函数参数的时候)是 <code>const char (&amp;)[6]</code>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T&gt;</span><br><span class="line">void f(T&amp; param);</span><br><span class="line">void g(T param)</span><br></pre></td></tr></table></figure></p>
-<p>传引用调用的时候，利用数组类型带大小这个特点，我们能够在编译器就能够获得传入数组的大小，利用的是非类型模板参数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T, std::size_t N&gt;</span><br><span class="line">constexpr std::size_t arraySize(T (&amp;)[N]) noexcept</span><br><span class="line">&#123;</span><br><span class="line">return N;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h1 id="auto关键字"><a href="#auto关键字" class="headerlink" title="auto关键字"></a>auto关键字</h1><p>auto关键字在很多情况下和模板类型的推导是一致的，以下这种情况却需要区别对待，那就是initializer_list这一个新出的初始化变量的方法。（以后我们分别将这两种类型推导叫做模板类型推导和auto类型推导。）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">auto x1=27;  //auto为int</span><br><span class="line">auto x2(27); // auto 为int</span><br><span class="line">auto x3&#123;27&#125;  // auto为std::initializer_list&lt;int&gt;, 且只有一个元素，27</span><br><span class="line">auto x4=&#123;27&#125; //同上</span><br></pre></td></tr></table></figure></p>
-<p>auto推导会将大括号推导为initializer_list，这一点和其他推导是不同的，比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">auto x=&#123;11, 12, 13&#125;;</span><br><span class="line">template &lt;typename T&gt;</span><br><span class="line">void f(T param)&#123;</span><br><span class="line">std::cout &lt;&lt; &quot;I am called&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">f(&#123;11, 12, 13&#125;);    // 错误，无法通过编译，默认不会讲花括号内转换成一个initializer_list类型。</span><br><span class="line">f(x); //正确， 输出I am called</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>另一个需要注意的是，auto用作函数返回值时，采用的是模板类型推导而不是auto类型推导，所以返回类似于{1, 2, 3}这样的initializer_list也是不被允许的。</p>
-<p>还有一个容易被混淆的点就是auto非常类似于 模板类型推导，但是不同于函数模板参数中会保留修饰词如const, auto并不会保留（函数按值传递不保留修饰词，这里也一样，auto是复制变量时，就不会保留修饰词）。要想要保留修饰词，需要使用decltype关键字。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Widget w;</span><br><span class="line">const Widget&amp; cw = w;</span><br><span class="line">auto myWidget1 = cw;    // myWidget1是Widget类型，不再具有const和引用</span><br><span class="line">decltype(auto) myWidget2 = cw;    // myWidget2是const Widget&amp;类型，能够保留修饰词</span><br></pre></td></tr></table></figure></p>
-<p>实际的编程中，应该多用auto来代替显式指定变量类型，以避免没必要的隐式的强制类型装换。</p>
-<h1 id="decltype关键字"><a href="#decltype关键字" class="headerlink" title="decltype关键字"></a>decltype关键字</h1><p>decltype一般用于返回值类型随着输入参数变化的函数，它的作用就是返回一个表达式或者一个值得型别。</p>
-<h2 id="decltype与C-11中的返回值型别尾序语法-trailing-return-type-syntax"><a href="#decltype与C-11中的返回值型别尾序语法-trailing-return-type-syntax" class="headerlink" title="decltype与C++11中的返回值型别尾序语法(trailing return type syntax)"></a>decltype与C++11中的返回值型别尾序语法(trailing return type syntax)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">template &lt;typename T, typename Index&gt;</span><br><span class="line">auto f(const T&amp; container, Index i) -&gt; decltype(container[i])</span><br><span class="line">&#123;</span><br><span class="line">std::cout &lt;&lt; container[i] &lt;&lt; std::endl;</span><br><span class="line">return container[i];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">std::vector&lt;int&gt; v&#123;11, 12, 13&#125;;    </span><br><span class="line">f(v, 0); //正确， 输出11</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>函数将会返回container[i]的类型的返回值，且是引用返回。decltype如果作用于比名字更加复杂的左值表达式中，将总是返回一个引用，比如对int x, decltype((x))将返回int&amp;, 而decltype(x)的推导结果却是int， 不带引用。这个区别只在C++14上面，自动推导返回值类型的时候比较重要，而在C++11中几乎不会用到。</p>
-<h1 id="非类型模板参数"><a href="#非类型模板参数" class="headerlink" title="非类型模板参数"></a>非类型模板参数</h1><p><a href="https://blog.csdn.net/lanchunhui/article/details/49634077" target="_blank" rel="noopener">https://blog.csdn.net/lanchunhui/article/details/49634077</a></p>
-<h2 id="类的非类型模板参数"><a href="#类的非类型模板参数" class="headerlink" title="类的非类型模板参数"></a>类的非类型模板参数</h2><p>类的非类型模板参数需要在实例化类的时候手工进行指定，而函数的非类型模板化参数则可以纯粹由编译器推导得出。非类型模板参数不允许类对象(enum除外)和浮点数，其余的是可以的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">emplate&lt;typename T, int MAXSIZE=20&gt;</span><br><span class="line">class Stack</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">Stack():idx(0)&#123;&#125;</span><br><span class="line">bool empty() const &#123; return idx == 0;&#125;</span><br><span class="line">bool full() const &#123; return idx == MAXSIZE;&#125;</span><br><span class="line">void push(const T&amp;);</span><br><span class="line">void pop();</span><br><span class="line">T&amp; top();</span><br><span class="line">const T&amp; top() const;</span><br><span class="line">private:</span><br><span class="line">int idx; </span><br><span class="line">T elems[MAXSIZE];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Stack&lt;int, 10&gt; stackSize10;</span><br><span class="line">Stack&lt;int&gt; stackSize20;    //使用了缺省参数</span><br></pre></td></tr></table></figure></p>
-<h2 id="函数的非类型模板参数"><a href="#函数的非类型模板参数" class="headerlink" title="函数的非类型模板参数"></a>函数的非类型模板参数</h2><p>形如下面的代码，不一样的是模板类型可以由推导得出，不一定需要显式传入。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T, std::size_t N&gt;</span><br><span class="line">constexpr std::size_t arraySize(T (&amp;)[N]) noexcept</span><br><span class="line">&#123;</span><br><span class="line">return N;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char helloStr[] = &quot;hello&quot;;</span><br><span class="line">arraySize(helloStr);    //返回6</span><br></pre></td></tr></table></figure></p>
-<p>又如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">template &lt;typename T&gt;</span><br><span class="line">bool f(const T&amp; a, const T&amp; b)</span><br><span class="line">&#123;</span><br><span class="line">std::cout &lt;&lt; (a &gt; b) &lt;&lt; std::endl;</span><br><span class="line">return a &gt; b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">template &lt;typename T&gt;</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">A(T a)&#123;</span><br><span class="line">std::cout &lt;&lt; &quot;Constructor&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">f&lt;int&gt;(0, 1);   //正确， </span><br><span class="line">f(0, 1);        //正确，T会被正确推导 </span><br><span class="line">A&lt;int&gt; a(1);    // 正确</span><br><span class="line">A b(1);         // 错误，编译不通过</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h1 id="C-泛型编程以及函数重载"><a href="#C-泛型编程以及函数重载" class="headerlink" title="C++泛型编程以及函数重载"></a>C++泛型编程以及函数重载</h1><ul>
-<li>enable_if_t</li>
-<li>enable_if</li>
-</ul>
-<p>SFINAE(Substitution Failure Is Not An Error)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">long multiply(int i, int j) &#123; return i * j; &#125;</span><br><span class="line"></span><br><span class="line">template &lt;class T&gt;</span><br><span class="line">typename T::multiplication_result multiply(T t1, T t2)</span><br><span class="line">&#123;</span><br><span class="line">return t1 * t2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">multiply(4, 5);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>main 函数调用 multiply 会使编译器会尽可能去匹配所有候选函数，虽然第一个 multiply 函数明显是较优的匹配，但是为了得到一个最精确的匹配，编译器依然会尝试去匹配剩下的候选函数，此时就会去推导 第二个multiply 函数，中间在参数推导的过程中出现了一个无效的类型 int::multiplication_result ，但是因为 SFINAE 原则并不会报错。</p>
-</blockquote>
-<p>待续</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1461,7 +1471,7 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1496,7 +1506,9 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
                     
                       
                     
-                    <span class="site-state-item-count">9</span>
+                      
+                    
+                    <span class="site-state-item-count">10</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>

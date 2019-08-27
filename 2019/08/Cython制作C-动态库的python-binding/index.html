@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="卡尔曼滤波器卡尔曼滤波可以看这篇文章：http://web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf 基本假设卡尔曼滤波器的基本假设是，对于t时刻一个状态值 x_t ,注意状态值是一个n维向量。它是通过某种转换关系从上一个时刻的状态 x_{t-1} 转换过来的，并且这个转换过程是存在白噪的，也">
+  <meta name="description" content="参考链接https://docs.python.org/2/extending/building.html#buildingpython3官方文档： https://docs.python.org/3/extending/extending.htmlhttps://www.tutorialspoint.com/python/python_further_extensions.htm关键参考这个例子">
 <meta property="og:type" content="article">
-<meta property="og:title" content="卡尔曼滤波器">
-<meta property="og:url" content="http://tensors.space/2018/04/卡尔曼滤波器/index.html">
+<meta property="og:title" content="Cython制作C++动态库的python binding">
+<meta property="og:url" content="http://tensors.space/2019/08/Cython制作C-动态库的python-binding/index.html">
 <meta property="og:site_name" content="阮明康">
-<meta property="og:description" content="卡尔曼滤波器卡尔曼滤波可以看这篇文章：http://web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf 基本假设卡尔曼滤波器的基本假设是，对于t时刻一个状态值 x_t ,注意状态值是一个n维向量。它是通过某种转换关系从上一个时刻的状态 x_{t-1} 转换过来的，并且这个转换过程是存在白噪的，也">
+<meta property="og:description" content="参考链接https://docs.python.org/2/extending/building.html#buildingpython3官方文档： https://docs.python.org/3/extending/extending.htmlhttps://www.tutorialspoint.com/python/python_further_extensions.htm关键参考这个例子">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-18T15:44:04.594Z">
+<meta property="og:updated_time" content="2019-08-27T15:24:31.133Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="卡尔曼滤波器">
-<meta name="twitter:description" content="卡尔曼滤波器卡尔曼滤波可以看这篇文章：http://web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf 基本假设卡尔曼滤波器的基本假设是，对于t时刻一个状态值 x_t ,注意状态值是一个n维向量。它是通过某种转换关系从上一个时刻的状态 x_{t-1} 转换过来的，并且这个转换过程是存在白噪的，也">
+<meta name="twitter:title" content="Cython制作C++动态库的python binding">
+<meta name="twitter:description" content="参考链接https://docs.python.org/2/extending/building.html#buildingpython3官方文档： https://docs.python.org/3/extending/extending.htmlhttps://www.tutorialspoint.com/python/python_further_extensions.htm关键参考这个例子">
 
 
 
@@ -114,7 +114,7 @@
 
   
   
-  <link rel="canonical" href="http://tensors.space/2018/04/卡尔曼滤波器/">
+  <link rel="canonical" href="http://tensors.space/2019/08/Cython制作C-动态库的python-binding/">
 
 
 
@@ -124,7 +124,7 @@
   };
 </script>
 
-  <title>卡尔曼滤波器 | 阮明康</title>
+  <title>Cython制作C++动态库的python binding | 阮明康</title>
   
 
 
@@ -392,7 +392,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/04/卡尔曼滤波器/">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/Cython制作C-动态库的python-binding/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="阮明康">
@@ -409,7 +409,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">卡尔曼滤波器
+          <h1 class="post-title" itemprop="name headline">Cython制作C++动态库的python binding
 
               
             
@@ -435,7 +435,7 @@
                 
               
 
-              <time title="Created: 2018-04-14 10:25:19" itemprop="dateCreated datePublished" datetime="2018-04-14T10:25:19+08:00">2018-04-14</time>
+              <time title="Created: 2019-08-27 23:22:33" itemprop="dateCreated datePublished" datetime="2019-08-27T23:22:33+08:00">2019-08-27</time>
             
 
             
@@ -453,14 +453,21 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
 
                 
                 
                   , 
                 
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/动态跟踪/" itemprop="url" rel="index"><span itemprop="name">动态跟踪</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
 
                 
                 
@@ -502,93 +509,33 @@
       
 
       
-        <h1 id="卡尔曼滤波器"><a href="#卡尔曼滤波器" class="headerlink" title="卡尔曼滤波器"></a>卡尔曼滤波器</h1><p>卡尔曼滤波可以看这篇文章：<a href="http://web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf" target="_blank" rel="noopener">http://web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf</a></p>
-<h2 id="基本假设"><a href="#基本假设" class="headerlink" title="基本假设"></a>基本假设</h2><p>卡尔曼滤波器的基本假设是，对于t时刻一个状态值 <script type="math/tex">x_t</script> ,注意状态值是一个n维向量。它是通过某种转换关系从上一个时刻的状态 <script type="math/tex">x_{t-1}</script> 转换过来的，并且这个转换过程是存在白噪的，也就是：</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-x_t = \Phi x_{t-1} + \omega_t
-\end{equation}</script><p>同时，卡尔曼滤波认为$x_t$的观测值$z_t$（观测值是一个m维向量，m和n不一定相等，取决于测量方法）与其状态值也存在一个关系：</p>
-<script type="math/tex; mode=display">
-z_t = Hx_t + v_t</script><p>这里显然$v_t​$就是测量误差，这里也认为这个测量误差符合高斯分布。 卡尔曼滤波认为这两个转换关系中的$\Phi​$和$H​$都是不随着时间改变的，是一个固定的值，由所建模的物理问题所决定，不需要每一帧重新计算，至于初始值是什么，就需要看卡尔曼滤波建模的实际物理量是什么了，比如说这个物理量是速度的话，且是匀加速运动，由于两帧之间的速度关系由加速度来决定，那么加速度就由$\Phi​$来进行建模。</p>
-<h2 id="问题定义"><a href="#问题定义" class="headerlink" title="问题定义"></a>问题定义</h2><p>定义了这么多，实际上我们要怎样从每一帧及其历史的观测值找到实际的$x_t$呢？答案是，找不到真实的$x_t$, 只能找到它的最优估计值$\hat{x_t}$，定义计算到的$\hat{x_t}$与实际的$x_t$的误差为$e_t = x_t- \hat{x_t}$， 显然，我们的目标函数可以定义为：</p>
-<script type="math/tex; mode=display">
-\tag{loss}
-\min\sum_i^n E(e_{t,i}^2)</script><p>也就是每一维误差的平方和。<br>换一种角度，用概率的思维可以表达为最大似然函数，也就是给定观测值，求实际值的最大似然：</p>
-<script type="math/tex; mode=display">
-\max P(\hat{x_t}|z_t)</script><p>我们认为测量误差$v_t$符合高斯分布，那么</p>
-<script type="math/tex; mode=display">
-\begin{align}
-\max P(\hat{x_t}|z_t) &= \max P(z_t/H - v_t/H|z_t) \\
-&=\max P(v_t|z_t) \\
-&= \max P(v_t) \\
-&= \max C_t e^{\frac{-(z_t-Hx_t)^2}{2\sigma^2}} \\
-\end{align}</script><p>其中$C_t$是高斯分布的常数项，最大化多帧似然函数为：</p>
-<script type="math/tex; mode=display">
-\max \Pi_t{P(\hat{x_t}|z_t)}</script><p>取对数改连乘为连加，再对$\sigma_t$求导即可求出每一帧最优的$\sigma_t$</p>
-<h1 id="卡尔曼滤波变量定义"><a href="#卡尔曼滤波变量定义" class="headerlink" title="卡尔曼滤波变量定义"></a>卡尔曼滤波变量定义</h1><p>以均方误差为例，我们优化的目标是：</p>
-<script type="math/tex; mode=display">
-\min\sum_i^n E(e_{t,i}^2)</script><p>为了获得这个最小的均方误差，我们先定义三个协方差矩阵：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-Q &= E[\omega_t\omega_t^T] \\
-R &= E[v_tv_t^T] \\
-P_t &= E[e_te_t^T] \\
-&= E[(x_t-\hat{x_t})(x_t-\hat{x_t})^T]
-\end{align}</script><p>那么我们需要最小化的就是$P_t$的迹$Tr(P_t)$。<br>现在我们使用类似迭代证明的方式来进行说明，假如通过某种途径，我们初步获得了$x_t$的估计值，记为$\hat{x’_t}$，这时候需要通过卡尔曼滤波来进一步优化这样的一个结果。假如我们认为每一步的精细化都是一种线性变换，那么精细化的公式都是类似于$\hat{x_t}=a\hat{x’_t} + b$这样的形式，卡尔曼滤波认为更加精细化的结果可以通过以下的式子获得：</p>
-<script type="math/tex; mode=display">
-\hat{x_t} = \hat{x'_{t}} + K_t(z_t - H\hat{x'_{t}})</script><p>这条公式为什么成立下面会说明。其中$K_t$称之为Kalman gain, 记所谓的innovation 或measurement residual为</p>
-<script type="math/tex; mode=display">
-i_t = z_t - H\hat{x'_{t}}</script><p>将$z_t$代入得：</p>
-<script type="math/tex; mode=display">
-\hat{x_t} = \hat{x'_{t}} + K_t(Hx_t+ v_t - H\hat{x'_{t}})</script><p>现在我们知道了怎样精细化对$x_t$的预测，那么接下来的问题就是解决$K_t$以及消除$x_t$了。由优化目标，我们应该选择一个$K_t$使其最小化$Tr(P_t)$，因此我们需要获得$P_t$关于$K_t$的式子，再进行求导计算。<br>由于：</p>
-<script type="math/tex; mode=display">
-x_t-\hat{x_t} = x_t-\hat{x'_{t}} - K_t(Hx_t + v_t - H\hat{x'_{t}}) = (I-K_tH)(x_t-\hat{x'_{t}})-K_tv_t</script><p>将<script type="math/tex">\hat{x_t}</script>代入<script type="math/tex">P_t</script>中，注意到噪声<script type="math/tex">v_t</script>和<script type="math/tex">x_t</script>以及<script type="math/tex">\hat{x'_{t}}</script>显然都不相关，因此:</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P_t &= E[(x_t-\hat{x_t})(x_t-\hat{x_t})^T] \\
-&= (I-K_tH)E[(x_t-\hat{x_t})(x_t-\hat{x_t})^T](I-K_tH) + K_tE[v_tv_t^T]K_t^T \\
-&= (I-K_tH)P'_t(I-K_tH) + K_tRK_t^T \\
-&= P'_t - K_tHP'_t - P'_tH^TK_t^T + K_t(HP'_kH^T+R)K_t^T
-\end{align}</script><p>上式用$P’_t$消除了对$x_t$的依赖，而$P’_t$同$\hat{x’_t}$一样认为是通过某种途径初步获得的，两者在迭代一开始的初始值一般是0。将$P_t$的迹与$K_t$进行求导，注意到公式：</p>
-<script type="math/tex; mode=display">
-\nabla_ATr(AB) = B^T</script><p>我们有：</p>
-<script type="math/tex; mode=display">
-\frac{dTr(P_t)}{dK_t} = -2(HP'_t)^T + 2K_t(HP'_kH^T+R)</script><p>使之为0，求得最优的$K_t$为：</p>
-<script type="math/tex; mode=display">
-K_t = P'_tH^T(HP'_tH^T+R)^{-1}</script><p>其中记$S_t = HP’_tH^T+R$。<br>将$K_t$代入$P_t$, 可以消除后两项得：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-P_t &= P'_t - K_tHP'_t \\
-&= P'_t - P'_tH^T(HP'_tH^T+R)^{-1}HP'_t \\
-&= (I-K_tH)P'_k \\
-\end{align}</script><p>我们现在获得了同一帧之间所有变量的迭代优化公式，现在需要将前后两帧联系起来。卡尔曼滤波认为，下一帧的粗略估计值与上一帧的精细估计值存在这样的关系：</p>
-<script type="math/tex; mode=display">
-\hat{x}'_{t+1} = \Phi \hat{x_t}</script><p>根据这一假设，我们能得到所有其他的粗略估计值：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-e'_{t+1} &= x_{t+1}-x'_{t+1} \\
-&=(\Phi x_t + \omega_t) - \Phi \hat{x}_t \\
-&= \Phi e_t + \omega_t \\
-\end{align}</script><script type="math/tex; mode=display">
-\begin{align}
-P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
-&= E[(\Phi e_t)(\Phi e_t)^T] + E[\omega_t\omega_t^T] \\
-&= \Phi P_t\Phi + Q
-\end{align}</script><h1 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h1><ul>
-<li>初始化$P’_0, e’_0, \hat{x’_0}$为0，或者为其他数字，这是根据建模需求的求出来的</li>
-<li>计算$K_t = P’_tH^T(HP’_tH^T+R)^{-1}$</li>
-<li>计算出当前帧调整后的状态 <script type="math/tex; mode=display">\hat{x_t} = \hat{x'_{t}} + K_t(Hx_t+ v_t - H\hat{x'_{t}})</script></li>
-<li>更新卡尔曼滤波的参数<ul>
-<li>$P_t = P’_t - K_tHP’_t$</li>
-</ul>
+        <h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://docs.python.org/2/extending/building.html#building" target="_blank" rel="noopener">https://docs.python.org/2/extending/building.html#building</a><br>python3官方文档： <a href="https://docs.python.org/3/extending/extending.html" target="_blank" rel="noopener">https://docs.python.org/3/extending/extending.html</a><br><a href="https://www.tutorialspoint.com/python/python_further_extensions.htm" target="_blank" rel="noopener">https://www.tutorialspoint.com/python/python_further_extensions.htm</a><br>关键参考这个例子<br><a href="https://github.com/JacekPierzchlewski/CppClass4Python3/blob/master/car/car2py.cpp" target="_blank" rel="noopener">https://github.com/JacekPierzchlewski/CppClass4Python3/blob/master/car/car2py.cpp</a><br>网上下载了Cython的书籍，已经上传nas<br><a href="http://www.jyguagua.com/wp-content/uploads/2017/03/OReilly.Cython-A-Guide-for-Python-Programmers.pdf" target="_blank" rel="noopener">http://www.jyguagua.com/wp-content/uploads/2017/03/OReilly.Cython-A-Guide-for-Python-Programmers.pdf</a><br>直接看第八章吧，其他的说的都是用不上的。<br><a href="https://notes-on-cython.readthedocs.io/en/latest/function_declarations.html" target="_blank" rel="noopener">https://notes-on-cython.readthedocs.io/en/latest/function_declarations.html</a></p>
+<h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>首先先上结论，对于c++ 11，使用pybind11能够更加完美支持C++11的新特性，Cython更加适合纯C或者C++11之前的C++，包括对模板类以及MemoryView的支持。手工写这两者都需要大量的转换，最好是能够写一个自动wrap的小工具会好一些。Cython主要的问题在于对enum class的支持不足，其他的坑暂时还没有发现更多。</p>
+<h1 id="主要概念"><a href="#主要概念" class="headerlink" title="主要概念"></a>主要概念</h1><p>需要认清以下几个主要的概念：</p>
+<ul>
+<li><p>Extension<br>Python大部分的解释器都是CPython，也就是实际上就是一个能够运行.py文件的C程序，python是支持通过so的方式对这个C程序进行扩展的，这个扩展是相当于直接加在了运行时的解释器上面，而不是类似于解析器读取py文件运行这样的机制，因此称之为Python的扩展Extension而不是package, </p>
 </li>
-<li>准备下一帧的粗略估计值<ul>
-<li>$\hat{x}’_{t+1} = \Phi \hat{x_t}​$</li>
-<li>$P’_{t+1}= \Phi P_t\Phi + Q$</li>
-</ul>
+<li><p>setup函数<br>setup函数来自setup_tools, setup_tools主要是改写了原本distutils里面的setup函数，我们一般只用setup_tools的setup函数，能够支持一些新的特性。<br>常见的开头长这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import setuptools</span><br><span class="line">from setuptools import setup, Extension</span><br><span class="line">from Cython.Build import cythonize</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>可以看出，卡尔曼滤波的更新跟状态量一点关系都没有，即使没有状态量，卡尔曼滤波每一帧的参数更新都是固定的。这也是为什么称之为滤波器的原因之一。</p>
+<p>下面我们会具体说明使用到的cythonize函数，也就是Cython方案的核心之一。</p>
+<h1 id="Cython方案"><a href="#Cython方案" class="headerlink" title="Cython方案"></a>Cython方案</h1><p>Cython方案是诸多C++ wrapper中最接近python语法的一种，它能够比较好地用接近python的语法调用c++，不足之处就是对于enum class的支持非常差，导致无法在接口模块直接使用。为了使用一些C++支持而Cython不支持的特性，我们需要独立出来这部分代码，用纯C++来wrap一遍，去掉enum class这一类输入，用简单变量比如纯C的enum或者int来简单包装一下，再输入到最早需要接收enum class的函数中去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// shared_lib.h</span><br><span class="line">enum class Flag&#123;</span><br><span class="line">  FLAG1,</span><br><span class="line">  FLAG2,</span><br><span class="line">  ...</span><br><span class="line">&#125;;</span><br><span class="line">void func(enum class Flag)&#123;&#125;</span><br><span class="line"></span><br><span class="line">// write a wrapper so that cython need not interact directly with shared_lib.h</span><br><span class="line">// wrapper.h</span><br><span class="line">void func_wrapper(int flag)&#123;</span><br><span class="line">  if(flag == 1) Flag cflag = Flag::FLAG1</span><br><span class="line">  ...</span><br><span class="line">  return func(cflag);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Cython编译整体有两个阶段，第一阶段就是pyx转c/c++， 第二阶段就是这个c/c++转换为python的extension。第一阶段由cython提供，第二阶段就用的python官方的setuptools来实现了。第二阶段还能加入很多纯C/C++的代码，也最灵活。</p>
+<h2 id="pyx和pyd"><a href="#pyx和pyd" class="headerlink" title="pyx和pyd"></a>pyx和pyd</h2><p>类比于C++的.cpp和.h文件，pyx和pyd就是Cython的实现和头文件，注意声明来自C的变量和函数一定要在pyd里面进行，否则编译的时候会出现符号重定义的现象，这和C++是一样一样的。</p>
+<h2 id="wrap函数"><a href="#wrap函数" class="headerlink" title="wrap函数"></a>wrap函数</h2><h3 id="返回bool值"><a href="#返回bool值" class="headerlink" title="返回bool值"></a>返回bool值</h3><p>返回bool值得函数在这里需要用bint来替代作为python object</p>
+<h2 id="wrap变量"><a href="#wrap变量" class="headerlink" title="wrap变量"></a>wrap变量</h2><h3 id="接收str变量到char"><a href="#接收str变量到char" class="headerlink" title="接收str变量到char*"></a>接收str变量到char*</h3><h3 id="接收numpy变量"><a href="#接收numpy变量" class="headerlink" title="接收numpy变量"></a>接收numpy变量</h3><p>numpy的array在传到C++层面时候，其存储不一定是连续的，因此不能够直接取array.data作为buffer的起点，而应该先转换为continuous array之后，这个array.data才是能够直接作为c++指针的起点。比如我们用opencv在python层读了一个图片进来，这时候要怎样变成一个<code>unsigned char*</code> 的指针呢？注意，这个指针指向的内存由python所管理，因此千万别尝试接管这部分内存，否则很可能出现内存泄漏。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cpdef receive_numpy(self, image_data):</span><br><span class="line">        row, col = image_data.shape[0], image_data.shape[1]</span><br><span class="line">        cdef np.ndarray[np.uint8_t, ndim=3, mode = &apos;c&apos;] np_buff = np.ascontiguousarray(image_data, dtype = np.uint8)</span><br><span class="line">        cdef unsigned char* im_buff = &lt;unsigned char*&gt; np_buff.data</span><br><span class="line">        # do whatever you want with im_buff, but do not free the memory it points to.</span><br><span class="line">        # ...</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure></p>
+<h3 id="接收bool变量"><a href="#接收bool变量" class="headerlink" title="接收bool变量"></a>接收bool变量</h3><p>有一个比较奇怪的现象，就是容器里面的bool不能用bint替换，因为没有默认的强制类型转换函数，必须使用原生的c++ bool<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from libcpp cimport bool</span><br><span class="line">cdef extern from &quot;wrapper.h&quot;:</span><br><span class="line">	cdef struct Foo:</span><br><span class="line">		vector[bool] boolFlags</span><br></pre></td></tr></table></figure></p>
+<h2 id="shared-library的依赖管理"><a href="#shared-library的依赖管理" class="headerlink" title="shared library的依赖管理"></a>shared library的依赖管理</h2><p>我们给shared library添加wrapper, 在这样的使用场景下，so库是预编译的，拿到的时候应该就是so库及其相应的头文件，我们知道，python作为C程序的一种，他要想要使用到这个so库，加载的方式和传统的C程序也是没有什么两样的，比如搜索/usr/lib, /lib， ${LD_LIBRARY_PATH}, RPATH等等，因为我们希望在pip install 和uninstall的时候，pip能够管理我们全部生成的文件，在卸载的时候也能够卸载干净，因此我们不可能将so库放在/usr/lib或者/lib这样的全局位置，并且这样的操作setuptools默认是不支持的，且需要sudo权限。而设置LD_IBRARY_PATH则需要在启动python之前就完成设置，一旦python启动，后续不能够再设置，当然也有办法是python设置完之后，重启python，这种骚操作我觉得还是少用为妙。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import sys, os</span><br><span class="line">mymodule_path = &quot;/home/me/python/mymodule&quot;</span><br><span class="line">try:</span><br><span class="line">    sys.path.append(mymodule_path)</span><br><span class="line">    import mymodule</span><br><span class="line">except ImportError:</span><br><span class="line">   if sys.platform == &apos;win32&apos;:</span><br><span class="line">       os.environ[&apos;PATH&apos;] = mymodule_path</span><br><span class="line">   elif sys.platform == &apos;darwin&apos;:</span><br><span class="line">       os.environ[&apos;DYLD_LIBRARY_PATH&apos;] = mymodule_path</span><br><span class="line">   else:</span><br><span class="line">       os.environ[&apos;LD_LIBRARY_PATH&apos;] = mymodule_path</span><br><span class="line">   args = [sys.executable]</span><br><span class="line">   args.extend(sys.argv)</span><br><span class="line">   os.execv(sys.executable, args)</span><br></pre></td></tr></table></figure></p>
+<p>那么就只剩下一个关键的途径了，那就是设置RPATH，也就是runtime_library_dirs了，这是写在so库中的一个路径，我们可以用<code>readelf -d xxx.so</code>来看到，也可以用<code>ldd xxx.so</code>来看到如果在ldd当前目录下运行程序，有什么样的xxx.so依赖的其他so库能够被找到。RPATH有一个特殊的符号，<code>$ORIGIN</code>，注意这个不是一个变量，而是一个特定的符号，他表示，无论这个so被扔到那里了，$ORIGIN就是so所在的目录位置，于是，相对路径就变得可行起来了，比如我们添加这样的一行编译：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set_target_properties(xxx PROPERTIES LINK_FLAGS &quot;-Wl,-rpath,$ORIGIN&quot;)</span><br><span class="line">或者</span><br><span class="line">set_target_properties(xxx PROPERTIES INSTALL_RPATH &quot;$ORIGIN&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>而在setuptools里面，则是在Extension加上这个property:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ext = Extension(runtime_library_dirs=[&quot;$ORIGIN&quot;], ... , )</span><br></pre></td></tr></table></figure></p>
+<p>再次提醒，这个$ORIGIN并不会被替换成其他的变量，因为这是一个特殊符号。但是，这个只解决了由wrapper直接依赖的so的问题，假设我们的模块是mylib, mylib依赖的A.so可以由上述方式找到，但是A.so可能依赖另外一些shared lib, 比如B.so， 这就要求A.so在编译的时候就已经将RPATH设置正确，否则也是没有办法的，不过一般A.so, B.so这些也都是我们能够接触到源码的，所以改一下编译也不是难题，并且实在不行还可以用patchelf这个工具做后处理修改掉rpath.</p>
+<h1 id="Cython打包过程"><a href="#Cython打包过程" class="headerlink" title="Cython打包过程"></a>Cython打包过程</h1><p>像我们这种打包shared lib的，不可避免需要将被wrap的so安装到site<em>package里面去，那么怎么实现这件事呢？那就是用package<em>data啦，注意，package_data只能打包在package所在的文件夹之内的数据文件，不在这个路径下的，是不能被打包的，也不会报错。并且，某个文件要想被打包，其顶层一定有一个__init</em></em>.py作为当前文件夹是package的声明。比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">|--data</span><br><span class="line">	|--model.bin</span><br><span class="line">	|--model.lib</span><br><span class="line">	|--__init__.py</span><br><span class="line">|--setup.py</span><br></pre></td></tr></table></figure></p>
+<p>在setup.py里面，要想打包data里面的内容，那么：<br>只需要<code>setup(package_data={&#39;data&#39;: [&quot;model.*&quot;]}, ..., )</code>即可，当然目录还能更加复杂一些。</p>
+<h2 id="python-setup-py-install-sdist-bdist-bdist-wheel"><a href="#python-setup-py-install-sdist-bdist-bdist-wheel" class="headerlink" title="python setup.py install/sdist/bdist/bdist_wheel"></a>python setup.py install/sdist/bdist/bdist_wheel</h2><p>install为直接安装，一般就是安装到本机<br>sdist作用基本相当于直接将当前源码打包，然后放到其他机器同样运行python setup.py install来安装，就是所谓的源码发布<br>bdist作用相当于将pyx, pyd等编译之后只取二进制文件，实际上并不好用<br>bdist_wheel是我觉得最好用的，它切掉了全部的源码，只留下必要的文件。</p>
+<p>所有需要被打包的文件，都通过MANIFEST.in来进行指定。</p>
+<h2 id="static问题"><a href="#static问题" class="headerlink" title="static问题"></a>static问题</h2><p>由于python的extension在不同的系统，动态库其symbol的可见性是不一样的，比如windows就全局共享一个可见性，因此建议所有的extension的函数都带上static，只有模块的初始化函数XXX_Init除外。</p>
 
       
     </div>
@@ -623,7 +570,7 @@ P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
   <li class="post-copyright-link">
     <strong>Post link: </strong>
     
-    <a href="http://tensors.space/2018/04/卡尔曼滤波器/" title="卡尔曼滤波器">http://tensors.space/2018/04/卡尔曼滤波器/</a>
+    <a href="http://tensors.space/2019/08/Cython制作C-动态库的python-binding/" title="Cython制作C++动态库的python binding">http://tensors.space/2019/08/Cython制作C-动态库的python-binding/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
@@ -643,8 +590,8 @@ P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/CPP11/C-11并发技术/" rel="next" title="C++11并发技术">
-                <i class="fa fa-chevron-left"></i> C++11并发技术
+              <a href="/2019/08/OpenGLES跨平台Context的建立/" rel="next" title="OpenGLES跨平台Context的建立">
+                <i class="fa fa-chevron-left"></i> OpenGLES跨平台Context的建立
               </a>
             
           </div>
@@ -652,10 +599,6 @@ P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/CPP11/CppMap的区别/" rel="prev" title="C++Map的区别">
-                C++Map的区别 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -841,7 +784,7 @@ P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#卡尔曼滤波器"><span class="nav-number">1.</span> <span class="nav-text">卡尔曼滤波器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本假设"><span class="nav-number">1.1.</span> <span class="nav-text">基本假设</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题定义"><span class="nav-number">1.2.</span> <span class="nav-text">问题定义</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#卡尔曼滤波变量定义"><span class="nav-number">2.</span> <span class="nav-text">卡尔曼滤波变量定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#整体流程"><span class="nav-number">3.</span> <span class="nav-text">整体流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考链接"><span class="nav-number">1.</span> <span class="nav-text">参考链接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#导言"><span class="nav-number">2.</span> <span class="nav-text">导言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主要概念"><span class="nav-number">3.</span> <span class="nav-text">主要概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cython方案"><span class="nav-number">4.</span> <span class="nav-text">Cython方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pyx和pyd"><span class="nav-number">4.1.</span> <span class="nav-text">pyx和pyd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wrap函数"><span class="nav-number">4.2.</span> <span class="nav-text">wrap函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#返回bool值"><span class="nav-number">4.2.1.</span> <span class="nav-text">返回bool值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wrap变量"><span class="nav-number">4.3.</span> <span class="nav-text">wrap变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接收str变量到char"><span class="nav-number">4.3.1.</span> <span class="nav-text">接收str变量到char*</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收numpy变量"><span class="nav-number">4.3.2.</span> <span class="nav-text">接收numpy变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收bool变量"><span class="nav-number">4.3.3.</span> <span class="nav-text">接收bool变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shared-library的依赖管理"><span class="nav-number">4.4.</span> <span class="nav-text">shared library的依赖管理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cython打包过程"><span class="nav-number">5.</span> <span class="nav-text">Cython打包过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#python-setup-py-install-sdist-bdist-bdist-wheel"><span class="nav-number">5.1.</span> <span class="nav-text">python setup.py install/sdist/bdist/bdist_wheel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static问题"><span class="nav-number">5.2.</span> <span class="nav-text">static问题</span></a></li></ol></li></ol></div>
             
 
           </div>
