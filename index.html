@@ -387,6 +387,194 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2020/01/3DMM的传统优化方法/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/01/3DMM的传统优化方法/" class="post-title-link" itemprop="url">3DMM的传统优化方法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-01-17 15:24:29" itemprop="dateCreated datePublished" datetime="2020-01-17T15:24:29+08:00">2020-01-17</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="3DMM的模型组成"><a href="#3DMM的模型组成" class="headerlink" title="3DMM的模型组成"></a>3DMM的模型组成</h1><p>3DMM是一类参数化3D建模的模型系列，其中最常用的就是来自巴塞尔大学的BFM模型。不同的3DMM模型的区别主要在于PCA的选择不一样。</p>
+<p>BFM家族的3DMM不是一步创建的，它实际上是由多个不同的研究成果组成。最早的BFM只有Shape， 不能够模拟表情。从MSRA的使用神经网络进行三维重建的代码中，我们可以了解到目前使用3DMM的传统优化算法所需要使用到的全部数据。</p>
+<h2 id="3DMM的数据组成"><a href="#3DMM的数据组成" class="headerlink" title="3DMM的数据组成"></a>3DMM的数据组成</h2><p>我们主要参考<a href="https://github.com/microsoft/Deep3DFaceReconstruction" target="_blank" rel="noopener">https://github.com/microsoft/Deep3DFaceReconstruction</a> 里面构建3DMM的方法来说明构建BFM所需的数据： <a href="https://github.com/microsoft/Deep3DFaceReconstruction/blob/80066b54507e98652e7efb2d4213146632380a05/load_data.py#L40" target="_blank" rel="noopener">https://github.com/microsoft/Deep3DFaceReconstruction/blob/80066b54507e98652e7efb2d4213146632380a05/load_data.py#L40</a></p>
+<ol>
+<li>BFM09模型<br>代码中是<code>original_BFM = loadmat(&#39;BFM/01_MorphableModel.mat&#39;)</code>， 我们主要使用它的shape basis以及texture basis. </li>
+</ol>
+<ul>
+<li>下载： <a href="https://faces.dmi.unibas.ch/bfm/main.php?nav=1-0&amp;id=basel_face_model" target="_blank" rel="noopener">https://faces.dmi.unibas.ch/bfm/main.php?nav=1-0&amp;id=basel_face_model</a><br>从这里我们只使用01_MorphableModel.mat这一个文件即可。</li>
+</ul>
+<ol>
+<li>Expression模型，用于模拟各种表情<br> 代码中是<code>Expbin = open(&#39;BFM/Exp_Pca.bin&#39;,&#39;rb&#39;)</code>以及<code>expEV = np.loadtxt(&#39;BFM/std_exp.txt&#39;)</code>，表情基及其特征值。特征值对于PCA模型是比较重要的，用于衡量这个基的重要性，后面在优化的时候，某个基的参数a的约束就是 $(a/e)^2 \le  \theta$， 因此特征值越大，该基的分量$a$就可以越大。</li>
+</ol>
+<ul>
+<li><p>下载：<a href="https://github.com/Juyong/3DFace" target="_blank" rel="noopener">https://github.com/Juyong/3DFace</a> 这里第一个链接<a href="https://drive.google.com/file/d/0B0A9UsiwtVTHY0p4em5qUzRISW8/view" target="_blank" rel="noopener">https://drive.google.com/file/d/0B0A9UsiwtVTHY0p4em5qUzRISW8/view</a> 就是Coarse_Dataset.zip (4.7GB)，抽出里面的Exp_Pca.bin， 特征值std_exp.txt在这里是没有的，只有MSRA自带的那个有，是需要跑sample code来算出来的。这个表情来自文章： 3DFaceNet: Real-time Dense Face Reconstruction via Synthesizing Photo-realistic Face Images. </p>
+<p>  [optional 2]:  3DDFA这个数据集上面还有一个expression基: Model_Expression.mat, <em>但是现在不用</em>。来自文章： Face Alignment Across Large Poses: A 3D Solution， 链接： <a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm" target="_blank" rel="noopener">http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm</a></p>
+</li>
+</ul>
+<ol>
+<li>下标关系<br>我们还需要3DMM的顶点的下标关系，三角形结构等一系列信息，从而获得面部的每个区域对应的顶点下标。这些信息原始的BFM那个文件是没有的。MSRA自带就有。实际上MSRA的信息也是来自3DDFA，可以参考这里第3点： <a href="https://github.com/YadiraF/face3d/blob/master/examples/Data/BFM/readme.md" target="_blank" rel="noopener">https://github.com/YadiraF/face3d/blob/master/examples/Data/BFM/readme.md</a></li>
+</ol>
+<blockquote>
+<ol>
+<li><p>Download raw BFM model</p>
+<p>website: <a href="https://faces.dmi.unibas.ch/bfm/main.php?nav=1-2&amp;id=downloads" target="_blank" rel="noopener">https://faces.dmi.unibas.ch/bfm/main.php?nav=1-2&amp;id=downloads</a></p>
+<p>copy 01_MorphabelModel.mat to raw/</p>
+</li>
+<li><p>Download extra BFM information from 3DDFA(Face Alignment Across Large Poses: A 3D Solution) and HFPE(High-Fidelity Pose and Expression Normalization for Face Recognition in the Wild)</p>
+<p>website: <a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm" target="_blank" rel="noopener">http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm</a></p>
+<p>download [Face Profiling] and [3DDFA]</p>
+<p>website: <a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/HPEN/main.htm" target="_blank" rel="noopener">http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/HPEN/main.htm</a></p>
+<p>download [HPEN]</p>
+<p>copy *.mat to 3ddfa/</p>
+</li>
+</ol>
+</blockquote>
+<p>在Face Profiling/ModelGeneration下面有model_info.mat， 里面有三角形信息，以及对应68点的下标信息。至此，我们拿到了所有的mat，可以开干了。如果需要106点或者其他关键点的对应信息一般是需要手动在maya中选点了。</p>
+<h1 id="数学原理"><a href="#数学原理" class="headerlink" title="数学原理"></a>数学原理</h1><p>3DMM的传统拟合方法就是从3DMM中挑出部分关键点，优化一个相机矩阵A和PCA的参数，使得这部分点投影在平面上与2D的关键点检测器的结果一致。这些选的点可以是学术界常用的68点，也可以是工业界常用的106点或者其他的合适的点。记这些3D点为p3d, 同时，我们记其投影到2D上的点为p2d.。<br>给定一张图片，我们首先通过关键点检测算法算出p2d的坐标位置。 由于p3d是由3DMM的参数coeff唯一确定的，所以我们需要根据p2d以及p3d，求出相机矩阵P以及3DMM各个PCA的参数。注意这里p3d的坐标是随着迭代不断更新的。</p>
+<p>因此，我们的优化目标是：</p>
+<script type="math/tex; mode=display">
+min\ \left[A·(PCA·\theta) - p2d\right]</script><p>其中$\theta$就是coeff。 如果需要限制coeff的大小，我们需要增加一个约束条件，使得每个基的参数$\sum(\theta_i/EV_i)^2 &lt; R$，那么问题改为</p>
+<script type="math/tex; mode=display">
+min A·(PCA·\theta) - p2d \\
+s.t. \sum(\theta_i/EV_i)^2 \le R</script><p>注意到A·PCA是固定的，这里我们用$\Phi$表示，同时用y表示p2d使用拉格朗日乘子法，那就是：</p>
+<script type="math/tex; mode=display">
+arg \min_\theta \left[\Phi·\theta - y + \frac{1}{2}\lambda ((\theta/EV)^2 - R)\right]\\</script><p>我们这里比较特殊的是，$\Phi$的每一维已经乘上EV了，因此$\theta$天生就不需要再除以EV，也就是</p>
+<script type="math/tex; mode=display">
+arg \min_\theta \left[\Phi·\theta - y + \frac{1}{2}\lambda (\theta^2 - R)\right]\\</script><p>对$\theta$求导令为0即可得到:</p>
+<script type="math/tex; mode=display">
+\hat{\theta} = (\Phi^T\Phi + \lambda I)^{-1}\Phi^Ty</script><p>整个过程连解方程都不需要，就能够得到最后的结果。注意，这里我们是强制指定$\lambda$的大小，看做一个固定值，实际上这个会变成调参的大坑，最好还是用迭代的方法不断更新$\lambda$， 不过效率也就下去了。</p>
+<p>这里我们需要注意，原本的PCA可是3w多维的或者五万多维，比如说(35049*3, 80), 也就是一共有35049个点，80个基。 但是我们只使用比如68个点，因此这里的PCA也需要先挑选出相应的68个基，也就是我们所用的$\Phi$实际上就是(68x3, 80)的维度， 这个映射可以用一个矩阵来完成，并且该矩阵是一个固定的值，因此不影响整体的优化算法。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/Cython制作C-动态库的python-binding/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1230,199 +1418,11 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/05/CPP11/C-11右值引用与完美转发/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/CPP11/C-11右值引用与完美转发/" class="post-title-link" itemprop="url">C++11右值引用与完美转发</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-04 10:46:02" itemprop="dateCreated datePublished" datetime="2019-05-04T10:46:02+08:00">2019-05-04</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="C-11右值引用与完美转发"><a href="#C-11右值引用与完美转发" class="headerlink" title="C++11右值引用与完美转发"></a>C++11右值引用与完美转发</h1><p>C++11中右值引用常与完美转发相联系在一起。在详细深入之前，我们需要了解这样几条规律：</p>
-<ul>
-<li>1.”右值和左值”，”右值引用和左值引用”两组概念是独立的。具有右值引用型的变量可能是左值。凡是可以取地址的均为左值，凡是命名变量，均为左值。<br>比如说：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void g(int &amp;&amp; a)</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>其中变量a虽然具有右值引用类型，但是在函数体内却是左值，有人会问，那这个右值引用有什么意义，意义就是外面在调用f的时候，必须传一个右值才能够匹配这个g，这个右值也告诉g函数内部，这个a是可以随时被强制类型转换到右值，或者move掉的。C++在实际调用g并传入a的时候，构造实参a的过程是在函数外部进行的，函数内部不再像按值调用一样需要重新初始化a，我们看到，下列代码中a只会被初始化一次，完整代码的运行结果如下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">class A</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">A()&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Constructor&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">~A()&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Destructor&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">void f(const A&amp; a)&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Calling LValue Version&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void f(A&amp;&amp; a)&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Calling RValue Version&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void g(A&amp;&amp; e)</span><br><span class="line">&#123;</span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 3&quot; &lt;&lt; std::endl;</span><br><span class="line">  f(e);</span><br><span class="line">&#125;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  A a;</span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 1&quot; &lt;&lt; std::endl;</span><br><span class="line">  g(std::move(a));    </span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 2&quot; &lt;&lt; std::endl;</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 运行结果</span><br><span class="line">Constructor</span><br><span class="line">sentinel 1</span><br><span class="line">sentinel 3</span><br><span class="line">Calling LValue Version</span><br><span class="line">sentinel 2</span><br><span class="line">Destructor</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><p>2.万能引用必须涉及类型推导，带类型推导不一定是万能引用。<br>带类型推导的方式有模板函数以及auto decltype组合等。例如下面的代码块是万能引用，而上面的代码块只能是右值引用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">template &lt;class A&gt;</span><br><span class="line">void f(A&amp;&amp; a) // 万能引用</span><br><span class="line">&#123;&#125;</span><br><span class="line"></span><br><span class="line">void f1(const A&amp;&amp; a) // 右值引用</span><br><span class="line">&#123;&#125;</span><br><span class="line"></span><br><span class="line">template &lt;class A&gt;</span><br><span class="line">class TemplateClass&#123;</span><br><span class="line">public:</span><br><span class="line">f(A&amp;&amp; a)&#123;&#125; // 右值引用，因为实例化TemplateClass的时候类型已经确定，函数调用时无需进行类型推导。</span><br><span class="line">template &lt;class B&gt;</span><br><span class="line">f1(B&amp;&amp; b)&#123;&#125; // 万能引用，因为函数调用时依然需要推导B的类型。</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3.<code>const T&amp;</code>可以接受任何实参，但是优先级不是最高的，如果存在同名的接受右值的形参，那么会优先调用右值形参的函数，否则会进行强制类型转换调用左值引用，const的存在使得即使原本是一个右值实参，也不会在函数内被改变，不会造成令调用者误解的情况，同时const的存在会延长右值的生命周期，使得至少在函数体内，右值是有效的。</p>
-</li>
-<li>4.move()并不会引发实际的操作，比如下面的代码中，A a的构造析构都与move无关，move只是一种强制类型转换，或者说是一种语法糖，告诉调用者，”a现在可以被安全移走，后续不保证a是有效的”等信息。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">class A</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">A()&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Constructor&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">~A()&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Destructor&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">void f(const A&amp; a)&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;Calling LValue Version&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// void f(A&amp;&amp; a)&#123;</span><br><span class="line">// 	std::cout &lt;&lt; &quot;Calling RValue Version&quot; &lt;&lt; std::endl;</span><br><span class="line">// &#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  A a;</span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 1&quot; &lt;&lt; std::endl;</span><br><span class="line">  f(std::move(a));    </span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 2&quot; &lt;&lt; std::endl;</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 输出结果</span><br><span class="line">Constructor</span><br><span class="line">sentinel 1</span><br><span class="line">Calling LValue Version</span><br><span class="line">sentinel 2                                                               Destructor</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>若最后一段稍微进行修改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 1&quot; &lt;&lt; std::endl;</span><br><span class="line">  f(A());    </span><br><span class="line">  std::cout &lt;&lt; &quot;sentinel 2&quot; &lt;&lt; std::endl;</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 输出结果</span><br><span class="line">sentinel 1</span><br><span class="line">Constructor</span><br><span class="line">Calling LValue Version</span><br><span class="line">Destructor</span><br><span class="line">sentinel 2</span><br></pre></td></tr></table></figure></p>
-<h2 id="模板的推导规则"><a href="#模板的推导规则" class="headerlink" title="模板的推导规则"></a>模板的推导规则</h2><p>带模板的引用参数推导规则：<br>要理解参数推导规则，我们先来看一下引用叠加规则，注意下面的T不一定是模板，而是实际的类：<br>1、T&amp; + &amp; = T&amp;<br>2、T&amp; + &amp;&amp; = T&amp;<br>3、T&amp;&amp; + &amp; = T&amp;<br>4、T或T&amp;&amp; + &amp;&amp; = T&amp;&amp;</p>
-<p>我们可以看到，<strong>只要存在一个&amp;,那就按左值引用&amp;来算</strong>，而只有只出现一个或者两个&amp;&amp;才是右值引用。当然，形参实参一个&amp;都没有必然是传值调用了。于是，如果我们的函数形参定义为&amp;&amp;，那么不管传入的参数是啥，都能够保持它的引用特性。引用的折叠是编译器的特性，也就是编译器如果看到三个&amp;&amp;&amp;，会直接用一个&amp;来进行替代。引用的折叠只能够发生在类型需要推导的情况下，如果类型不需要推导而出现了多个引用符号那么编译器会直接报错，比如我们是无法定义<code>int&amp;&amp;&amp; i=0;</code>这样的句子的，因为不涉及类型的推导，编译器不会自动将三个&amp;换成一个。</p>
-<p>我们将示例代码稍微进行修改，以下面这段代码为例分析一下带模板的引用参数推导规则：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">void F(const Widget&amp; a);</span><br><span class="line">void F(Widget&amp;&amp; a);</span><br><span class="line">template&lt;class A&gt;</span><br><span class="line">void G(A &amp;&amp;a)</span><br><span class="line">&#123;</span><br><span class="line">F(a); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Widget w;</span><br><span class="line">G(w);             // 传入左值，A被推导为Widget&amp;（注意万能引用传入左值就变成左值引用）， 左值，</span><br><span class="line">                  // 调用的是void F(const Widget&amp; a);</span><br><span class="line">G(std::move(w))   // 传入右值，A被推导为Widget，a的类型是右值引用，但是a本身在函数G内是一个左值，因此调用的依然是void F(const Widget&amp; a);</span><br></pre></td></tr></table></figure></p>
-<p>首先分析函数G引用参数的推导规则：<br>分为两种情况讨论（再次提醒，T是实际编程时候一个确定的类型，不是template）：<br>1、若实参为T&amp;，则模板参数A应被推导为引用类型T&amp;。（由引用叠加规则第2点T&amp; + &amp;&amp; = T&amp;和A&amp;&amp;=T&amp;，可得出A=T&amp;）唔，换个角度，这么理解, 传入T&amp;，也就是A &amp;&amp;a = T&amp; a, 只有当A = T&amp;才能达成，因为T &amp;&amp;&amp; = T&amp;。</p>
-<p>2、若实参为T&amp;&amp;，则模板参数A应被推导为非引用类型T。（由引用叠加规则第4点T或T&amp;&amp; + &amp;&amp; = T&amp;&amp;和A&amp;&amp;=T&amp;&amp;，可得出A=T或T&amp;&amp;，强制规定A=T）同样，如果实参是T&amp;&amp;， 那么只有当A=T或者A=T&amp;&amp;才能做到，C++直接规定，这个时候，A=T而不是T&amp;&amp;.</p>
-<p>这一切看起来都非常自然，然而，不能够忽略的是，上述函数G的函数体内，a实际上是一个左值，只是带有右值引用的型别，因此<code>G(std::move(w))</code>调用的f依然是<code>void f(const A&amp; a);</code>,这实际上大部分时候会与调用者的需求不一致。</p>
-<h2 id="完美转发"><a href="#完美转发" class="headerlink" title="完美转发"></a>完美转发</h2><p>为了解决这样的问题，需要有一种机制，使得调用实参的左右值特性能够被保留下来，于是就有了完美转发这样的概念。即<code>std::forward&lt;T&gt;</code>。<br>将上述改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class A&gt;</span><br><span class="line">void G(A &amp;&amp;a)</span><br><span class="line">&#123;</span><br><span class="line">F(std::forward&lt;A&gt;(a)); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>则能够将a的左右值特性和其他修饰完整转发到F函数中。和move不同的是，如果G接收的实参是左值，那么forward不会像move一样强制将实参转为右值。这是怎么做到的呢？上述例子中，如果G接收实参类型为T&amp;, 那么A推导为T&amp;，此时G实例化调用的是<code>F(std::forward&lt;T&amp;&gt;(a));</code>如果实参类型是T&amp;&amp;， 那么A推导为T，此时G实例化调用的是<code>F(std::forward&lt;T&gt;(a));</code>，forward会执行强制类型转换，转为右值类型。也就是说，std::forward会自动对非引用类型进行强制类型转换到右值。一个非常简单实现的forward函数如下, 如果G被传入右值，那么T推导为A, 这时候static_cast<t&&> param折叠后变成static_cast<a&&> param， 是一个右值。如果G被传入左值，那么T被推导为A&amp;, 这时候static_cast<t&&> param折叠后变成static_cast<a&> param，是一个左值，不会被强制类型转换。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template&lt;typename T&gt;</span><br><span class="line">T&amp;&amp; forward(typename remove_reference&lt;T&gt;::type&amp; param)</span><br><span class="line">&#123;</span><br><span class="line">return static_cast&lt;T&amp;&amp;&gt; param;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></a&></t&&></a&&></t&&></p>
-<p>forward在不带模板推导的情况下是非常容易出错的，不带模板推导的情况下，forward常用错引用符号，将完美转发的结果搞反，所以如果明确知道要使用一个右值，应该用move而不是forward, forward主要是针对带有模板推导的参数转发。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1466,7 +1466,7 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-count">21</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1581,7 +1581,7 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

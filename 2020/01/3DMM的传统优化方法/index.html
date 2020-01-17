@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="下面以一个简单的例子说明virtual的作用，作为继承和多态的重要组件，如果没有虚函数，那么多态的实现将非常的困难。首先明确一点，类成员函数中this的类型取决于该函数定义的位置，在父类中，this的类型是父类，在子类中，this的类型是子类。比如父类A和B，父类有一个成员函数test(), 其函数体中通过this调用了test1, 如果子类没有override这个函数，那么子类中，test()函">
+  <meta name="description" content="3DMM的模型组成3DMM是一类参数化3D建模的模型系列，其中最常用的就是来自巴塞尔大学的BFM模型。不同的3DMM模型的区别主要在于PCA的选择不一样。 BFM家族的3DMM不是一步创建的，它实际上是由多个不同的研究成果组成。最早的BFM只有Shape， 不能够模拟表情。从MSRA的使用神经网络进行三维重建的代码中，我们可以了解到目前使用3DMM的传统优化算法所需要使用到的全部数据。 3DMM的">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++虚函数的意义">
-<meta property="og:url" content="http://tensors.space/2018/05/CPP11/Cpp虚函数的意义/index.html">
+<meta property="og:title" content="3DMM的传统优化方法">
+<meta property="og:url" content="http://tensors.space/2020/01/3DMM的传统优化方法/index.html">
 <meta property="og:site_name" content="阮明康">
-<meta property="og:description" content="下面以一个简单的例子说明virtual的作用，作为继承和多态的重要组件，如果没有虚函数，那么多态的实现将非常的困难。首先明确一点，类成员函数中this的类型取决于该函数定义的位置，在父类中，this的类型是父类，在子类中，this的类型是子类。比如父类A和B，父类有一个成员函数test(), 其函数体中通过this调用了test1, 如果子类没有override这个函数，那么子类中，test()函">
+<meta property="og:description" content="3DMM的模型组成3DMM是一类参数化3D建模的模型系列，其中最常用的就是来自巴塞尔大学的BFM模型。不同的3DMM模型的区别主要在于PCA的选择不一样。 BFM家族的3DMM不是一步创建的，它实际上是由多个不同的研究成果组成。最早的BFM只有Shape， 不能够模拟表情。从MSRA的使用神经网络进行三维重建的代码中，我们可以了解到目前使用3DMM的传统优化算法所需要使用到的全部数据。 3DMM的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-18T15:44:04.594Z">
+<meta property="og:updated_time" content="2020-01-17T07:24:58.602Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C++虚函数的意义">
-<meta name="twitter:description" content="下面以一个简单的例子说明virtual的作用，作为继承和多态的重要组件，如果没有虚函数，那么多态的实现将非常的困难。首先明确一点，类成员函数中this的类型取决于该函数定义的位置，在父类中，this的类型是父类，在子类中，this的类型是子类。比如父类A和B，父类有一个成员函数test(), 其函数体中通过this调用了test1, 如果子类没有override这个函数，那么子类中，test()函">
+<meta name="twitter:title" content="3DMM的传统优化方法">
+<meta name="twitter:description" content="3DMM的模型组成3DMM是一类参数化3D建模的模型系列，其中最常用的就是来自巴塞尔大学的BFM模型。不同的3DMM模型的区别主要在于PCA的选择不一样。 BFM家族的3DMM不是一步创建的，它实际上是由多个不同的研究成果组成。最早的BFM只有Shape， 不能够模拟表情。从MSRA的使用神经网络进行三维重建的代码中，我们可以了解到目前使用3DMM的传统优化算法所需要使用到的全部数据。 3DMM的">
 
 
 
@@ -114,7 +114,7 @@
 
   
   
-  <link rel="canonical" href="http://tensors.space/2018/05/CPP11/Cpp虚函数的意义/">
+  <link rel="canonical" href="http://tensors.space/2020/01/3DMM的传统优化方法/">
 
 
 
@@ -124,7 +124,7 @@
   };
 </script>
 
-  <title>C++虚函数的意义 | 阮明康</title>
+  <title>3DMM的传统优化方法 | 阮明康</title>
   
 
 
@@ -392,7 +392,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/05/CPP11/Cpp虚函数的意义/">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2020/01/3DMM的传统优化方法/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="阮明康">
@@ -409,7 +409,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">C++虚函数的意义
+          <h1 class="post-title" itemprop="name headline">3DMM的传统优化方法
 
               
             
@@ -435,37 +435,12 @@
                 
               
 
-              <time title="Created: 2018-05-07 17:00:37" itemprop="dateCreated datePublished" datetime="2018-05-07T17:00:37+08:00">2018-05-07</time>
+              <time title="Created: 2020-01-17 15:24:29" itemprop="dateCreated datePublished" datetime="2020-01-17T15:24:29+08:00">2020-01-17</time>
             
 
             
           </span>
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -502,9 +477,56 @@
       
 
       
-        <p>下面以一个简单的例子说明virtual的作用，作为继承和多态的重要组件，如果没有虚函数，那么多态的实现将非常的困难。首先明确一点，类成员函数中this的类型取决于该函数定义的位置，在父类中，this的类型是父类，在子类中，this的类型是子类。比如父类A和B，父类有一个成员函数test(), 其函数体中通过this调用了test1, 如果子类没有override这个函数，那么子类中，test()函数体里面this的类型依然是父类的类型。我们看下面三个例子来理解这一点：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;thread&gt;</span><br><span class="line">//This function will be called from a thread</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">    void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B:public A</span><br><span class="line">&#123;</span><br><span class="line">    virtual void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am Not Base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  //Launch a thread</span><br><span class="line">  B b;</span><br><span class="line">  b.test();</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 运行结果</span><br><span class="line">// I am base</span><br><span class="line">// I am base</span><br></pre></td></tr></table></figure></p>
-<p>这个例子中，子类B没有覆盖A::test，因此test函数体内，this类型依然是<code>A*</code>，这就造成了b.test()调用的是A::test1()，这往往不是想要的结果。而如果加上virtual, 那么就能够调用到真正想要调用的函数了，看下面的改动：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">    virtual void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B:public A</span><br><span class="line">&#123;</span><br><span class="line">    virtual void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am Not Base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  B b;</span><br><span class="line">  b.test();</span><br><span class="line">  </span><br><span class="line">  A a;</span><br><span class="line">  a.test();</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 运行结果</span><br><span class="line">// I am Not Base</span><br><span class="line">// I am base</span><br></pre></td></tr></table></figure></p>
-<p>这个例子中，test1是虚函数，因此即使B没有覆盖test函数，this的编译时类型依然是<code>A*</code>，但是在调用this-&gt;test1()的时候会查找虚函数表，然后知道this实际类型应该是<code>B*</code>并调用B::test1()。具体要调用A::test1还是B::test1只能在运行时知道。注意哦，如果子类同时覆盖了调用的函数test，那么也是能够调用到想要的test1的，因为此时编译时this的类型就已经是<code>B*</code>了。看下面的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">    void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">class B:public A</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    void test1()&#123;</span><br><span class="line">        std::cout &lt;&lt; &quot;I am Not Base&quot; &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">    void test()&#123;</span><br><span class="line">        this-&gt;test1();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main() &#123;</span><br><span class="line">  B b;</span><br><span class="line">  b.test();</span><br><span class="line">  </span><br><span class="line">  A a;</span><br><span class="line">  a.test();</span><br><span class="line">  return 0;</span><br><span class="line">&#125;</span><br><span class="line">// 运行结果</span><br><span class="line">// I am Not Base</span><br><span class="line">// I am base</span><br></pre></td></tr></table></figure></p>
+        <h1 id="3DMM的模型组成"><a href="#3DMM的模型组成" class="headerlink" title="3DMM的模型组成"></a>3DMM的模型组成</h1><p>3DMM是一类参数化3D建模的模型系列，其中最常用的就是来自巴塞尔大学的BFM模型。不同的3DMM模型的区别主要在于PCA的选择不一样。</p>
+<p>BFM家族的3DMM不是一步创建的，它实际上是由多个不同的研究成果组成。最早的BFM只有Shape， 不能够模拟表情。从MSRA的使用神经网络进行三维重建的代码中，我们可以了解到目前使用3DMM的传统优化算法所需要使用到的全部数据。</p>
+<h2 id="3DMM的数据组成"><a href="#3DMM的数据组成" class="headerlink" title="3DMM的数据组成"></a>3DMM的数据组成</h2><p>我们主要参考<a href="https://github.com/microsoft/Deep3DFaceReconstruction" target="_blank" rel="noopener">https://github.com/microsoft/Deep3DFaceReconstruction</a> 里面构建3DMM的方法来说明构建BFM所需的数据： <a href="https://github.com/microsoft/Deep3DFaceReconstruction/blob/80066b54507e98652e7efb2d4213146632380a05/load_data.py#L40" target="_blank" rel="noopener">https://github.com/microsoft/Deep3DFaceReconstruction/blob/80066b54507e98652e7efb2d4213146632380a05/load_data.py#L40</a></p>
+<ol>
+<li>BFM09模型<br>代码中是<code>original_BFM = loadmat(&#39;BFM/01_MorphableModel.mat&#39;)</code>， 我们主要使用它的shape basis以及texture basis. </li>
+</ol>
+<ul>
+<li>下载： <a href="https://faces.dmi.unibas.ch/bfm/main.php?nav=1-0&amp;id=basel_face_model" target="_blank" rel="noopener">https://faces.dmi.unibas.ch/bfm/main.php?nav=1-0&amp;id=basel_face_model</a><br>从这里我们只使用01_MorphableModel.mat这一个文件即可。</li>
+</ul>
+<ol>
+<li>Expression模型，用于模拟各种表情<br> 代码中是<code>Expbin = open(&#39;BFM/Exp_Pca.bin&#39;,&#39;rb&#39;)</code>以及<code>expEV = np.loadtxt(&#39;BFM/std_exp.txt&#39;)</code>，表情基及其特征值。特征值对于PCA模型是比较重要的，用于衡量这个基的重要性，后面在优化的时候，某个基的参数a的约束就是 $(a/e)^2 \le  \theta$， 因此特征值越大，该基的分量$a$就可以越大。</li>
+</ol>
+<ul>
+<li><p>下载：<a href="https://github.com/Juyong/3DFace" target="_blank" rel="noopener">https://github.com/Juyong/3DFace</a> 这里第一个链接<a href="https://drive.google.com/file/d/0B0A9UsiwtVTHY0p4em5qUzRISW8/view" target="_blank" rel="noopener">https://drive.google.com/file/d/0B0A9UsiwtVTHY0p4em5qUzRISW8/view</a> 就是Coarse_Dataset.zip (4.7GB)，抽出里面的Exp_Pca.bin， 特征值std_exp.txt在这里是没有的，只有MSRA自带的那个有，是需要跑sample code来算出来的。这个表情来自文章： 3DFaceNet: Real-time Dense Face Reconstruction via Synthesizing Photo-realistic Face Images. </p>
+<p>  [optional 2]:  3DDFA这个数据集上面还有一个expression基: Model_Expression.mat, <em>但是现在不用</em>。来自文章： Face Alignment Across Large Poses: A 3D Solution， 链接： <a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm" target="_blank" rel="noopener">http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm</a></p>
+</li>
+</ul>
+<ol>
+<li>下标关系<br>我们还需要3DMM的顶点的下标关系，三角形结构等一系列信息，从而获得面部的每个区域对应的顶点下标。这些信息原始的BFM那个文件是没有的。MSRA自带就有。实际上MSRA的信息也是来自3DDFA，可以参考这里第3点： <a href="https://github.com/YadiraF/face3d/blob/master/examples/Data/BFM/readme.md" target="_blank" rel="noopener">https://github.com/YadiraF/face3d/blob/master/examples/Data/BFM/readme.md</a></li>
+</ol>
+<blockquote>
+<ol>
+<li><p>Download raw BFM model</p>
+<p>website: <a href="https://faces.dmi.unibas.ch/bfm/main.php?nav=1-2&amp;id=downloads" target="_blank" rel="noopener">https://faces.dmi.unibas.ch/bfm/main.php?nav=1-2&amp;id=downloads</a></p>
+<p>copy 01_MorphabelModel.mat to raw/</p>
+</li>
+<li><p>Download extra BFM information from 3DDFA(Face Alignment Across Large Poses: A 3D Solution) and HFPE(High-Fidelity Pose and Expression Normalization for Face Recognition in the Wild)</p>
+<p>website: <a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm" target="_blank" rel="noopener">http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/3DDFA/main.htm</a></p>
+<p>download [Face Profiling] and [3DDFA]</p>
+<p>website: <a href="http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/HPEN/main.htm" target="_blank" rel="noopener">http://www.cbsr.ia.ac.cn/users/xiangyuzhu/projects/HPEN/main.htm</a></p>
+<p>download [HPEN]</p>
+<p>copy *.mat to 3ddfa/</p>
+</li>
+</ol>
+</blockquote>
+<p>在Face Profiling/ModelGeneration下面有model_info.mat， 里面有三角形信息，以及对应68点的下标信息。至此，我们拿到了所有的mat，可以开干了。如果需要106点或者其他关键点的对应信息一般是需要手动在maya中选点了。</p>
+<h1 id="数学原理"><a href="#数学原理" class="headerlink" title="数学原理"></a>数学原理</h1><p>3DMM的传统拟合方法就是从3DMM中挑出部分关键点，优化一个相机矩阵A和PCA的参数，使得这部分点投影在平面上与2D的关键点检测器的结果一致。这些选的点可以是学术界常用的68点，也可以是工业界常用的106点或者其他的合适的点。记这些3D点为p3d, 同时，我们记其投影到2D上的点为p2d.。<br>给定一张图片，我们首先通过关键点检测算法算出p2d的坐标位置。 由于p3d是由3DMM的参数coeff唯一确定的，所以我们需要根据p2d以及p3d，求出相机矩阵P以及3DMM各个PCA的参数。注意这里p3d的坐标是随着迭代不断更新的。</p>
+<p>因此，我们的优化目标是：</p>
+<script type="math/tex; mode=display">
+min\ \left[A·(PCA·\theta) - p2d\right]</script><p>其中$\theta$就是coeff。 如果需要限制coeff的大小，我们需要增加一个约束条件，使得每个基的参数$\sum(\theta_i/EV_i)^2 &lt; R$，那么问题改为</p>
+<script type="math/tex; mode=display">
+min A·(PCA·\theta) - p2d \\
+s.t. \sum(\theta_i/EV_i)^2 \le R</script><p>注意到A·PCA是固定的，这里我们用$\Phi$表示，同时用y表示p2d使用拉格朗日乘子法，那就是：</p>
+<script type="math/tex; mode=display">
+arg \min_\theta \left[\Phi·\theta - y + \frac{1}{2}\lambda ((\theta/EV)^2 - R)\right]\\</script><p>我们这里比较特殊的是，$\Phi$的每一维已经乘上EV了，因此$\theta$天生就不需要再除以EV，也就是</p>
+<script type="math/tex; mode=display">
+arg \min_\theta \left[\Phi·\theta - y + \frac{1}{2}\lambda (\theta^2 - R)\right]\\</script><p>对$\theta$求导令为0即可得到:</p>
+<script type="math/tex; mode=display">
+\hat{\theta} = (\Phi^T\Phi + \lambda I)^{-1}\Phi^Ty</script><p>整个过程连解方程都不需要，就能够得到最后的结果。注意，这里我们是强制指定$\lambda$的大小，看做一个固定值，实际上这个会变成调参的大坑，最好还是用迭代的方法不断更新$\lambda$， 不过效率也就下去了。</p>
+<p>这里我们需要注意，原本的PCA可是3w多维的或者五万多维，比如说(35049*3, 80), 也就是一共有35049个点，80个基。 但是我们只使用比如68个点，因此这里的PCA也需要先挑选出相应的68个基，也就是我们所用的$\Phi$实际上就是(68x3, 80)的维度， 这个映射可以用一个矩阵来完成，并且该矩阵是一个固定的值，因此不影响整体的优化算法。</p>
 
       
     </div>
@@ -539,7 +561,7 @@
   <li class="post-copyright-link">
     <strong>Post link: </strong>
     
-    <a href="http://tensors.space/2018/05/CPP11/Cpp虚函数的意义/" title="C++虚函数的意义">http://tensors.space/2018/05/CPP11/Cpp虚函数的意义/</a>
+    <a href="http://tensors.space/2020/01/3DMM的传统优化方法/" title="3DMM的传统优化方法">http://tensors.space/2020/01/3DMM的传统优化方法/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
@@ -559,8 +581,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/05/CPP11/CppMap的区别/" rel="next" title="C++Map的区别">
-                <i class="fa fa-chevron-left"></i> C++Map的区别
+              <a href="/2019/08/Cython制作C-动态库的python-binding/" rel="next" title="Cython制作C++动态库的python binding">
+                <i class="fa fa-chevron-left"></i> Cython制作C++动态库的python binding
               </a>
             
           </div>
@@ -568,10 +590,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/05/由人脸识别引发的Softmax改进/" rel="prev" title="由人脸识别引发的Softmax改进">
-                由人脸识别引发的Softmax改进 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -619,8 +637,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -737,6 +764,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3DMM的模型组成"><span class="nav-number">1.</span> <span class="nav-text">3DMM的模型组成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3DMM的数据组成"><span class="nav-number">1.1.</span> <span class="nav-text">3DMM的数据组成</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数学原理"><span class="nav-number">2.</span> <span class="nav-text">数学原理</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
