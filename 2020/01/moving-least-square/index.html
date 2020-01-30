@@ -96,13 +96,17 @@
 
 
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="阮明康">
-<meta property="og:url" content="http://tensors.space/categories/理论基础/动态跟踪/index.html">
+  <meta name="description" content="形变图形学上，形变包括几个控制点，这些控制点可以是点，线，甚至是三角形网格。形变算法的作用就是将物体进行形变以使得相应的控制点满足要求。 mls要解决的问题是，对于某个物体，假如其关键点需要变动到一个新的位置，那么这个物体的其他部分要怎样变动才能够显得自然真实呢？这就需要使用到image deformation这一个技术了。 mls算法首先解释下moving这个名字的来历，由于mls针对每一个像素">
+<meta property="og:type" content="article">
+<meta property="og:title" content="moving least square">
+<meta property="og:url" content="http://tensors.space/2020/01/moving-least-square/index.html">
 <meta property="og:site_name" content="阮明康">
+<meta property="og:description" content="形变图形学上，形变包括几个控制点，这些控制点可以是点，线，甚至是三角形网格。形变算法的作用就是将物体进行形变以使得相应的控制点满足要求。 mls要解决的问题是，对于某个物体，假如其关键点需要变动到一个新的位置，那么这个物体的其他部分要怎样变动才能够显得自然真实呢？这就需要使用到image deformation这一个技术了。 mls算法首先解释下moving这个名字的来历，由于mls针对每一个像素">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-01-30T04:57:53.999Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="阮明康">
+<meta name="twitter:title" content="moving least square">
+<meta name="twitter:description" content="形变图形学上，形变包括几个控制点，这些控制点可以是点，线，甚至是三角形网格。形变算法的作用就是将物体进行形变以使得相应的控制点满足要求。 mls要解决的问题是，对于某个物体，假如其关键点需要变动到一个新的位置，那么这个物体的其他部分要怎样变动才能够显得自然真实呢？这就需要使用到image deformation这一个技术了。 mls算法首先解释下moving这个名字的来历，由于mls针对每一个像素">
 
 
 
@@ -110,7 +114,7 @@
 
   
   
-  <link rel="canonical" href="http://tensors.space/categories/理论基础/动态跟踪/">
+  <link rel="canonical" href="http://tensors.space/2020/01/moving-least-square/">
 
 
 
@@ -120,7 +124,7 @@
   };
 </script>
 
-  <title>Category: 动态跟踪 | 阮明康</title>
+  <title>moving least square | 阮明康</title>
   
 
 
@@ -168,7 +172,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left ">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -261,7 +265,7 @@
         
         
           
-          <li class="menu-item menu-item-categories menu-item-active">
+          <li class="menu-item menu-item-categories">
 
     
     
@@ -366,86 +370,268 @@
           
             
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
           
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>动态跟踪<small>Category</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
 
   <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2020/01/moving-least-square/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
         
-          <a class="post-title-link" href="/2018/04/卡尔曼滤波器/" itemprop="url">
-            
-              <span itemprop="name">卡尔曼滤波器</span>
-            
-          </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">moving least square
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-04-14T10:25:19+08:00" content="2018-04-14">
-          04-14
-        </time>
-      </div>
+              
+            
+          </h1>
+        
 
-    </header>
-  </article>
+        <div class="post-meta">
+          <span class="post-time">
 
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-01-30 12:57:34" itemprop="dateCreated datePublished" datetime="2020-01-30T12:57:34+08:00">2020-01-30</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="形变"><a href="#形变" class="headerlink" title="形变"></a>形变</h1><p>图形学上，形变包括几个控制点，这些控制点可以是点，线，甚至是三角形网格。形变算法的作用就是将物体进行形变以使得相应的控制点满足要求。</p>
+<p>mls要解决的问题是，对于某个物体，假如其关键点需要变动到一个新的位置，那么这个物体的其他部分要怎样变动才能够显得自然真实呢？这就需要使用到image deformation这一个技术了。</p>
+<h1 id="mls算法"><a href="#mls算法" class="headerlink" title="mls算法"></a>mls算法</h1><p>首先解释下moving这个名字的来历，由于mls针对每一个像素位置v都会独立算一个映射方式，因此被称为moving.<br>算法的目标是：<br>对于每一个像素位置v，优化一个映射函数$l_v(p_i)$，使得</p>
+<script type="math/tex; mode=display">
+min\left[\sum_i w_i|l_v(p_i)-q_i|\right]</script><p>其中$p_i$是第i个控制点的位置，$q_i$是控制点 $p_i$ 按照当前的$l_v$映射后的像素的位置，也就是用户将控制点移到的新位置。</p>
+<script type="math/tex; mode=display">
+w_i = \frac{1}{|p_i-v|^{2\alpha}}</script><p>控制点对当前点的权重由$\alpha$决定，这个映射要满足这样的条件：</p>
+<script type="math/tex; mode=display">
+l_v(p_i) = q_i</script><p>并且，如果控制点不动，那么这个算出来的映射关系也应该是一个等价映射，也就是</p>
+<script type="math/tex; mode=display">
+if\ p_i=q_i, then\ l_v(x)=x\ for\ all\ x</script><h1 id="根据映射函数的种类不同，可以有多种mls"><a href="#根据映射函数的种类不同，可以有多种mls" class="headerlink" title="根据映射函数的种类不同，可以有多种mls"></a>根据映射函数的种类不同，可以有多种mls</h1><h2 id="1-Affine-transformation"><a href="#1-Affine-transformation" class="headerlink" title="1. Affine transformation"></a>1. Affine transformation</h2><p>假如$l_v$是一个仿射变换：</p>
+<script type="math/tex; mode=display">
+l_v(x) = xM + T</script><p>将这个形式代回</p>
+<script type="math/tex; mode=display">
+min\left[\sum_i w_i|l_v(p_i)-q_i|\right]</script><p>直接对T求导并使导数为0，得$T = q<em>*-p</em>*M$<br>其中:</p>
+<script type="math/tex; mode=display">
+q_*=\frac{\sum_iw_iq_i}{\sum_iw_i} \\
+p_*=\frac{\sum_iw_ip_i}{\sum_iw_i}</script><p>求得T后代回$l_v$的表达式，我们可以获得$l_v$的最优解：</p>
+<script type="math/tex; mode=display">
+l_v(x) = (x-p_*)M + q_*</script><p>现在问题来了，T已经解出来了，那么M要满足什么条件呢？<br>还是之前的路子，先把这个解了T的$l_v$代回去最早的优化问题，我们得到：</p>
+<script type="math/tex; mode=display">
+min \left[\sum_i w_i|\hat{p_i}M - \hat{q_i}|^2\right] \\
+where\ \hat{p_i}=p_i-p_*, \hat{q_i} = q_i - q_*</script><p>现在实际上$\hat{p_i}, \hat{q_i}$是已知的，那么这就是一个标准的线性最小二乘问题，变量是M。之前优化3DMM、优化摄像机矩阵的时候都用到线性最小二乘问题的解法，只不过当时变量是一个向量，而在这里M是一个矩阵。</p>
+<p>故技重施，对M求导，令导数为0，我们得到：</p>
+<script type="math/tex; mode=display">
+\hat{M} = (\sum_i \hat{p_i}^Tw_i\hat{p_i})^{-1}\sum_j\hat{p_j}w_j\hat{q_j}</script><p>原论文漏写了右边的$w<em>j$，相信应该是笔误。将M代入$l_v(x) = (x-p</em><em>)M + q_</em>$：</p>
+<script type="math/tex; mode=display">
+f_a(x) = l_v(x) =  (x-p_*) (\sum_i \hat{p_i}^Tw_i\hat{p_i})^{-1}\sum_j\hat{p_j}w_j\hat{q_j} + q_*</script><p>下标a表示这个只是接近最优(approximate)。至此，我们已经获得了$l_v$的完整表达式，对每个像素位置v计算一个$l_v$就得到了全图的deformation formula.</p>
+<h2 id="在-l-v-是Affine-Transformation的基础上，根据M的不同还能继续细分"><a href="#在-l-v-是Affine-Transformation的基础上，根据M的不同还能继续细分" class="headerlink" title="在$l_v$是Affine Transformation的基础上，根据M的不同还能继续细分"></a>在$l_v$是Affine Transformation的基础上，根据M的不同还能继续细分</h2><p>Affine Transformation对M不作限制，因此M会包括切变。如果限制M只能包括旋转平移和scale，那么就称之为similarity deformations. 如果限制M只能够旋转平移，那么就称之为rigid deformations.</p>
+<ul>
+<li>similarity deformation<br>  限制shear, 也就是说M进行QP分解的时候，P只能是对角矩阵且对角线的值一致。原因很简单，假如M=QP, 那么xM = xQP, xQ表示旋转操作，xQP表示对旋转后的结果进行scale操作，此时P需要是uniform scale。在这样的条件下，$M^TM=P^TQ^TQP=\lambda I$，这就是M是相似变换需要满足的条件。多了这个条件后，M的自由度减少，假设将M写成以下两个列向量的区块形式：<script type="math/tex; mode=display">
+  M = (M_1\ M_2)</script>那么我们有$M<em>1^TM_1=M_2^TM_2=\lambda^2, M_1^TM_2=0$，所以M可以仅由M1表示：<br>$M = (M_1, M_1^\bot)$，由于我们实际要求M，所以会把$\bot$加到$x-p</em>*$上面，所以</li>
+</ul>
+<script type="math/tex; mode=display">
+min \left[\sum_i w_i|\hat{p_i}M - \hat{q_i}|^2\right]</script><p>改为：</p>
+<script type="math/tex; mode=display">
+min \left[\sum_i w_i\left|\left(
+  \begin{array}{c}
+          \hat{p_i} \\
+          -\hat{p_i^\bot}
+ \end{array}
+ \right)M_1 - \hat{q_i}^T\right|^2\right]</script><p>同样的方法解即可，具体看论文，就不再进行推导了。负号的来源：<br>这里$\bot$的定义就是和原向量垂直的向量，也就是$(x, y)^\bot=(-y, x)$， 那么</p>
+<script type="math/tex; mode=display">
+pm^\bot = (p_1\ p_2)\left(\begin{array}{c}
+          -m_2 \\
+          m_1
+ \end{array}\right) = -\left((-p_2\ p_1)\left(\begin{array}{c}
+          m_1 \\
+          m_2
+ \end{array}\right)\right)^T = -p^\bot m</script><p>因此</p>
+<script type="math/tex; mode=display">
+min \left[\sum_i w_i\left|\hat{p_i}(M_1\ M_1^\bot) - \hat{q_i}\right|^2\right] \\
+\Rightarrow 
+min \left[\sum_i w_i\left|\left(
+  \begin{array}{c}
+          \hat{p_i} \\
+          -\hat{p_i^\bot}
+ \end{array}
+ \right)M_1 - \hat{q_i}^T\right|^2\right]</script><ul>
+<li>rigid deformation</li>
+</ul>
+<p>rigid就更进一步，不允许scale,也就是$M^TM=P^TQ^TQP=I$，这里论文作者用了一个简单结论从simiarity推广到了rigid.</p>
+<h1 id="使用线段控制deformation"><a href="#使用线段控制deformation" class="headerlink" title="使用线段控制deformation"></a>使用线段控制deformation</h1><p>使用控制线段的mls的开源实现不多，大多数都只是基于控制点的实现。</p>
+<p>未完待续</p>
 
       
     </div>
 
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>阮明康</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    
+    <a href="http://tensors.space/2020/01/moving-least-square/" title="moving least square">http://tensors.space/2020/01/moving-least-square/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/3DMM的传统优化方法/" rel="next" title="3DMM的传统优化方法">
+                <i class="fa fa-chevron-left"></i> 3DMM的传统优化方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
 
         </div>
         
@@ -465,8 +651,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -583,6 +778,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#形变"><span class="nav-number">1.</span> <span class="nav-text">形变</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mls算法"><span class="nav-number">2.</span> <span class="nav-text">mls算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#根据映射函数的种类不同，可以有多种mls"><span class="nav-number">3.</span> <span class="nav-text">根据映射函数的种类不同，可以有多种mls</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Affine-transformation"><span class="nav-number">3.1.</span> <span class="nav-text">1. Affine transformation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-l-v-是Affine-Transformation的基础上，根据M的不同还能继续细分"><span class="nav-number">3.2.</span> <span class="nav-text">在$l_v$是Affine Transformation的基础上，根据M的不同还能继续细分</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用线段控制deformation"><span class="nav-number">4.</span> <span class="nav-text">使用线段控制deformation</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -746,6 +958,10 @@
 
 
   
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
 
   
 
@@ -761,6 +977,37 @@
 
   
 
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '765ca76ad899ed716837',
+    clientSecret: 'c8111d57983bf95607814ee45462a5e45117291f',
+    repo: 'git-comments',
+    owner: 'ruanmk',
+    admin: ['ruanmk'],
+    id: md5(location.pathname),
+    
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
 
 
   
@@ -1161,7 +1408,7 @@
   <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
   <script>
   
-    bookmark.loadBookmark();
+    bookmark.scrollToMark('auto', "#more");
   
   </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 

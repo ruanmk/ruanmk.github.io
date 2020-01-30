@@ -387,6 +387,197 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/06/美颜算法/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/美颜算法/" class="post-title-link" itemprop="url">美颜算法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-10 17:54:58" itemprop="dateCreated datePublished" datetime="2019-06-10T17:54:58+08:00">2019-06-10</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/图像处理/" itemprop="url" rel="index"><span itemprop="name">图像处理</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="美颜算法"><a href="#美颜算法" class="headerlink" title="美颜算法"></a>美颜算法</h1><p>美颜算法主要是以下两种技术进行组合：</p>
+<ul>
+<li>保边滤波：表面滤波、双边滤波、导向滤波等</li>
+<li>锐化：对眼睛等部分采用拉普拉斯算子、非锐化掩蔽等进行锐化</li>
+</ul>
+<p>这些算法常用到两个基础的算法：积分图以及直方图，用于加速计算。</p>
+<h1 id="保边滤波算法"><a href="#保边滤波算法" class="headerlink" title="保边滤波算法"></a>保边滤波算法</h1><p>保边滤波算法一般需要使用到原图信息作为计算权重的一个重要因素。</p>
+<h2 id="表面模糊滤波-Surface-Blur"><a href="#表面模糊滤波-Surface-Blur" class="headerlink" title="表面模糊滤波(Surface Blur)"></a>表面模糊滤波(Surface Blur)</h2><p>表面模糊滤波是PS里面的一个磨皮算法，但是是其原理并未公开，是由一个PS技术爱好者通过excel拟合出来的。其计算公式为：</p>
+<script type="math/tex; mode=display">
+q_k = \frac{\sum_{i=1}^{(2r+1)^2}[max(0, 1-\frac{|p_i-p_k|}{2.5Y})p_i]}{\sum_{i=1}^{(2r+1)^2}(max(0, 1-\frac{|p_i-p_k|}{2.5Y})}</script><p>其中$p_k$是当前的中心像素，$p_i$是中心像素邻域的像素点，$q_k$则是当前中心像素的转换结果，也称之为响应。可以看到，在平坦区域，$p_i-p_k\approx 0$，此时表面滤波就是一个均值滤波。对于非平坦区域，特别不平坦的外围像素，其$max(0, 1-\frac{|p_i-p_k|}{2.5Y})$结果一般为0，不为0的邻域像素，其权重也随着差别变大而获得较低的权重，从而很好地保护了中心像素。<br><em>O(1)效率的表面模糊算法 <a href="https://www.cnblogs.com/Imageshop/p/5995093.html" target="_blank" rel="noopener">https://www.cnblogs.com/Imageshop/p/5995093.html</a></em></p>
+<h2 id="双边滤波-Bilateral-Blur"><a href="#双边滤波-Bilateral-Blur" class="headerlink" title="双边滤波(Bilateral Blur)"></a>双边滤波(Bilateral Blur)</h2><p>双边滤波是在高斯滤波上做了一定的改进，其邻域像素的权重不仅由距离中心点的空间距离决定，还由邻域像素与其中心点的像素差别而决定。邻域像素的权重为：</p>
+<script type="math/tex; mode=display">
+w_i = G(loc_i-loc_k)*G(p_i-p_k)</script><p>其中$w_i$是邻域像素i的权重，$loc_i, loc_k$分别是邻域像素i以及中心像素k的空间位置。在平坦区域，$p_i-p_k\approx 0$，此时双边滤波退化为高斯滤波。在非平坦区域，由于$|p_i-p_k|$较大，因此$G(p_i-p_k)$较小，从而拉低了这些差别较大的像素的整体权重。与表面模糊一样，实现了对非平坦区域的细节保留。</p>
+<h2 id="导向滤波"><a href="#导向滤波" class="headerlink" title="导向滤波"></a>导向滤波</h2><p><a href="http://kaiminghe.com/eccv10/eccv10ppt.pdf" target="_blank" rel="noopener">http://kaiminghe.com/eccv10/eccv10ppt.pdf</a><br><a href="https://blog.csdn.net/baimafujinji/article/details/74750283" target="_blank" rel="noopener">https://blog.csdn.net/baimafujinji/article/details/74750283</a><br>导向滤波也是非常类似的，其具体推导就不再重复了。其原理依然是，在平坦区域趋向于使用滑窗的均值，而在非平坦区域趋向于保留中心像素的值。它的精髓之处在于使用线性变换来计算响应，从而能够保证区域内guided image的梯度能够传导到响应中去，并且保持比例，避免了梯度翻转(就是响应中两个像素的大小关系与导向图或者原图不一致)。</p>
+<p><img src="/2019/06/美颜算法/guidedfilter.png" alt="guidedfilter"></p>
+<blockquote>
+<p>你可以想象一种情况来理解这种假设。II中的甲处和乙处都是区域，而丙处是边缘。那甲处的梯度和乙处的梯度应该不会相差太大，例如乙处的梯度是甲处梯度的1.5倍。但是由于丙处是边缘，所以丙处的梯度会比较大，例如可能是甲处的6倍，也就是乙处的4倍。如果I和q之间满足线性关系，那么甲乙丙的梯度大小和倍数关系就都不会被扭曲。否则，如果二者之间的关系是非线性的，那么可能的结果是在q中，尽管丙处的梯度仍然大于乙处的梯度，进而大于甲处的梯度，但是倍数关系可能会扭曲。例如，丙处的梯度是乙处的1.5倍，而是甲处的6倍（即乙处的梯度是甲处的4倍），这时你就会想象，甲处是区域，而乙处和丙处就变成了边缘。可见非线性关系会使得引导图像对于边缘和区域的指示作用发生错乱。</p>
+</blockquote>
+<p><img src="/2019/06/美颜算法/guidedfilter_gradient.png" alt="guidedfilter_gradient"><br>看这个图，虽然响应（filterred）中，像素大小的偏序关系依然保留，但是由于映射比例不一致，导致与原图的差（上图的detail部分）存在波动。这时候将filter的结果应用回原图就会出现梯度翻转的现象(enhanced)。在非边缘处这样的现象不容易发生的，非边缘处主要是空间高斯起作用。在边缘处，主要是像素差高斯起主要作用，越靠近斜线的中心部分，也就是边界部分，邻域的像素波动就越大，而靠近两个平坦区域的像素，其波动相对较小，因此filtered曲线更加平缓，这就是上左图中filtered曲线先平缓后快速上升再平缓的原因。同时，guided filter更快，可以用于抠图，毛发模拟、去雾等一系列应用中去。</p>
+<h3 id="暗通道去雾算法"><a href="#暗通道去雾算法" class="headerlink" title="暗通道去雾算法"></a>暗通道去雾算法</h3><p><a href="https://www.jianshu.com/p/df9c963a392a" target="_blank" rel="noopener">https://www.jianshu.com/p/df9c963a392a</a></p>
+<p>这里不得不提一下暗通道去雾算法，这里讲得最清晰，其中最关键的一步就是对无雾图像的假设，即下面的公式(6)：</p>
+<p> <a href="https://blkstone.github.io/2015/08/20/single-image-haze-removal-using-dark-channel/" target="_blank" rel="noopener">https://blkstone.github.io/2015/08/20/single-image-haze-removal-using-dark-channel/</a></p>
+<p><img src="/2019/06/美颜算法/darkchannel.png" alt="darkchannel"></p>
+<h1 id="图像混合算法"><a href="#图像混合算法" class="headerlink" title="图像混合算法"></a>图像混合算法</h1><h2 id="线性光混合"><a href="#线性光混合" class="headerlink" title="线性光混合"></a>线性光混合</h2><p>假定两个相邻图层X和Y，X在下方，Y在上方，X与Y混合，则X是基色，Y是混合色，X与Y混合得到的颜色是结果色Z，对于线性光混合模式，其计算公式为：</p>
+<script type="math/tex; mode=display">
+Z=X+2Y-256</script><h2 id="不透明度混合"><a href="#不透明度混合" class="headerlink" title="不透明度混合"></a>不透明度混合</h2><script type="math/tex; mode=display">
+Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的数值，0代表上方的Y完全透明。</p>
+<h1 id="瘦脸宽脸之液化算法"><a href="#瘦脸宽脸之液化算法" class="headerlink" title="瘦脸宽脸之液化算法"></a>瘦脸宽脸之液化算法</h1><p>液化类算法一般是和磨皮一起出现的，其作用就是能够改变脸型。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/05/CPP11/C-11右值引用与完美转发/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1158,171 +1349,6 @@ QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/04/贝叶斯学派和频率学派/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/贝叶斯学派和频率学派/" class="post-title-link" itemprop="url">贝叶斯学派和频率学派</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-08 19:11:22" itemprop="dateCreated datePublished" datetime="2019-04-08T19:11:22+08:00">2019-04-08</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="概率和统计"><a href="#概率和统计" class="headerlink" title="概率和统计"></a>概率和统计</h1><p>概率和统计并不是一个东西，概率是已知模型，求观测值出现的可能性。而统计是已知多个观测值，求概率符合的模型（分布）和参数。切换到机器学习，统计是训练模型阶段，而概率是inference阶段。</p>
-<h1 id="MAP（Maximum-A-Posteriori-Estimation-）和MLE-Maximum-Likelihood-Estimation"><a href="#MAP（Maximum-A-Posteriori-Estimation-）和MLE-Maximum-Likelihood-Estimation" class="headerlink" title="MAP（Maximum A Posteriori Estimation ）和MLE (Maximum Likelihood Estimation)"></a>MAP（Maximum A Posteriori Estimation ）和MLE (Maximum Likelihood Estimation)</h1><p>MAP和MLE都是统计的过程，分别代表着统计里面的两个学派，贝叶斯学派和频率学派。以抛硬币为例，假如小明抛十次硬币分别出现2次正面和8次反面，那么按照两种学派，我们会得到什么样的统计结果呢：</p>
-<ul>
-<li><p>频率学派<br>  频率学派认为，由于制造工艺不稳定，这个硬币抛出正面的概率虽然不知道，但是一定是一个固定的值，毕竟就这一个硬币。记这个抛正面的概率为p，那么当p=0.2的时候，是最可能出现这样的结果的。这就是频率学派的看家内功最大似然法。</p>
-</li>
-<li><p>贝叶斯学派<br>  贝叶斯学派认为，p是一个随机变量，但是应该是符合某种分布的，一般来讲硬币应该均匀的，因此p应该在0.5附近波动，虽然说p=0.2的时候最可能出现抛出的结果，但是p=0.3的时候也有可能出这种结果啊，只不过概率相对小一点而已。为什么贝叶斯学派会争这一点呢，因为贝叶斯学派认为，p本身的概率也是要考虑进去的，p=0.2本身就是件小概率事件，即使P(A|p=0.2)概率最大，也不代表<script type="math/tex">P(A|p=0.2) * P(p=0.2)</script>概率最大。<br>  贝叶斯学派这种雨露均沾的方法难点就在于，p的分布也是很难得到的，即使得到，要想计算<script type="math/tex">\int_{-\infty}^{\infty} P(A|p) * P(p)dP(p)</script>在没有计算机的年代也是非常辛苦的。(计算机时代出现了类似蒙特卡洛之类的估计方法)。MLE可以看做是认为P(p)是均匀分布的MAP，这时候它就完全不需要考虑P(p)的概率分布了。</p>
-<p>  至于谁对谁错？至今都还没有个定论~</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1371,7 +1397,7 @@ QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
