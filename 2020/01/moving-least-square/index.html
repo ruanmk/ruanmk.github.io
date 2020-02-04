@@ -103,7 +103,7 @@
 <meta property="og:site_name" content="阮明康">
 <meta property="og:description" content="形变图形学上，形变包括几个控制点，这些控制点可以是点，线，甚至是三角形网格。形变算法的作用就是将物体进行形变以使得相应的控制点满足要求。 mls要解决的问题是，对于某个物体，假如其关键点需要变动到一个新的位置，那么这个物体的其他部分要怎样变动才能够显得自然真实呢？这就需要使用到image deformation这一个技术了。 mls算法首先解释下moving这个名字的来历，由于mls针对每一个像素">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-01-30T04:57:53.999Z">
+<meta property="og:updated_time" content="2020-02-04T06:52:26.029Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="moving least square">
 <meta name="twitter:description" content="形变图形学上，形变包括几个控制点，这些控制点可以是点，线，甚至是三角形网格。形变算法的作用就是将物体进行形变以使得相应的控制点满足要求。 mls要解决的问题是，对于某个物体，假如其关键点需要变动到一个新的位置，那么这个物体的其他部分要怎样变动才能够显得自然真实呢？这就需要使用到image deformation这一个技术了。 mls算法首先解释下moving这个名字的来历，由于mls针对每一个像素">
@@ -502,14 +502,17 @@ min \left[\sum_i w_i|\hat{p_i}M - \hat{q_i}|^2\right] \\
 where\ \hat{p_i}=p_i-p_*, \hat{q_i} = q_i - q_*</script><p>现在实际上$\hat{p_i}, \hat{q_i}$是已知的，那么这就是一个标准的线性最小二乘问题，变量是M。之前优化3DMM、优化摄像机矩阵的时候都用到线性最小二乘问题的解法，只不过当时变量是一个向量，而在这里M是一个矩阵。</p>
 <p>故技重施，对M求导，令导数为0，我们得到：</p>
 <script type="math/tex; mode=display">
-\hat{M} = (\sum_i \hat{p_i}^Tw_i\hat{p_i})^{-1}\sum_j\hat{p_j}w_j\hat{q_j}</script><p>原论文漏写了右边的$w<em>j$，相信应该是笔误。将M代入$l_v(x) = (x-p</em><em>)M + q_</em>$：</p>
+\hat{M} = (\sum_i \hat{p_i}^Tw_i\hat{p_i})^{-1}\sum_j\hat{p_j}w_j\hat{q_j}</script><p>原论文漏写了右边的 $w_j$ ，相信应该是笔误。将M代入</p>
+<script type="math/tex; mode=display">
+l_v(x) = (x-p_*)M + q_*</script><p>我们得到</p>
 <script type="math/tex; mode=display">
 f_a(x) = l_v(x) =  (x-p_*) (\sum_i \hat{p_i}^Tw_i\hat{p_i})^{-1}\sum_j\hat{p_j}w_j\hat{q_j} + q_*</script><p>下标a表示这个只是接近最优(approximate)。至此，我们已经获得了$l_v$的完整表达式，对每个像素位置v计算一个$l_v$就得到了全图的deformation formula.</p>
 <h2 id="在-l-v-是Affine-Transformation的基础上，根据M的不同还能继续细分"><a href="#在-l-v-是Affine-Transformation的基础上，根据M的不同还能继续细分" class="headerlink" title="在$l_v$是Affine Transformation的基础上，根据M的不同还能继续细分"></a>在$l_v$是Affine Transformation的基础上，根据M的不同还能继续细分</h2><p>Affine Transformation对M不作限制，因此M会包括切变。如果限制M只能包括旋转平移和scale，那么就称之为similarity deformations. 如果限制M只能够旋转平移，那么就称之为rigid deformations.</p>
 <ul>
 <li>similarity deformation<br>  限制shear, 也就是说M进行QP分解的时候，P只能是对角矩阵且对角线的值一致。原因很简单，假如M=QP, 那么xM = xQP, xQ表示旋转操作，xQP表示对旋转后的结果进行scale操作，此时P需要是uniform scale。在这样的条件下，$M^TM=P^TQ^TQP=\lambda I$，这就是M是相似变换需要满足的条件。多了这个条件后，M的自由度减少，假设将M写成以下两个列向量的区块形式：<script type="math/tex; mode=display">
-  M = (M_1\ M_2)</script>那么我们有$M<em>1^TM_1=M_2^TM_2=\lambda^2, M_1^TM_2=0$，所以M可以仅由M1表示：<br>$M = (M_1, M_1^\bot)$，由于我们实际要求M，所以会把$\bot$加到$x-p</em>*$上面，所以</li>
+  M = (M_1\ M_2)</script>那么我们有 $M_1^TM_1=M_2^TM_2=\lambda^2, M_1^TM_2=0$ ，所以M可以仅由M1表示： $M = (M_1, M_1^\bot)$ .</li>
 </ul>
+<p>由于我们实际要求M，所以会把$\bot$加到 $x-p_*$ 上面，所以</p>
 <script type="math/tex; mode=display">
 min \left[\sum_i w_i|\hat{p_i}M - \hat{q_i}|^2\right]</script><p>改为：</p>
 <script type="math/tex; mode=display">
