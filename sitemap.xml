@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://tensors.space/2020/03/TutteEmbedding/</loc>
+    
+    <lastmod>2020-03-25T08:11:43.234Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://tensors.space/2020/01/moving-least-square/</loc>
     
     <lastmod>2020-02-04T06:52:26.029Z</lastmod>
@@ -37,6 +44,13 @@
   </url>
   
   <url>
+    <loc>http://tensors.space/categories/index.html</loc>
+    
+    <lastmod>2019-08-18T15:44:04.613Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://tensors.space/about/index.html</loc>
     
     <lastmod>2019-08-18T15:44:04.613Z</lastmod>
@@ -45,13 +59,6 @@
   
   <url>
     <loc>http://tensors.space/tags/index.html</loc>
-    
-    <lastmod>2019-08-18T15:44:04.613Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://tensors.space/categories/index.html</loc>
     
     <lastmod>2019-08-18T15:44:04.613Z</lastmod>
     
@@ -149,14 +156,14 @@
   </url>
   
   <url>
-    <loc>http://tensors.space/2019/03/CPP11/CMake%E5%9F%BA%E7%A1%80/</loc>
+    <loc>http://tensors.space/2019/05/CPP11/C-11%E6%B3%9B%E5%9E%8B%E7%BC%96%E7%A8%8B/</loc>
     
     <lastmod>2019-08-18T15:44:04.592Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://tensors.space/2019/05/CPP11/C-11%E6%B3%9B%E5%9E%8B%E7%BC%96%E7%A8%8B/</loc>
+    <loc>http://tensors.space/2019/03/CPP11/CMake%E5%9F%BA%E7%A1%80/</loc>
     
     <lastmod>2019-08-18T15:44:04.592Z</lastmod>
     

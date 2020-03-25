@@ -387,6 +387,215 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/04/PCA推导/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/PCA推导/" class="post-title-link" itemprop="url">PCA推导</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-16 23:16:38" itemprop="dateCreated datePublished" datetime="2019-04-16T23:16:38+08:00">2019-04-16</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="PCA原理"><a href="#PCA原理" class="headerlink" title="PCA原理"></a>PCA原理</h1><p>在介绍PCA的原理前，首先回顾一下坐标系的变换以及向量的点积。两个向量的点乘代表着一个向量在另一个向量方向上的投影，并乘上另一个向量的长度。如果另一个向量刚好是单位向量，那就纯粹是一个向量在另一个单位向量上的投影：$\frac{\vec{a}\vec{b}}{|\vec{a}|} = |\vec{b}|cos\theta$。回顾坐标系，一个向量在某个坐标系的坐标分别是该向量在各坐标轴上的投影长度，因此向量的坐标可以由其在某坐标系$x’Oy’$的坐标$x’, y’$与各坐标轴方向的单位向量的乘积得出。举个例子，在平面直角坐标系中，向量(1, 1)的坐标就是(1, 1)，如果将其坐标系整体逆时针旋转45度，即新的坐标轴变成 $(\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2})$以及$(\frac{-\sqrt{2}}{2}, \frac{\sqrt{2}}{2})$，那么新的坐标将变成：</p>
+<script type="math/tex; mode=display">
+\begin{vmatrix}
+\frac{\sqrt{2}}{2} & \frac{\sqrt{2}}{2} \\
+\frac{-\sqrt{2}}{2}& \frac{\sqrt{2}}{2}
+\end{vmatrix}
+\cdot
+\begin{vmatrix}
+1 \\
+1
+\end{vmatrix}
+=
+\begin{vmatrix}
+\sqrt{2} \\
+0
+\end{vmatrix}</script><p>PCA的作用就是给原始数据找一个新的坐标系，使得数据在新的坐标系下，每个字段方差最大，也就是最容易区分彼此，尽可能保留原始数据。假设这样的一个新的坐标系记为$H$, 其中$H$每一行向量都是新坐标系的每一个坐标轴坐标，是单位向量，而数据矩阵$X$每一列就是原始的一个数据样本。因此经过PCA转换后的坐标为：</p>
+<script type="math/tex; mode=display">
+Z=HX</script><p>在这里，我们假设X已经进行中心化，也就是所有样本每一维的均值都是0，我们还希望转换后每一个样本尽可能分散分布，也就是转换后的坐标字段间协方差最大，防止出现冗余数据，尽量加大压缩比例。总结而言就是两个目标：</p>
+<ol>
+<li>字段方差最大，从而保留尽可能多的信息</li>
+<li>字段间协方差绝对值最小（最优值为0），尽量减少冗余信息</li>
+</ol>
+<p>即：</p>
+<script type="math/tex; mode=display">
+argmax_H tr(ZZ^T) = argmax_H tr(HXX^TH^T)\\
+ZZ^T=diag(z_1, z_2, ..., z_n)</script><p>这里我们解释下为什么需要$ZZ^T$而不是$Z^TZ$等之类的其他式子最大：我们知道，$Z$的每一列都是一个新的样本(sample)，每一行是坐标的一维，或称一个字段，那么$ZZ^T$的对角线就是每一个字段的方差和，第i行第j列的元素表示第i个字段和第j个字段的协方差。注意，是字段的方差和协方差，直接讨论样本的方差和协方差（即$Z^TZ$）是没有意义的，下面我们再解释为什么。<br>由第二个目标，我们知道，转换后的坐标系彼此之间应该线性无关，为什么呢，因为仅凭第一个目标约束条件，$H$的每一行的约束没有差别，$H$的每一行将得到完全一样的优化结果，因此我们需要添加约束使得结果唯一。假设$ZZ^T$满足第二个条件，由于$XX^T$又是实对称矩阵，那么只要$H$是正交矩阵就能满足这个要求（注意这个是充分不必要条件，非正交矩阵$H$也能用于矩阵对角化，注意，如果是相似对角化那么这个就是充分必要条件了，相似对角化是$H^{-1}AH$这种形式的），为了结果的唯一性，我们选取$H$为单位正交矩阵，因此我们有一个额外的约束就是$H$每行向量单位正交，也就是：</p>
+<script type="math/tex; mode=display">
+HH^T = I</script><p>综上，使用拉格朗日乘子法，列出：</p>
+<script type="math/tex; mode=display">
+f(H, XX^T) = tr(HXX^TH^T) - \vec{\alpha} tr(HH^T-I)</script><p>分别求导得：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{df}{dH} = tr(2XX^TH^T - 2\vec{\alpha} H^T) &= 0 \\
+\Rightarrow XX^TH^T &= \vec{\alpha} H^T \\
+\end{align}</script><p>显然$H$是$XX^T$的特征向量，代回$f(H, XX^T)$得$f(H, XX^T) = \vec{\alpha} I$<br>注意理解时将$f$拆开成一行一行来看，每一行的最大化实际上就是最大化这一行对应的特征值，由此可知，若$\vec{\alpha}$取$XX^T$最大的前k个特征值便可最大化$f$，与此相对应，H总共有k行，每一行是对应的特征向量。</p>
+<p>P.S.  解释下为什么$Z^TZ$没有意义，因为不管哪个假设，我们都限定了$H$是单位正交，我们有：</p>
+<script type="math/tex; mode=display">
+Z^TZ =X^TH^THX = X^TX</script><p>也就是，$Z^TZ$根本与$H$的选取无关，如果$H$满足单位正交矩阵的性质。</p>
+<h1 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h1><ul>
+<li>首先对$X$进行中心化</li>
+<li>求出$XX^T$的特征值和特征向量</li>
+<li>根据要求，取前k大特征值及其对应的特征向量，特征向量作为$H$每行的向量，转换后的数据为$Z = H\cdot X$</li>
+</ul>
+<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><h2 id="为什么对角化不需要正交"><a href="#为什么对角化不需要正交" class="headerlink" title="为什么对角化不需要正交"></a>为什么对角化不需要正交</h2><p>假设正交矩阵$Q$满足$QAQ^T=\Lambda​$，那么我们有：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
+\Rightarrow \sqrt{\Lambda}^{-1}QAQ^T(\sqrt{\Lambda}^{T})^{-1} &= (\sqrt{\Lambda}^{-1}Q)A(\sqrt{\Lambda }^{-1}Q)^T \\
+\Rightarrow Q'AQ'^T &=I, where\ Q'=\sqrt{\Lambda}^{-1}Q\\
+\Rightarrow A &= (Q'^{-1})(Q'^T)^{-1} \\
+&= Q'^{-1}(Q'^{-1})^{T}\\
+\Rightarrow (A^{-1})^T&= Q'Q'^T
+\end{align}</script><p>可以看到，$Q’$并非正交矩阵，其相乘为$(A^{-1})^T$而不是$\Lambda$</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/04/贝叶斯学派和频率学派/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1122,180 +1331,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/" class="post-title-link" itemprop="url">网络爬虫SCRAPY爬取GOOGLE PLAY APPS</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-10-01 21:07:05" itemprop="dateCreated datePublished" datetime="2018-10-01T21:07:05+08:00">2018-10-01</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/系统/" itemprop="url" rel="index"><span itemprop="name">系统</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/系统/系统架构/" itemprop="url" rel="index"><span itemprop="name">系统架构</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Scrapy框架介绍"><a href="#Scrapy框架介绍" class="headerlink" title="Scrapy框架介绍"></a>Scrapy框架介绍</h1><p><img src="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/scrapy_architecture_02.png" alt="scrapy架构图"><br>scrapy作为一种可以轻易扩展为分布式的爬虫框架，其内部框架采用类似于消息队列的方式进行任务的调度分发也就不奇怪了，消息队列使得各组件低耦合。至于这个消息队列是存在于单机内存中还是分布式集群中的一个节点，就看业务的需要了。采用生产者-消费者模式进行组织的系统实际上就是三块：任务的生产者，消费者以及消息队列。对应框架图上：<br>生产者：Spiders<br>消费者：Downloader<br>消息队列：Scheduler以及Engine<br>各部分组件由Engine进行驱动，Engine可以看做是一个main函数吧。生产者生产任务（在这里就是要爬取的url）放到消息队列，消费者从消息队列中取得任务进行实际的下载。下载结果交给生产者进行解析，解析结果的一部分是我们要提取的信息，它直接进入Pipeline进行处理，另一部分则是从下载结果中提取的新的任务（url），它将进入消息队列中。整个流程是：</p>
-<ul>
-<li>(1)一开始Scheduler的队列是空的，所以需要人工hard code一个起始的种子url列表，spider将这些url封装成Request，Engine将这些Request转给Scheduler</li>
-<li>(2)与此同时，一旦Scheduler队列非空，Engine将从Scheduler中抽取一个Request给Downloader进行实际下载，Downloader的产出即Response由engine转给spider</li>
-<li>(3)Spider抽取Response里面两类信息：第一类就是页面上我们实际要爬取的内容Item，以及这个页面包含的符合要求的url列表。Item由Engine转入Item的深层加工流水线Pipeline，进行进一步的筛选、存储等， url由Spider封装为Request经由Engine交给Scheduler。重复(2)<br>框架图中engine和各组件交换Request和Response的过程中可以插入各种额外的流程，称之为中间件，所以不难想象一共有两种种中间件：Downloader middlewares(对应图中4，5)和 Spider middlewares(对应图中6，7)。除此之外，Item Pipeline中可以插入处理Item的各个步骤。</li></ul>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1344,7 +1379,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

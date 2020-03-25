@@ -96,13 +96,21 @@
 
 
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="阮明康">
-<meta property="og:url" content="http://tensors.space/archives/2018/index.html">
+  <meta name="description" content="Tutte Embedding是一种将三维的图画在二维平面上的办法。我们知道，三维图，如人脸的三维mesh如果想要画在二维平面上，并且能够清楚地展示其拓扑结构，光去掉z坐标将其强行压平是不够的，这样子操作会使得多个立体的节点在平面上重合，不再是一个简单图。Tutte Embedding就是解决这样的问题而存在的，只要指定外轮廓在二维平面上的位置，算法就能够自动计算其他节点在二维平面上合适的位置，且">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TutteEmbedding">
+<meta property="og:url" content="http://tensors.space/2020/03/TutteEmbedding/index.html">
 <meta property="og:site_name" content="阮明康">
+<meta property="og:description" content="Tutte Embedding是一种将三维的图画在二维平面上的办法。我们知道，三维图，如人脸的三维mesh如果想要画在二维平面上，并且能够清楚地展示其拓扑结构，光去掉z坐标将其强行压平是不够的，这样子操作会使得多个立体的节点在平面上重合，不再是一个简单图。Tutte Embedding就是解决这样的问题而存在的，只要指定外轮廓在二维平面上的位置，算法就能够自动计算其他节点在二维平面上合适的位置，且">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://tensors.space/2020/03/TutteEmbedding/560px-Delaunay_circumcircles_vectorial.svg.png">
+<meta property="og:image" content="http://tensors.space/2020/03/TutteEmbedding/triangulate2c.gif">
+<meta property="og:image" content="http://tensors.space/2020/03/TutteEmbedding/triangulate2b.gif">
+<meta property="og:updated_time" content="2020-03-25T08:11:43.234Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="阮明康">
+<meta name="twitter:title" content="TutteEmbedding">
+<meta name="twitter:description" content="Tutte Embedding是一种将三维的图画在二维平面上的办法。我们知道，三维图，如人脸的三维mesh如果想要画在二维平面上，并且能够清楚地展示其拓扑结构，光去掉z坐标将其强行压平是不够的，这样子操作会使得多个立体的节点在平面上重合，不再是一个简单图。Tutte Embedding就是解决这样的问题而存在的，只要指定外轮廓在二维平面上的位置，算法就能够自动计算其他节点在二维平面上合适的位置，且">
+<meta name="twitter:image" content="http://tensors.space/2020/03/TutteEmbedding/560px-Delaunay_circumcircles_vectorial.svg.png">
 
 
 
@@ -110,7 +118,7 @@
 
   
   
-  <link rel="canonical" href="http://tensors.space/archives/2018/">
+  <link rel="canonical" href="http://tensors.space/2020/03/TutteEmbedding/">
 
 
 
@@ -120,7 +128,7 @@
   };
 </script>
 
-  <title>Archive | 阮明康</title>
+  <title>TutteEmbedding | 阮明康</title>
   
 
 
@@ -168,7 +176,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-archive">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -278,7 +286,7 @@
         
         
           
-          <li class="menu-item menu-item-archives menu-item-active">
+          <li class="menu-item menu-item-archives">
 
     
     
@@ -366,251 +374,219 @@
           
             
 
-    
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-      
-      
-    
-    
-
-  
-
-
           
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-      
-      <span class="archive-page-counter">
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2020/03/TutteEmbedding/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
         
         
+          <h1 class="post-title" itemprop="name headline">TutteEmbedding
+
+              
+            
+          </h1>
         
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-03-25 16:06:23" itemprop="dateCreated datePublished" datetime="2020-03-25T16:06:23+08:00">2020-03-25</time>
+            
+
+            
+          </span>
+
           
-        
-        Um..! 23 posts in total. Keep on posting.
-      </span>
-      
 
-      
-
-        
-        
-        
-
-        
           
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2018">2018</h1>
-          </div>
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2018/10/配置PyCharm远程调试并本地显示matplotlib图像/" itemprop="url">
             
-              <span itemprop="name">配置PyCharm远程调试并本地显示matplotlib图像</span>
             
-          </a>
-        
-      </h2>
+          
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-10-01T21:25:19+08:00" content="2018-10-01">
-          10-01
-        </time>
-      </div>
+          
+          
 
-    </header>
-  </article>
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
 
+          
 
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/" itemprop="url">
-            
-              <span itemprop="name">网络爬虫SCRAPY爬取GOOGLE PLAY APPS</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-10-01T21:07:05+08:00" content="2018-10-01">
-          10-01
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
       
 
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2018/10/UBUNTU搭建DEEPSPEECH语音转录系统/" itemprop="url">
-            
-              <span itemprop="name">UBUNTU搭建DEEPSPEECH语音转录系统</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-10-01T21:04:57+08:00" content="2018-10-01">
-          10-01
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
+      
+        <p>Tutte Embedding是一种将三维的图画在二维平面上的办法。我们知道，三维图，如人脸的三维mesh如果想要画在二维平面上，并且能够清楚地展示其拓扑结构，光去掉z坐标将其强行压平是不够的，这样子操作会使得多个立体的节点在平面上重合，不再是一个简单图。Tutte Embedding就是解决这样的问题而存在的，只要指定外轮廓在二维平面上的位置，算法就能够自动计算其他节点在二维平面上合适的位置，且能够保持原有的拓扑信息。</p>
+<p>Tutte Embedding需要指定外轮廓的坐标，根据内部节点分布的权重，Tutte Embeeding可以有多个版本。</p>
+<h1 id="feature-matching"><a href="#feature-matching" class="headerlink" title="feature matching"></a>feature matching</h1><h2 id="barymetric-mapping"><a href="#barymetric-mapping" class="headerlink" title="barymetric mapping"></a>barymetric mapping</h2><p>第一种是简单的barymetric mapping, 该方法内部节点的分布完全由外轮廓所指定，只要确定了外轮廓的坐标，那么内部节点的左边也随之确定，不会考虑到内部节点之间的距离等因素。其做法就是解线性方程组。</p>
+<h1 id="Spline-Warp"><a href="#Spline-Warp" class="headerlink" title="Spline Warp"></a>Spline Warp</h1><p>怎样将网格样条化</p>
+<p><a href="http://alumni.media.mit.edu/~maov/classes/comp_photo_vision08f/lect/07_Image%20Morphing.pdf" target="_blank" rel="noopener">http://alumni.media.mit.edu/~maov/classes/comp_photo_vision08f/lect/07_Image%20Morphing.pdf</a><br><a href="https://baike.baidu.com/item/Delaunay%E4%B8%89%E8%A7%92%E5%89%96%E5%88%86%E7%AE%97%E6%B3%95" target="_blank" rel="noopener">https://baike.baidu.com/item/Delaunay%E4%B8%89%E8%A7%92%E5%89%96%E5%88%86%E7%AE%97%E6%B3%95</a></p>
+<h1 id="Delaunay-Triangulation-完美三角剖分"><a href="#Delaunay-Triangulation-完美三角剖分" class="headerlink" title="Delaunay Triangulation(完美三角剖分)"></a>Delaunay Triangulation(完美三角剖分)</h1><p>给定一系列的点，怎样做三角化？这里有个方法叫做delaunay triangulation, 能够做到没有一个三角形的外接圆内包含第四个点（边界除外）。<br><img src="/2020/03/TutteEmbedding/560px-Delaunay_circumcircles_vectorial.svg.png" alt="560px-Delaunay_circumcircles_vectorial.svg"></p>
+<p>它的好处是，由于每三个点都在一个独立的外接圆上，因此所有点组成的三角形的角的和是比较大的，它能够较大限度提高了最小的角的下限。</p>
+<h2 id="算法步骤"><a href="#算法步骤" class="headerlink" title="算法步骤"></a>算法步骤</h2><p>首先建立一个足够大的三角形来包含所有的样本点，以这个三角形为起始，逐步添加样本点进来。在某一个时刻，将一个新的点添加进来，检查现有网格里面所有的三角形，如果某个三角形的外接圆包含了这个新的顶点，那么就将这个三角形记录下来。所有外接圆包含这个点的三角形会形成一个多边形，这个多边形的外边缘和这个点组合成新的星形的三角形。如图所示：</p>
+<p><img src="/2020/03/TutteEmbedding/triangulate2c.gif" alt="triangulate2c"></p>
+<p><img src="/2020/03/TutteEmbedding/triangulate2b.gif" alt="triangulate2b"></p>
+<p>为什么这样子有用呢，因为这样子相当于外边缘换了一个更小的外接圆(此时原本在圆内的点变成了在圆上，也就是，之前能够将这个点收在囊中的外接圆都逐渐缩小到刚好在边界上与这个点相交。)重复这个过程，就能够获得最后的结果。</p>
+<p>做surface interpolation</p>
+<h1 id="合成三角形后的三角形变"><a href="#合成三角形后的三角形变" class="headerlink" title="合成三角形后的三角形变"></a>合成三角形后的三角形变</h1><p>合成三角形后，需要在源A的形变应用到B中，这需要特定的方法来将两个三角形对应的像素放在一起。详细可以看这篇教程：<br><a href="https://www.learnopencv.com/warp-one-triangle-to-another-using-opencv-c-python/" target="_blank" rel="noopener">https://www.learnopencv.com/warp-one-triangle-to-another-using-opencv-c-python/</a></p>
+<p>An <strong>Affine Transform</strong> is the simplest way to transform a set of 3 points ( i.e. a triangle ) to another set of arbitrary 3 points. It encodes translation ( move ), scale, rotation and shear.</p>
+<p><a href="https://inst.eecs.berkeley.edu/~cs194-26/fa17/upload/files/proj4/cs194-26-aae/" target="_blank" rel="noopener">https://inst.eecs.berkeley.edu/~cs194-26/fa17/upload/files/proj4/cs194-26-aae/</a></p>
 
       
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2018/05/CPP11/用cmake发布库/" itemprop="url">
-            
-              <span itemprop="name">用cmake发布库</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-05-13T19:21:24+08:00" content="2018-05-13">
-          05-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
-        
-        
-        
-
-        
-        
-
-        
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-          <a class="post-title-link" href="/2018/05/由人脸识别引发的Softmax改进/" itemprop="url">
-            
-              <span itemprop="name">由人脸识别引发的Softmax改进</span>
-            
-          </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-05-11T19:53:39+08:00" content="2018-05-11">
-          05-11
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-      
-
     </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+      <div>
+        
+
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>阮明康</li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    
+    <a href="http://tensors.space/2020/03/TutteEmbedding/" title="TutteEmbedding">http://tensors.space/2020/03/TutteEmbedding/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/en" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/moving-least-square/" rel="next" title="moving least square">
+                <i class="fa fa-chevron-left"></i> moving least square
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/2018/page/2/">2</a><a class="extend next" rel="next" href="/archives/2018/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
-  </nav>
+  </article>
 
 
+  </div>
 
 
           </div>
           
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
 
         </div>
         
@@ -630,8 +606,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -748,6 +733,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#feature-matching"><span class="nav-number">1.</span> <span class="nav-text">feature matching</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#barymetric-mapping"><span class="nav-number">1.1.</span> <span class="nav-text">barymetric mapping</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spline-Warp"><span class="nav-number">2.</span> <span class="nav-text">Spline Warp</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Delaunay-Triangulation-完美三角剖分"><span class="nav-number">3.</span> <span class="nav-text">Delaunay Triangulation(完美三角剖分)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#算法步骤"><span class="nav-number">3.1.</span> <span class="nav-text">算法步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#合成三角形后的三角形变"><span class="nav-number">4.</span> <span class="nav-text">合成三角形后的三角形变</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
@@ -911,6 +913,10 @@
 
 
   
+  <script src="/js/scrollspy.js?v=7.1.0"></script>
+<script src="/js/post-details.js?v=7.1.0"></script>
+
+
 
   
 
@@ -926,6 +932,37 @@
 
   
 
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '765ca76ad899ed716837',
+    clientSecret: 'c8111d57983bf95607814ee45462a5e45117291f',
+    repo: 'git-comments',
+    owner: 'ruanmk',
+    admin: ['ruanmk'],
+    id: md5(location.pathname),
+    
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
 
 
   
@@ -1326,7 +1363,7 @@
   <script src="/lib/bookmark/bookmark.min.js?v=1.0"></script>
   <script>
   
-    bookmark.loadBookmark();
+    bookmark.scrollToMark('auto', "#more");
   
   </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 

@@ -387,6 +387,181 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/05/CPP11/CppMap的区别/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/CPP11/CppMap的区别/" class="post-title-link" itemprop="url">C++Map的区别</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-01 08:00:17" itemprop="dateCreated datePublished" datetime="2018-05-01T08:00:17+08:00">2018-05-01</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>面试别人时我常问一个编程题，也就是leetcode上的two sum，其中使用map和unordered_map的速度区别高达(打败)40%和(打败)88%,也就是快了接近一倍。使用map打败40%, 20ms, 使用unorderred_map打败88%， 12ms。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">public:</span><br><span class="line">vector&lt;int&gt; twoSum(vector&lt;int&gt;&amp; nums, int target) &#123;</span><br><span class="line">  std::unordered_map&lt;int, int&gt; m;</span><br><span class="line">  for(int i=0; i &lt; nums.size(); i++ )&#123;</span><br><span class="line">    int residual = target-nums[i];</span><br><span class="line">    if(m.find(nums[i]) != m.end())&#123;</span><br><span class="line">      return &#123;m[nums[i]], i&#125;;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">    m.insert(pair&lt;int, int&gt;(residual, i));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>那么他们有什么区别呢？</p>
+<h1 id="原理上的区别"><a href="#原理上的区别" class="headerlink" title="原理上的区别"></a>原理上的区别</h1><p>原理上来说，map采用二叉树(如红黑树等)来存储键值，键是有序的，而unordered_map则是采用哈希的方法来存储，是无序的。map的键必须定义operator &lt;，而unordered_map必须定义operator =。C++的unordered_map其实就是Hashmap，但是因为c++有太多第三方库占用了std::hash_map这么一个名字，因此起名叫做unordered_map. (毕竟大家都能给std加料，这也是namespace的设计我感觉到还存在不足的地方)</p>
+<p>另有hash_set, hash_multiset等数据结构<br><a href="https://cloud.tencent.com/developer/article/1338322" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1338322</a></p>
+<h1 id="使用上的区别"><a href="#使用上的区别" class="headerlink" title="使用上的区别"></a>使用上的区别</h1><p>map由于是有序的，因此可以按区间取元素，存在以下方法，而unordered_map则不存在以下方法：</p>
+<ul>
+<li><a href="http://www.cplusplus.com/reference/map/map/lower_bound/" target="_blank" rel="noopener"><strong>lower_bound</strong></a><br>Return iterator to lower bound (public member function )</li>
+<li><a href="http://www.cplusplus.com/reference/map/map/upper_bound/" target="_blank" rel="noopener"><strong>upper_bound</strong></a><br>Return iterator to upper bound (public member function )</li>
+<li><a href="http://www.cplusplus.com/reference/map/map/equal_range/" target="_blank" rel="noopener"><strong>equal_range</strong></a><br>Get range of equal elements (public member function )<br><img src="/2018/05/CPP11/CppMap的区别/cpp_diff_map.jpeg" alt="cpp_diff_map"></li>
+</ul>
+<p>其他容器也类似，有两个版本，在原理上分使用二叉树的和使用hashmap的，在是否允许键重复分multiXXX和非multi的。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/04/卡尔曼滤波器/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -839,7 +1014,7 @@ P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -1453,6 +1628,8 @@ P'_{t+1} &= E[(\Phi e_t+\omega_t)(\Phi e_t+\omega_t)^T] \\
 
   
   
+    
+      
     
       
     

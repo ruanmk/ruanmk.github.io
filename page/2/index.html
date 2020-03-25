@@ -387,6 +387,312 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/08/三维重建方法/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/三维重建方法/" class="post-title-link" itemprop="url">三维重建方法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-18 23:49:27" itemprop="dateCreated datePublished" datetime="2019-08-18T23:49:27+08:00">2019-08-18</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="小孔相机模型"><a href="#小孔相机模型" class="headerlink" title="小孔相机模型"></a>小孔相机模型</h2><p><a href="https://blog.csdn.net/lsh_2013/article/details/47615309" target="_blank" rel="noopener">https://blog.csdn.net/lsh_2013/article/details/47615309</a></p>
+<h2 id="坐标系及其转换"><a href="#坐标系及其转换" class="headerlink" title="坐标系及其转换"></a>坐标系及其转换</h2><p>相机模型中有四个重要的坐标系</p>
+<ul>
+<li>1.世界坐标系 ($X_w, Y_w, Z_w$)，世界坐标系就是物体在真实世界中的坐标</li>
+<li>2.像平面坐标系($x, y$)，注意这个是像平面的物理坐标，单位是实际物理长度，如1cm等</li>
+<li>3.像素坐标系($u, v$)，注意这个是像平面的像素坐标，是按个算的像素位置，如(3, 5)是指第三行第五个像素。</li>
+<li>4.相机坐标系($X_c, Y_c, Z_c$), 是以相机为中心，相机朝向为坐标轴方向的坐标系，实际上就是世界坐标系进行了一定的线性变换得到的新的坐标系。(显然从世界坐标系转换到相机坐标系物体都是保持线性关系的，不会发生扭曲，相对位移等，因此这就是个仿射变换)</li>
+</ul>
+<h3 id="相机坐标系和世界坐标系的变换"><a href="#相机坐标系和世界坐标系的变换" class="headerlink" title="相机坐标系和世界坐标系的变换"></a>相机坐标系和世界坐标系的变换</h3><p>既然知道了这就是个仿射变换，那么其实转换形式也就定下来了。实际上就是一个三维旋转平移矩阵. 点击这里复习三维坐标系旋转平移的各种表示方法： <a href="https://zhuanlan.zhihu.com/p/45404840" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/45404840</a><br>三维的旋转矩阵就是一个3x3的矩阵，是由三个旋转矩阵按照欧拉角的顺规顺序点乘得来的，维基百科有所有12种顺规的旋转矩阵表示：<a href="https://en.wikipedia.org/wiki/Euler_angles" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Euler_angles</a><br>显然，旋转矩阵，加上平移分量，就可以用齐次坐标表示相机坐标系和世界坐标系的转换了。<br>反正得到的旋转矩阵是这样的形式：</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+X_c \\
+Y_c \\
+Z_c \\
+1
+\end{bmatrix}
+= 
+\begin{bmatrix}
+R & t \\
+0^T & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+X_w \\
+Y_w \\
+Z_w \\
+1
+\end{bmatrix}</script><h3 id="像素坐标系与像平面坐标系转换"><a href="#像素坐标系与像平面坐标系转换" class="headerlink" title="像素坐标系与像平面坐标系转换"></a>像素坐标系与像平面坐标系转换</h3><p><img src="/2019/08/三维重建方法/20150813170616321.png" alt="20150813170616321"><br>可以看到，像素坐标系和像平面坐标系还是比较容易转换的，其中一个关键参数就是一个像素的物理大小是多少，假设一个像素的物理大小是$(dx, dy)$，那么单位面积的像素个数就是$(\frac{1}{dx}, \frac{1}{dy})$转换关系就是：</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+u \\
+v \\
+1
+\end{bmatrix}
+= 
+\begin{bmatrix}
+\frac{1}{dx} & 0 & u_0 \\
+0 & \frac{1}{dy} & v_0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix}</script><h3 id="相机坐标系与像平面坐标系关系"><a href="#相机坐标系与像平面坐标系关系" class="headerlink" title="相机坐标系与像平面坐标系关系"></a>相机坐标系与像平面坐标系关系</h3><p>也就是成像关系，符合相似三角形性质</p>
+<p><img src="/2019/08/三维重建方法/20160126094724700.jpeg" alt="20160126094724700"><br>我们可以看到</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+\frac{x}{f} = \frac{X_c}{Z_c} \\
+\frac{y}{f} = \frac{Y_c}{Z_c}
+\end{cases}
+\Rightarrow
+Z_c
+\begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix}
+= 
+\begin{bmatrix}
+f & 0 & 0 & 0 \\
+0 & f & 0 & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+X_c \\
+Y_c \\
+Z_c \\
+1
+\end{bmatrix}</script><h3 id="综合上述三个转换关系，我们能够得到从世界坐标到像素坐标的转换关系"><a href="#综合上述三个转换关系，我们能够得到从世界坐标到像素坐标的转换关系" class="headerlink" title="综合上述三个转换关系，我们能够得到从世界坐标到像素坐标的转换关系"></a>综合上述三个转换关系，我们能够得到从世界坐标到像素坐标的转换关系</h3><script type="math/tex; mode=display">
+\begin{aligned}
+Z_c\begin{bmatrix}
+u \\
+v \\
+1
+\end{bmatrix}
+ &= 
+Z_c\begin{bmatrix}
+\frac{1}{dx} & 0 & u_0 \\
+0 & \frac{1}{dy} & v_0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix} \\
+ &= 
+ \begin{bmatrix}
+\frac{1}{dx} & 0 & u_0 \\
+0 & \frac{1}{dy} & v_0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+f & 0 & 0 & 0 \\
+0 & f & 0 & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+X_c \\
+Y_c \\
+Z_c \\
+1
+\end{bmatrix} \\
+ &= 
+ \begin{bmatrix}
+\frac{1}{dx} & 0 & u_0 \\
+0 & \frac{1}{dy} & v_0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+f & 0 & 0 & 0 \\
+0 & f & 0 & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+R & t \\
+0^T & 1 \\
+\end{bmatrix}
+\begin{bmatrix}
+X_w \\
+Y_w \\
+Z_w \\
+1
+\end{bmatrix}  \\
+&= KM\begin{bmatrix}
+X_w \\
+Y_w \\
+Z_w \\
+1
+\end{bmatrix}
+\end{aligned}</script><p>其中：</p>
+<script type="math/tex; mode=display">
+K =  \begin{bmatrix}
+\frac{1}{dx} & 0 & u_0 \\
+0 & \frac{1}{dy} & v_0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+f & 0 & 0 & 0 \\
+0 & f & 0 & 0 \\
+0 & 0 & 1 & 0
+\end{bmatrix} \\
+
+M=\begin{bmatrix}
+R & t \\
+0^T & 1 \\
+\end{bmatrix}</script><p>所以</p>
+<script type="math/tex; mode=display">
+\begin{bmatrix}
+u \\
+v \\
+1
+\end{bmatrix}
+=K\frac{1}{Z_C}M\begin{bmatrix}
+X_w \\
+Y_w \\
+Z_w \\
+1
+\end{bmatrix}</script><p>注意，我们看到，这些矩阵计算过程中，是需要保留中间结果$Z_C$的，不能直接混在一起乘过去。实际上，K是OpenGL根据glViewPort计算出来的，用来决定OpenGL的像平面（三维空间里的二维平面， 范围是x, y都是[-1, 1]）和实际渲染的像素（实际渲染结果）的比例，因此在GLSL里面我们完全可以将所有矩阵都乘完，此时所有的矩阵等效于一个$M$，此后我们就管不着了，到了OpenGL内部去了，此时OpenGL会自动除以第三个参数，也就是$Z_C$，将[-1, 1]范围内的留下，然后再乘以K。比如一个常见的片段着色器可以这么写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#version 330 core</span><br><span class="line">layout (location = 0) in vec3 aPos;</span><br><span class="line">layout (location = 1) in vec3 aNormal;</span><br><span class="line">layout (location = 2) in vec2 aTexCoord;</span><br><span class="line"></span><br><span class="line">out vec2 TexCoord;</span><br><span class="line"></span><br><span class="line">uniform mat4 model;</span><br><span class="line">uniform mat4 view;</span><br><span class="line">uniform mat4 projection;</span><br><span class="line"></span><br><span class="line">void main()</span><br><span class="line">&#123;</span><br><span class="line">	gl_Position = projection * view * model * vec4(aPos, 1.0);</span><br><span class="line">	TexCoord = vec2(aTexCoord.x, aTexCoord.y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上，到gl_Position为止，依然还是相机坐标，还没渲染到像平面（即还没除以$Z_C$），也显然没到像素(即还没乘以K)。而OpenGL的相机内参K非常简单，那就是：一般而言，f/dx = 渲染宽度，可以取img.cols/2, f/dy是渲染高度，可以取img.rows/2 ，也就是，像平面坐标(1, 1)映射到图像像素那就是(x=cols/2, y=rows/2)，以图像中心为坐标原点，刚好是右上角，所以不要觉得神奇，就是个约定。</p>
+<script type="math/tex; mode=display">
+K =  \begin{bmatrix}
+\frac{f}{dx} & 0 & u_0 \\
+0 & \frac{f}{dy} & v_0 \\
+0 & 0 & 1
+\end{bmatrix}</script><p>OpenGL这个相机是假的，所以K是已知的，但是实际的相机K可不是这么简单的。K的参数完全由相机决定，称之为内部参数矩阵，而M的参数则由相机的位置所决定，称之为外部参数矩阵。实际成像模型，考虑到相机镜头加工不完善，还会存在畸变，比如由于多个光学镜头的主光轴不完全共线产生的径向和切向畸变。参考：<a href="https://blog.csdn.net/dcrmg/article/details/52950141" target="_blank" rel="noopener">https://blog.csdn.net/dcrmg/article/details/52950141</a><br>切向畸变是由于透镜本身与相机传感器平面（成像平面）或图像平面不平行而产生的，这种情况多是由于透镜被粘贴到镜头模组上的安装偏差导致。<br><img src="/2019/08/三维重建方法/切向畸变.jpeg" alt="切向畸变"></p>
+<p>径向畸变就是沿着透镜半径方向分布的畸变，产生原因是光线在原理透镜中心的地方比靠近中心的地方更加弯曲，这种畸变在普通廉价的镜头中表现更加明显，径向畸变主要包括桶形畸变和枕形畸变两种。以下分别是枕形和桶形畸变示意图：<br><img src="/2019/08/三维重建方法/径向畸变.jpeg" alt="径向畸变"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/06/美颜算法/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1140,215 +1446,6 @@ Z= (X*(100-Opacity) + Y*Opacity)/100</script><p>其中Opacity是0-100之间的�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2019/04/PCA推导/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/PCA推导/" class="post-title-link" itemprop="url">PCA推导</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-16 23:16:38" itemprop="dateCreated datePublished" datetime="2019-04-16T23:16:38+08:00">2019-04-16</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/理论基础/" itemprop="url" rel="index"><span itemprop="name">理论基础</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="PCA原理"><a href="#PCA原理" class="headerlink" title="PCA原理"></a>PCA原理</h1><p>在介绍PCA的原理前，首先回顾一下坐标系的变换以及向量的点积。两个向量的点乘代表着一个向量在另一个向量方向上的投影，并乘上另一个向量的长度。如果另一个向量刚好是单位向量，那就纯粹是一个向量在另一个单位向量上的投影：$\frac{\vec{a}\vec{b}}{|\vec{a}|} = |\vec{b}|cos\theta$。回顾坐标系，一个向量在某个坐标系的坐标分别是该向量在各坐标轴上的投影长度，因此向量的坐标可以由其在某坐标系$x’Oy’$的坐标$x’, y’$与各坐标轴方向的单位向量的乘积得出。举个例子，在平面直角坐标系中，向量(1, 1)的坐标就是(1, 1)，如果将其坐标系整体逆时针旋转45度，即新的坐标轴变成 $(\frac{\sqrt{2}}{2}, \frac{\sqrt{2}}{2})$以及$(\frac{-\sqrt{2}}{2}, \frac{\sqrt{2}}{2})$，那么新的坐标将变成：</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
-\frac{\sqrt{2}}{2} & \frac{\sqrt{2}}{2} \\
-\frac{-\sqrt{2}}{2}& \frac{\sqrt{2}}{2}
-\end{vmatrix}
-\cdot
-\begin{vmatrix}
-1 \\
-1
-\end{vmatrix}
-=
-\begin{vmatrix}
-\sqrt{2} \\
-0
-\end{vmatrix}</script><p>PCA的作用就是给原始数据找一个新的坐标系，使得数据在新的坐标系下，每个字段方差最大，也就是最容易区分彼此，尽可能保留原始数据。假设这样的一个新的坐标系记为$H$, 其中$H$每一行向量都是新坐标系的每一个坐标轴坐标，是单位向量，而数据矩阵$X$每一列就是原始的一个数据样本。因此经过PCA转换后的坐标为：</p>
-<script type="math/tex; mode=display">
-Z=HX</script><p>在这里，我们假设X已经进行中心化，也就是所有样本每一维的均值都是0，我们还希望转换后每一个样本尽可能分散分布，也就是转换后的坐标字段间协方差最大，防止出现冗余数据，尽量加大压缩比例。总结而言就是两个目标：</p>
-<ol>
-<li>字段方差最大，从而保留尽可能多的信息</li>
-<li>字段间协方差绝对值最小（最优值为0），尽量减少冗余信息</li>
-</ol>
-<p>即：</p>
-<script type="math/tex; mode=display">
-argmax_H tr(ZZ^T) = argmax_H tr(HXX^TH^T)\\
-ZZ^T=diag(z_1, z_2, ..., z_n)</script><p>这里我们解释下为什么需要$ZZ^T$而不是$Z^TZ$等之类的其他式子最大：我们知道，$Z$的每一列都是一个新的样本(sample)，每一行是坐标的一维，或称一个字段，那么$ZZ^T$的对角线就是每一个字段的方差和，第i行第j列的元素表示第i个字段和第j个字段的协方差。注意，是字段的方差和协方差，直接讨论样本的方差和协方差（即$Z^TZ$）是没有意义的，下面我们再解释为什么。<br>由第二个目标，我们知道，转换后的坐标系彼此之间应该线性无关，为什么呢，因为仅凭第一个目标约束条件，$H$的每一行的约束没有差别，$H$的每一行将得到完全一样的优化结果，因此我们需要添加约束使得结果唯一。假设$ZZ^T$满足第二个条件，由于$XX^T$又是实对称矩阵，那么只要$H$是正交矩阵就能满足这个要求（注意这个是充分不必要条件，非正交矩阵$H$也能用于矩阵对角化，注意，如果是相似对角化那么这个就是充分必要条件了，相似对角化是$H^{-1}AH$这种形式的），为了结果的唯一性，我们选取$H$为单位正交矩阵，因此我们有一个额外的约束就是$H$每行向量单位正交，也就是：</p>
-<script type="math/tex; mode=display">
-HH^T = I</script><p>综上，使用拉格朗日乘子法，列出：</p>
-<script type="math/tex; mode=display">
-f(H, XX^T) = tr(HXX^TH^T) - \vec{\alpha} tr(HH^T-I)</script><p>分别求导得：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-\frac{df}{dH} = tr(2XX^TH^T - 2\vec{\alpha} H^T) &= 0 \\
-\Rightarrow XX^TH^T &= \vec{\alpha} H^T \\
-\end{align}</script><p>显然$H$是$XX^T$的特征向量，代回$f(H, XX^T)$得$f(H, XX^T) = \vec{\alpha} I$<br>注意理解时将$f$拆开成一行一行来看，每一行的最大化实际上就是最大化这一行对应的特征值，由此可知，若$\vec{\alpha}$取$XX^T$最大的前k个特征值便可最大化$f$，与此相对应，H总共有k行，每一行是对应的特征向量。</p>
-<p>P.S.  解释下为什么$Z^TZ$没有意义，因为不管哪个假设，我们都限定了$H$是单位正交，我们有：</p>
-<script type="math/tex; mode=display">
-Z^TZ =X^TH^THX = X^TX</script><p>也就是，$Z^TZ$根本与$H$的选取无关，如果$H$满足单位正交矩阵的性质。</p>
-<h1 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h1><ul>
-<li>首先对$X$进行中心化</li>
-<li>求出$XX^T$的特征值和特征向量</li>
-<li>根据要求，取前k大特征值及其对应的特征向量，特征向量作为$H$每行的向量，转换后的数据为$Z = H\cdot X$</li>
-</ul>
-<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><h2 id="为什么对角化不需要正交"><a href="#为什么对角化不需要正交" class="headerlink" title="为什么对角化不需要正交"></a>为什么对角化不需要正交</h2><p>假设正交矩阵$Q$满足$QAQ^T=\Lambda​$，那么我们有：</p>
-<script type="math/tex; mode=display">
-\begin{align}
-QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
-\Rightarrow \sqrt{\Lambda}^{-1}QAQ^T(\sqrt{\Lambda}^{T})^{-1} &= (\sqrt{\Lambda}^{-1}Q)A(\sqrt{\Lambda }^{-1}Q)^T \\
-\Rightarrow Q'AQ'^T &=I, where\ Q'=\sqrt{\Lambda}^{-1}Q\\
-\Rightarrow A &= (Q'^{-1})(Q'^T)^{-1} \\
-&= Q'^{-1}(Q'^{-1})^{T}\\
-\Rightarrow (A^{-1})^T&= Q'Q'^T
-\end{align}</script><p>可以看到，$Q’$并非正交矩阵，其相乘为$(A^{-1})^T$而不是$\Lambda$</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1397,7 +1494,7 @@ QAQ^T&=\Lambda = \sqrt{\Lambda}\sqrt{\Lambda}^T \\
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

@@ -387,6 +387,180 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="阮明康">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阮明康">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/" class="post-title-link" itemprop="url">网络爬虫SCRAPY爬取GOOGLE PLAY APPS</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-10-01 21:07:05" itemprop="dateCreated datePublished" datetime="2018-10-01T21:07:05+08:00">2018-10-01</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/系统/" itemprop="url" rel="index"><span itemprop="name">系统</span></a></span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/系统/系统架构/" itemprop="url" rel="index"><span itemprop="name">系统架构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Scrapy框架介绍"><a href="#Scrapy框架介绍" class="headerlink" title="Scrapy框架介绍"></a>Scrapy框架介绍</h1><p><img src="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/scrapy_architecture_02.png" alt="scrapy架构图"><br>scrapy作为一种可以轻易扩展为分布式的爬虫框架，其内部框架采用类似于消息队列的方式进行任务的调度分发也就不奇怪了，消息队列使得各组件低耦合。至于这个消息队列是存在于单机内存中还是分布式集群中的一个节点，就看业务的需要了。采用生产者-消费者模式进行组织的系统实际上就是三块：任务的生产者，消费者以及消息队列。对应框架图上：<br>生产者：Spiders<br>消费者：Downloader<br>消息队列：Scheduler以及Engine<br>各部分组件由Engine进行驱动，Engine可以看做是一个main函数吧。生产者生产任务（在这里就是要爬取的url）放到消息队列，消费者从消息队列中取得任务进行实际的下载。下载结果交给生产者进行解析，解析结果的一部分是我们要提取的信息，它直接进入Pipeline进行处理，另一部分则是从下载结果中提取的新的任务（url），它将进入消息队列中。整个流程是：</p>
+<ul>
+<li>(1)一开始Scheduler的队列是空的，所以需要人工hard code一个起始的种子url列表，spider将这些url封装成Request，Engine将这些Request转给Scheduler</li>
+<li>(2)与此同时，一旦Scheduler队列非空，Engine将从Scheduler中抽取一个Request给Downloader进行实际下载，Downloader的产出即Response由engine转给spider</li>
+<li>(3)Spider抽取Response里面两类信息：第一类就是页面上我们实际要爬取的内容Item，以及这个页面包含的符合要求的url列表。Item由Engine转入Item的深层加工流水线Pipeline，进行进一步的筛选、存储等， url由Spider封装为Request经由Engine交给Scheduler。重复(2)<br>框架图中engine和各组件交换Request和Response的过程中可以插入各种额外的流程，称之为中间件，所以不难想象一共有两种种中间件：Downloader middlewares(对应图中4，5)和 Spider middlewares(对应图中6，7)。除此之外，Item Pipeline中可以插入处理Item的各个步骤。</li></ul>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2018/10/网络爬虫SCRAPY爬取GOOGLE-PLAY-APPS/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/10/UBUNTU搭建DEEPSPEECH语音转录系统/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1128,181 +1302,6 @@ W_1x+b1=W_2x+b2\Rightarrow (W_1-W_2)x + b_1-b_2=0</script><p>这就是softmax上
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://tensors.space/2018/05/CPP11/CppMap的区别/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="阮明康">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阮明康">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/CPP11/CppMap的区别/" class="post-title-link" itemprop="url">C++Map的区别</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-05-01 08:00:17" itemprop="dateCreated datePublished" datetime="2018-05-01T08:00:17+08:00">2018-05-01</time>
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/" itemprop="url" rel="index"><span itemprop="name">语言基础</span></a></span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/语言基础/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h1><p>面试别人时我常问一个编程题，也就是leetcode上的two sum，其中使用map和unordered_map的速度区别高达(打败)40%和(打败)88%,也就是快了接近一倍。使用map打败40%, 20ms, 使用unorderred_map打败88%， 12ms。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">public:</span><br><span class="line">vector&lt;int&gt; twoSum(vector&lt;int&gt;&amp; nums, int target) &#123;</span><br><span class="line">  std::unordered_map&lt;int, int&gt; m;</span><br><span class="line">  for(int i=0; i &lt; nums.size(); i++ )&#123;</span><br><span class="line">    int residual = target-nums[i];</span><br><span class="line">    if(m.find(nums[i]) != m.end())&#123;</span><br><span class="line">      return &#123;m[nums[i]], i&#125;;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">    m.insert(pair&lt;int, int&gt;(residual, i));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  return &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>那么他们有什么区别呢？</p>
-<h1 id="原理上的区别"><a href="#原理上的区别" class="headerlink" title="原理上的区别"></a>原理上的区别</h1><p>原理上来说，map采用二叉树(如红黑树等)来存储键值，键是有序的，而unordered_map则是采用哈希的方法来存储，是无序的。map的键必须定义operator &lt;，而unordered_map必须定义operator =。C++的unordered_map其实就是Hashmap，但是因为c++有太多第三方库占用了std::hash_map这么一个名字，因此起名叫做unordered_map. (毕竟大家都能给std加料，这也是namespace的设计我感觉到还存在不足的地方)</p>
-<p>另有hash_set, hash_multiset等数据结构<br><a href="https://cloud.tencent.com/developer/article/1338322" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1338322</a></p>
-<h1 id="使用上的区别"><a href="#使用上的区别" class="headerlink" title="使用上的区别"></a>使用上的区别</h1><p>map由于是有序的，因此可以按区间取元素，存在以下方法，而unordered_map则不存在以下方法：</p>
-<ul>
-<li><a href="http://www.cplusplus.com/reference/map/map/lower_bound/" target="_blank" rel="noopener"><strong>lower_bound</strong></a><br>Return iterator to lower bound (public member function )</li>
-<li><a href="http://www.cplusplus.com/reference/map/map/upper_bound/" target="_blank" rel="noopener"><strong>upper_bound</strong></a><br>Return iterator to upper bound (public member function )</li>
-<li><a href="http://www.cplusplus.com/reference/map/map/equal_range/" target="_blank" rel="noopener"><strong>equal_range</strong></a><br>Get range of equal elements (public member function )<br><img src="/2018/05/CPP11/CppMap的区别/cpp_diff_map.jpeg" alt="cpp_diff_map"></li>
-</ul>
-<p>其他容器也类似，有两个版本，在原理上分使用二叉树的和使用hashmap的，在是否允许键重复分multiXXX和非multi的。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1351,7 +1350,7 @@ W_1x+b1=W_2x+b2\Rightarrow (W_1-W_2)x + b_1-b_2=0</script><p>这就是softmax上
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
